@@ -1,0 +1,52 @@
+.page-wrap {
+    flex: 1;
+    overflow: hidden;
+  }
+  .page-topPart {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+  }
+  .left-box {
+    flex: 1;
+    display: block;
+  }
+  .right-box {
+    flex: 1;
+  }
+  .middle-box {
+    flex: 1;
+  }
+  .input-item {
+    text-align: center;
+  }
+  .input-box {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 0rem;
+  }
+  .input-label {
+    min-width: 9rem;
+    text-align: right;
+    padding-right: 1rem;
+  }
+  .page-content {
+    padding: 1rem;
+    text-align: left;
+  }
+  .page-title {
+    font-weight: 700;
+  }
+  .page-dialog {
+    text-align: left;
+  }
+  .enclosure-box {
+    background-color: #fff;
+  }
+  .footer-btns {
+    padding: 1rem;
+    text-align: right;
+  }
+  .page-device{
+    padding:1rem 0rem;
+  }
