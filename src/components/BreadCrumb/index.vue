@@ -1,8 +1,15 @@
+<!--
+ * @Description: In User Settings Edit
+ * @Author: your name
+ * @Date: 2019-09-14 09:30:21
+ * @LastEditTime: 2019-09-14 18:10:06
+ * @LastEditors: Please set LastEditors
+ -->
 <template>
   <div class="BreadCrumb-wrap">
     <el-breadcrumb separator="/">
-      <el-breadcrumb-item :to="{ path: '/' }" class="BreadCrumb-item" @click="breadCrumbClickHandle()">首页</el-breadcrumb-item>
-      <el-breadcrumb-item v-for="(item,index) in BreadList" :key="index" :to="{ path:item.path }" @click="breadCrumbClickHandle(item.path)">{{item.breakName}}</el-breadcrumb-item>
+      <el-breadcrumb-item class="BreadCrumb-item">首页</el-breadcrumb-item>
+      <el-breadcrumb-item v-for="(item,index) in BreadList" :key="index" @click="breadCrumbClickHandle(item.path)">{{item.name}}</el-breadcrumb-item>
     </el-breadcrumb>
   </div>
 </template>
@@ -52,4 +59,10 @@ export default {
 .BreadCrumb-item{
     cursor: pointer;
 }
+
+
+
+
+
+
 </style>

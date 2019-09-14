@@ -1,10 +1,17 @@
+/*
+ * @Description: In User Settings Edit
+ * @Author: your name
+ * @Date: 2019-09-14 09:30:21
+ * @LastEditTime: 2019-09-14 09:30:21
+ * @LastEditors: your name
+ */
 'use strict'
 const path = require('path')
 const utils = require('./utils')
 const config = require('../config')
 const vueLoaderConfig = require('./vue-loader.conf')
 
-function resolve (dir) {
+function resolve(dir) {
   return path.join(__dirname, '..', dir)
 }
 
@@ -15,17 +22,17 @@ module.exports = {
   entry: {
     app: './src/main.js'
   },
-  externals:{
-    'vue':'Vue', // cdn引入vue 忽略无需打包
-    'element-ui':'ELEMENT',
-    'jquery':'$'
+  externals: {
+    'vue': 'Vue', // cdn引入vue 忽略无需打包
+    'element-ui': 'ELEMENT',
+    'jquery': '$'
   },
   output: {
     path: config.build.assetsRoot,
     filename: '[name].js',
-    publicPath: process.env.NODE_ENV === 'production'
-      ? config.build.assetsPublicPath
-      : config.dev.assetsPublicPath
+    publicPath: process.env.NODE_ENV === 'production' ?
+      config.build.assetsPublicPath :
+      config.dev.assetsPublicPath
   },
   resolve: {
     extensions: ['.js', '.vue', '.json'],
@@ -35,8 +42,7 @@ module.exports = {
     }
   },
   module: {
-    rules: [
-      {
+    rules: [{
         test: /\.vue$/,
         loader: 'vue-loader',
         options: vueLoaderConfig
@@ -45,6 +51,20 @@ module.exports = {
         test: /\.js$/,
         loader: 'babel-loader',
         include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
+      },
+      {
+        test: /\.less$/,
+        use: [{
+          loader: "style-loader"
+        }, {
+          loader: "css-loader"
+        }, {
+          loader: "less-loader",
+          options: {
+            strictMath: true,
+            noIeCompat: true
+          }
+        }]
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
