@@ -1,3 +1,10 @@
+<!--
+ * @Description: In User Settings Edit
+ * @Author: your name
+ * @Date: 2019-09-14 09:30:21
+ * @LastEditTime: 2019-09-15 17:53:55
+ * @LastEditors: Please set LastEditors
+ -->
 <template>
   <div class="page-wrap">
     <h1>商品采购合同</h1>
@@ -127,7 +134,7 @@ export default {
   // 合同录入
   name: "contractSummary",
   components:{
-    FileUpload
+    FileUpload,
   },
   data() {
     return {
@@ -281,11 +288,10 @@ export default {
 </script>
 <style scoped>
 .page-wrap {
-  /* width: 100%;
-  height: 100%; */
-  /* overflow: hidden; */
-  flex: 1;
-  overflow: hidden;
+  width:100%;
+  height:100%;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 .page-topPart {
   display: flex;
@@ -329,4 +335,12 @@ export default {
   padding:1rem;
   text-align: right;
 }
+
+
+
+
+
+
+
+
 </style>

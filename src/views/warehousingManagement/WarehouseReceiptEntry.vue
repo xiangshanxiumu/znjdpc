@@ -1,3 +1,10 @@
+<!--
+ * @Description: In User Settings Edit
+ * @Author: your name
+ * @Date: 2019-09-14 09:30:21
+ * @LastEditTime: 2019-09-15 16:04:59
+ * @LastEditors: Please set LastEditors
+ -->
 <template>
   <div class="page-wrap">
     <h1>入仓单信息录入</h1>
@@ -304,11 +311,10 @@ export default {
 </script>
 <style scoped>
 .page-wrap {
-  /* width: 100%;
-  height: 100%; */
-  /* overflow: hidden; */
-  flex: 1;
-  overflow: hidden;
+  width:100%;
+  height:100%;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 .page-topPart {
   display: flex;
@@ -355,4 +361,6 @@ export default {
   padding: 1rem;
   text-align: right;
 }
+
+
 </style>

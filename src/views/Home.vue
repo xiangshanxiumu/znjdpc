@@ -2,12 +2,58 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:30:21
- * @LastEditTime: 2019-09-14 18:42:19
+ * @LastEditTime: 2019-09-15 16:03:00
  * @LastEditors: Please set LastEditors
  -->
 <template>
   <div class="home-wrap">
-    <el-container class="home-container">
+    <div class="home-header">
+      <div class="home-logo">
+        <img src="@/assets/logo.png" />
+        <span>福建中鞍科技(御管家)管理系统</span>
+      </div>
+      <div class="home-personal">个人信息区域</div>
+    </div>
+    <div class="home-body">
+      <div class="home-left">
+        <el-menu
+          :collapse="isCollapse"
+          @open="handleOpen"
+          @close="handleClose"
+          @select="handleSelect"
+          background-color="#545c64"
+          text-color="#fff"
+          active-text-color="#ffd04b"
+          :default-active="activeMenuIndex"
+          router
+        >
+          <NavMenu :navMenus="menuData"></NavMenu>
+        </el-menu>
+      </div>
+      <div class="home-right">
+        <div class="home-topBar">
+          <div class="home-navBar">
+            <div class="navBar-Btn" @click="collapseClickHandle">
+              <img src="@/assets/img/home/cdzk.png" v-show="isCollapse" />
+              <img src="@/assets/img/home/cdsq.png" v-show="!isCollapse" />
+            </div>
+            <div class="navBar-breadcrumb">
+              <BreadCrumb v-model="breadList" />
+            </div>
+          </div>
+          <div class="home-tags">
+            <NavTags :dynamicTags="dynamicTags" :activeTagIndex="activeTagIndex" />
+          </div>
+        </div>
+        <div class="home-content">
+          <keep-alive>
+            <router-view v-if="$route.meta.KeepAlive"></router-view>
+          </keep-alive>
+          <router-view v-if="!$route.meta.KeepAlive"></router-view>
+        </div>
+      </div>
+    </div>
+    <!-- <el-container class="home-container">
       <el-header>
         <div class="home-logo">
           <img src="@/assets/logo.png" />
@@ -17,7 +63,6 @@
       </el-header>
       <el-container class="home-content">
         <div class="home-aside">
-          <!--侧边导航栏菜单-->
           <el-menu
             :collapse="isCollapse"
             @open="handleOpen"
@@ -31,42 +76,32 @@
           >
             <NavMenu :navMenus="menuData"></NavMenu>
           </el-menu>
-          <!--侧边导航栏菜单-->
         </div>
         <el-main>
           <div>
             <div class="home-navBar">
-              <!--左侧导航条展开收起-->
               <div class="navBar-Btn" @click="collapseClickHandle">
                 <img src="@/assets/img/home/cdzk.png" v-show="isCollapse" />
                 <img src="@/assets/img/home/cdsq.png" v-show="!isCollapse" />
               </div>
-              <!--左侧导航条展开收起-->
               <div class="navBar-breadcrumb">
-                <!--面包屑-->
                 <BreadCrumb v-model="breadList" />
-                <!--面包屑-->
               </div>
             </div>
-            <!--tags-->
             <div class="home-tags">
               <NavTags :dynamicTags="dynamicTags" :activeTagIndex="activeTagIndex" />
             </div>
           </div>
-          <!--tags-->
           <div class="main-content">
-            <!--需要缓存的-->
             <keep-alive>
               <router-view v-if="$route.meta.KeepAlive"></router-view>
             </keep-alive>
-            <!--需要缓存的-->
-            <!--不需要缓存的-->
+
             <router-view v-if="!$route.meta.KeepAlive"></router-view>
-            <!--不需要缓存的-->
           </div>
         </el-main>
       </el-container>
-    </el-container>
+    </el-container>-->
   </div>
 </template>
 <script>
@@ -145,7 +180,7 @@ export default {
       breadList: [],
       menuMap: [], // 菜单路由映射表,
       dynamicTags: [], // 动态tags
-      activeTagIndex: 0,
+      activeTagIndex: 0
     };
   },
   watch: {
@@ -185,9 +220,9 @@ export default {
       // 首先判断是否存在
       let isHas = false;
       // 清除 undefined
-      this.dynamicTags = this.dynamicTags.filter(item=>{
+      this.dynamicTags = this.dynamicTags.filter(item => {
         return item != undefined;
-      })
+      });
       if (this.dynamicTags.length != 0) {
         isHas = this.dynamicTags.some(item => {
           return item.path == path;
@@ -200,13 +235,13 @@ export default {
         });
         this.dynamicTags.push(tagItem);
         this.activeTagIndex = this.dynamicTags.length - 1;
-        console.log("44",this.dynamicTags)
+        console.log("44", this.dynamicTags);
       } else {
         // tags已经添加的情况下
         this.activeTagIndex = this.dynamicTags.findIndex((item, index) => {
           return item.path == path;
         });
-        console.log("55",this.dynamicTags)
+        console.log("55", this.dynamicTags);
       }
     },
     // 菜单展开或收起
@@ -241,59 +276,70 @@ export default {
 .home-wrap {
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
 }
-.home-container {
-  width: 100%;
-  height: 100%;
+.home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* height: 60px;
+  line-height: 60px; */
+  color: #333;
+  background-color: cornflowerblue;
 }
 .home-logo {
-  position: absolute;
-  left: 20px;
   display: inline-flex;
+  padding:0.25rem 1rem;
+  align-items: center;
 }
 .home-logo > img {
-  width: 60px;
-  height: 60px;
+  width: 3rem;
+  height: 3rem;
 }
 .home-logo > span {
   font-size: 1.5rem;
   font-weight: 700;
   font-family: "songti";
+  padding:0rem 0.5rem;
 }
-.personal-msg {
-  position: absolute;
-  right: 20px;
-  width: 100px;
-  height: 60px;
+.home-personal {
+  display: inline-flex;
+  padding:0.25rem 1rem;
+  align-items: center;
   /* background-color: #d3dce6; */
 }
-.el-header {
-  background-color: skyblue;
-  color: #333;
-  text-align: center;
-  line-height: 60px;
+
+.home-body {
+  flex: 1;
+  display: flex;
+  box-sizing: border-box;
 }
-.el-aside {
+.home-left {
   background-color: #d3dce6;
   color: #333;
 }
-
-.el-main {
+.home-right {
+  flex: 1;
   background-color: #e9eef3;
   color: #333;
-  text-align: center;
-  /* line-height: 160px; */
-  padding: 0px;
   display: flex;
   flex-direction: column;
 }
+.home-topBar{
+  text-align: left;
+  background-color: #d3dce6;
+}
+.home-content{
+  flex:1;
+  box-sizing: border-box;
+  text-align: center;
+}
 .home-navBar {
   width: 100%;
-  /* height: 60px; */
   padding: 0.5rem;
   text-align: left;
-  /* background-color: #909399; */
-  background-color: #fff;
   border-bottom: 1px solid #ccc;
   display: flex;
   align-items: center;
@@ -310,20 +356,22 @@ export default {
   font-size: 1rem;
   padding: 1rem;
 }
-.main-content {
-  flex: 1;
-  display: flex;
-}
-.home-content {
-  display: flex;
-}
-.home-aside {
-  width: auto;
-}
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 200px;
   min-height: 400px;
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
