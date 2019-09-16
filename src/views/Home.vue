@@ -108,7 +108,7 @@
 import NavMenu from "@/components/NavMenu";
 import BreadCrumb from "@/components/BreadCrumb";
 import NavTags from "@/components/NavTags";
-import { constants } from "fs";
+import { mapGetters } from "vuex";
 export default {
   // 首页 布局
   name: "Home",
@@ -126,9 +126,9 @@ export default {
         {
           entity: {
             id: "cggl",
-            path: "合同管理",
+            path: "资金管理",
             icon: "el-icon-menu",
-            name: "合同管理"
+            name: "资金管理"
           },
           childs: [
             {
@@ -145,6 +145,30 @@ export default {
                 path: "ContractEntry",
                 icon: "el-icon-document",
                 name: "合同录入"
+              }
+            },
+            {
+              entity: {
+                id: "ContractSummary",
+                path: "ContractSummary",
+                icon: "el-icon-document",
+                name: "付款申请单录入"
+              }
+            },
+            {
+              entity: {
+                id: "ContractEntry",
+                path: "ContractEntry",
+                icon: "el-icon-document",
+                name: "收款申请单录入"
+              }
+            },
+            {
+              entity: {
+                id: "ContractEntry",
+                path: "ContractEntry",
+                icon: "el-icon-document",
+                name: "收付款汇总表"
               }
             }
           ]
@@ -172,6 +196,178 @@ export default {
                 icon: "el-icon-document",
                 name: "入仓单录入"
               }
+            },
+            {
+              entity: {
+                id: "gysdab",
+                path: "采购合同",
+                icon: "el-icon-menu",
+                name: "采购合同管理"
+              },
+              childs: [
+                {
+                  entity: {
+                    id: "gysdab",
+                    path: "WarehouseReceiptEntry",
+                    icon: "el-icon-document",
+                    name: "采购合同录入"
+                  }
+                },
+                {
+                  entity: {
+                    id: "gysdab",
+                    path: "WarehouseReceiptEntry",
+                    icon: "el-icon-document",
+                    name: "采购合同汇总"
+                  }
+                }
+              ]
+            },
+            {
+              entity: {
+                id: "gysdab",
+                path: "仓储合同",
+                icon: "el-icon-menu",
+                name: "仓储合同管理"
+              },
+              childs: [
+                {
+                  entity: {
+                    id: "gysdab",
+                    path: "WarehouseReceiptEntry",
+                    icon: "el-icon-document",
+                    name: "仓储合同录入"
+                  }
+                },
+                {
+                  entity: {
+                    id: "gysdab",
+                    path: "WarehouseReceiptEntry",
+                    icon: "el-icon-document",
+                    name: "仓储合同汇总"
+                  }
+                },
+                {
+                  entity: {
+                    id: "gysdab",
+                    path: "WarehouseReceiptEntry",
+                    icon: "el-icon-document",
+                    name: "物流合同录入"
+                  }
+                },
+                {
+                  entity: {
+                    id: "gysdab",
+                    path: "WarehouseReceiptEntry",
+                    icon: "el-icon-document",
+                    name: "物流合同汇总"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          entity: {
+            id: "cggl",
+            path: "出仓管理",
+            icon: "el-icon-menu",
+            name: "出仓管理"
+          },
+          childs: [
+            {
+              entity: {
+                id: "gysdab",
+                path: "WarehousingSummary",
+                icon: "el-icon-document",
+                name: "出仓单汇总"
+              }
+            },
+            {
+              entity: {
+                id: "gysdab",
+                path: "WarehouseReceiptEntry",
+                icon: "el-icon-document",
+                name: "出仓单录入"
+              }
+            },
+            {
+              entity: {
+                id: "gysdab",
+                path: "销售合同",
+                icon: "el-icon-menu",
+                name: "销售合同管理"
+              },
+              childs: [
+                {
+                  entity: {
+                    id: "gysdab",
+                    path: "WarehouseReceiptEntry",
+                    icon: "el-icon-document",
+                    name: "销售合同录入"
+                  }
+                },
+                {
+                  entity: {
+                    id: "gysdab",
+                    path: "WarehouseReceiptEntry",
+                    icon: "el-icon-document",
+                    name: "销售合同汇总"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          entity: {
+            id: "cggl",
+            path: "加工管理",
+            icon: "el-icon-menu",
+            name: "加工管理"
+          },
+          childs: [
+            {
+              entity: {
+                id: "gysdab",
+                path: "WarehousingSummary",
+                icon: "el-icon-document",
+                name: "委外加工单汇总"
+              }
+            },
+            {
+              entity: {
+                id: "gysdab",
+                path: "WarehouseReceiptEntry",
+                icon: "el-icon-document",
+                name: "委外加工单录入"
+              }
+            },
+            {
+              entity: {
+                id: "gysdab",
+                path: "委外加工合同管理",
+                icon: "el-icon-menu",
+                name: "委外加工合同管理"
+              },
+              childs: [
+                {
+                  entity: {
+                    id: "gysdab",
+                    path: "WarehouseReceiptEntry",
+                    icon: "el-icon-document",
+                    name: "委外加工合同录入"
+                  }
+                },
+                {
+                  entity: {
+                    id: "gysdab",
+                    path: "WarehouseReceiptEntry",
+                    icon: "el-icon-document",
+                    name: "委外加工合同汇总"
+                  }
+                }
+              ]
             }
           ]
         }
@@ -183,6 +379,9 @@ export default {
       activeTagIndex: 0
     };
   },
+  // computed:{
+  //   ...mapGetters(['menuMap','breadList','dynamicTags'])
+  // },
   watch: {
     // 监控路由变化
     $route: {
@@ -197,9 +396,14 @@ export default {
       }
     }
   },
-  mounted() {
+  created() {
     // 生成菜单路由名称映射表
     this.getMenuMap(this.menuData);
+    this.$store.commit("updateMenuMap", { menuMap: this.menuMap });
+  },
+  mounted() {
+    // 生成菜单路由名称映射表
+    // this.getMenuMap(this.menuData);
   },
   methods: {
     getMenuMap(menuData) {
@@ -291,7 +495,7 @@ export default {
 }
 .home-logo {
   display: inline-flex;
-  padding:0.25rem 1rem;
+  padding: 0.25rem 1rem;
   align-items: center;
 }
 .home-logo > img {
@@ -302,11 +506,11 @@ export default {
   font-size: 1.5rem;
   font-weight: 700;
   font-family: "songti";
-  padding:0rem 0.5rem;
+  padding: 0rem 0.5rem;
 }
 .home-personal {
   display: inline-flex;
-  padding:0.25rem 1rem;
+  padding: 0.25rem 1rem;
   align-items: center;
   /* background-color: #d3dce6; */
 }
@@ -327,12 +531,12 @@ export default {
   display: flex;
   flex-direction: column;
 }
-.home-topBar{
+.home-topBar {
   text-align: left;
   background-color: #d3dce6;
 }
-.home-content{
-  flex:1;
+.home-content {
+  flex: 1;
   box-sizing: border-box;
   text-align: center;
 }
@@ -360,42 +564,4 @@ export default {
   width: 200px;
   min-height: 400px;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </style>

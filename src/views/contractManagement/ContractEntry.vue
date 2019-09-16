@@ -46,6 +46,11 @@
     </div>
     <!---->
     <div class="page-content">
+      <!--表格顶部按钮-->
+      <div class="table-top-btns">
+        <el-button size="mini" @click="addOneRow">新增一行</el-button>
+      </div>
+      <!--表格顶部按钮-->
       <!--表格-->
       <el-table :data="tableData" border show-summary :summary-method="getSummaries" style="width: 100%">
         <el-table-column
@@ -93,7 +98,7 @@
       <!--按钮区-->
     </div>
     <!--dialog对话框-->
-    <el-dialog title="编辑" :visible.sync="dialogFormVisible" class="page-dialog">
+    <el-dialog title="编辑" :visible.sync="dialogFormVisible" class="page-dialog" width="30%">
       <el-form :model="form">
         <el-form-item label="产品名称" :label-width="formLabelWidth">
           <el-input v-model="form.productName" auto-complete="off"></el-input>
@@ -221,13 +226,27 @@ export default {
         totalSum: "",
         unitPrice:""
       },
-      formLabelWidth: "120px"
+      formLabelWidth: "100px"
     };
   },
   mounted(){
     // console.log($('.page-wrap'))
   },
   methods: {
+    // 表格新增一行
+    addOneRow() {
+      let row = {
+        productName: "",
+        manufactor: "",
+        number: "",
+        brandName: "",
+        remarks: "",
+        specifications: "",
+        totalSum: "",
+        unitPrice:""
+      };
+      this.tableData.push(row);
+    },
     // 表单合计自定义统计计算方法
     getSummaries(param) {
       const { columns, data } = param;

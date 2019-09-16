@@ -18,7 +18,7 @@
         </div>
         <div class="input-item">
           <div class="input-box">
-            <div class="input-label">采购单位:</div>
+            <div class="input-label">销售单位:</div>
             <el-input v-model="purchasingUnit" placeholder="请输入内容"></el-input>
           </div>
         </div>
@@ -36,12 +36,12 @@
             <el-date-picker v-model="receivingDate" type="date" placeholder="选择日期"></el-date-picker>
           </div>
         </div>
-        <div class="input-item">
+        <!-- <div class="input-item">
           <div class="input-box">
             <div class="input-label">供应商出仓单编号:</div>
             <el-input v-model="vendorWarehouseReleaseNumber" placeholder="请输入内容"></el-input>
           </div>
-        </div>
+        </div> -->
         <div class="input-item">
           <div class="input-box">
             <div class="input-label">收货地点:</div>
@@ -72,6 +72,9 @@
     </div>
     <!---->
     <div class="page-content">
+      <div class="table-top-btns">
+        <el-button size="mini" @click="addOneRow">新增一行</el-button>
+      </div>
       <!--表格-->
       <el-table
         :data="tableData"
@@ -88,8 +91,8 @@
         ></el-table-column>
         <el-table-column label="操作" width="180" fixed="right">
           <template slot-scope="scope">
-            <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+            <el-button size="mini" @click="handleEdit(scope.$index, scope.row)" type="primary" round>编辑</el-button>
+            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)" round>删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -108,7 +111,7 @@
       <!--按钮区-->
     </div>
     <!--dialog对话框-->
-    <el-dialog title="编辑" :visible.sync="dialogFormVisible" class="page-dialog">
+    <el-dialog title="编辑" :visible.sync="dialogFormVisible" class="page-dialog" width="30%">
       <el-form :model="form">
         <el-form-item label="品名" :label-width="formLabelWidth">
           <el-input v-model="form.productName" auto-complete="off"></el-input>
@@ -251,10 +254,26 @@ export default {
         objectionFeedback: "",
         remarks: ""
       },
-      formLabelWidth: "120px"
+      formLabelWidth: "120px", // 表单 label宽度
     };
   },
   methods: {
+    // 表格新增一行
+    addOneRow() {
+      let row = {
+        productName: "",
+        brandName: "",
+        coilNumber: "",
+        specifications: "",
+        tonnage: "",
+        receiptAndLoss: "",
+        packagingState: "",
+        receptionObjection: "",
+        objectionFeedback: "",
+        remarks: ""
+      };
+      this.tableData.push(row);
+    },
     // 表单合计自定义统计计算方法
     getSummaries(param) {
       const { columns, data } = param;
@@ -311,8 +330,8 @@ export default {
 </script>
 <style scoped>
 .page-wrap {
-  width:100%;
-  height:100%;
+  width: 100%;
+  height: 100%;
   overflow-x: hidden;
   overflow-y: auto;
 }
@@ -361,6 +380,4 @@ export default {
   padding: 1rem;
   text-align: right;
 }
-
-
 </style>

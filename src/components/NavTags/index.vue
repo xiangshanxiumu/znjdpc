@@ -120,6 +120,9 @@ export default {
     //首页点击事件
     homeClickHandle(){
       location.href = '/';
+      // this.$router.push({
+      //   path:'/'
+      // })
     }
   }
 };

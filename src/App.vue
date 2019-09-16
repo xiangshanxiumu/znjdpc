@@ -24,9 +24,9 @@
 
 <script>
 // 统一初始样式
-// import "@/assets/css/normalize.css";
+import "@/assets/css/normalize.css";
 // 公共样式
-// import "@/assets/css/common.css";
+import "@/assets/css/common.css";
 export default {
   name: "App"
 };
