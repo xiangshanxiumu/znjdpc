@@ -149,24 +149,24 @@ export default {
             },
             {
               entity: {
-                id: "ContractSummary",
-                path: "ContractSummary",
+                id: "PaymentApplicationFormEntry",
+                path: "PaymentApplicationFormEntry",
                 icon: "el-icon-document",
                 name: "付款申请单录入"
               }
             },
             {
               entity: {
-                id: "ContractEntry",
-                path: "ContractEntry",
+                id: "ReceivingApplicationFormEntry",
+                path: "ReceivingApplicationFormEntry",
                 icon: "el-icon-document",
-                name: "收款申请单录入"
+                name: "收款通知单录入"
               }
             },
             {
               entity: {
-                id: "ContractEntry",
-                path: "ContractEntry",
+                id: "SummaryOfReceiptsAndPayments",
+                path: "SummaryOfReceiptsAndPayments",
                 icon: "el-icon-document",
                 name: "收付款汇总表"
               }
@@ -184,14 +184,6 @@ export default {
             {
               entity: {
                 id: "gysdab",
-                path: "WarehousingSummary",
-                icon: "el-icon-document",
-                name: "入仓单汇总"
-              }
-            },
-            {
-              entity: {
-                id: "gysdab",
                 path: "WarehouseReceiptEntry",
                 icon: "el-icon-document",
                 name: "入仓单录入"
@@ -200,7 +192,15 @@ export default {
             {
               entity: {
                 id: "gysdab",
-                path: "采购合同",
+                path: "WarehousingSummary",
+                icon: "el-icon-document",
+                name: "入仓单汇总"
+              }
+            },
+            {
+              entity: {
+                id: "gysdab",
+                path: "采购合同管理",
                 icon: "el-icon-menu",
                 name: "采购合同管理"
               },
@@ -208,7 +208,7 @@ export default {
                 {
                   entity: {
                     id: "gysdab",
-                    path: "WarehouseReceiptEntry",
+                    path: "ProcurementContractEntry",
                     icon: "el-icon-document",
                     name: "采购合同录入"
                   }
@@ -216,7 +216,7 @@ export default {
                 {
                   entity: {
                     id: "gysdab",
-                    path: "WarehouseReceiptEntry",
+                    path: "ProcurementContractSummary",
                     icon: "el-icon-document",
                     name: "采购合同汇总"
                   }
@@ -226,7 +226,7 @@ export default {
             {
               entity: {
                 id: "gysdab",
-                path: "仓储合同",
+                path: "仓储合同管理",
                 icon: "el-icon-menu",
                 name: "仓储合同管理"
               },
@@ -234,7 +234,7 @@ export default {
                 {
                   entity: {
                     id: "gysdab",
-                    path: "WarehouseReceiptEntry",
+                    path: "WarehousingContractEntry",
                     icon: "el-icon-document",
                     name: "仓储合同录入"
                   }
@@ -242,7 +242,7 @@ export default {
                 {
                   entity: {
                     id: "gysdab",
-                    path: "WarehouseReceiptEntry",
+                    path: "WarehousingContractSummary",
                     icon: "el-icon-document",
                     name: "仓储合同汇总"
                   }
@@ -250,7 +250,7 @@ export default {
                 {
                   entity: {
                     id: "gysdab",
-                    path: "WarehouseReceiptEntry",
+                    path: "LogisticsContractEntry",
                     icon: "el-icon-document",
                     name: "物流合同录入"
                   }
@@ -258,7 +258,7 @@ export default {
                 {
                   entity: {
                     id: "gysdab",
-                    path: "WarehouseReceiptEntry",
+                    path: "LogisticsContractsSummary",
                     icon: "el-icon-document",
                     name: "物流合同汇总"
                   }
@@ -278,17 +278,17 @@ export default {
             {
               entity: {
                 id: "gysdab",
-                path: "WarehousingSummary",
+                path: "WarehouseEntry",
                 icon: "el-icon-document",
-                name: "出仓单汇总"
+                name: "出仓单录入"
               }
             },
             {
               entity: {
                 id: "gysdab",
-                path: "WarehouseReceiptEntry",
+                path: "WarehouseSummary",
                 icon: "el-icon-document",
-                name: "出仓单录入"
+                name: "出仓单汇总"
               }
             },
             {
@@ -302,7 +302,7 @@ export default {
                 {
                   entity: {
                     id: "gysdab",
-                    path: "WarehouseReceiptEntry",
+                    path: "SalesContractEntry",
                     icon: "el-icon-document",
                     name: "销售合同录入"
                   }
@@ -310,7 +310,7 @@ export default {
                 {
                   entity: {
                     id: "gysdab",
-                    path: "WarehouseReceiptEntry",
+                    path: "SalesContractSummary",
                     icon: "el-icon-document",
                     name: "销售合同汇总"
                   }
@@ -330,17 +330,17 @@ export default {
             {
               entity: {
                 id: "gysdab",
-                path: "WarehousingSummary",
+                path: "OutsourcingProcessingEntry",
                 icon: "el-icon-document",
-                name: "委外加工单汇总"
+                name: "委外加工单录入"
               }
             },
             {
               entity: {
                 id: "gysdab",
-                path: "WarehouseReceiptEntry",
+                path: "OutsourcingProcessingSummary",
                 icon: "el-icon-document",
-                name: "委外加工单录入"
+                name: "委外加工单汇总"
               }
             },
             {
@@ -354,7 +354,7 @@ export default {
                 {
                   entity: {
                     id: "gysdab",
-                    path: "WarehouseReceiptEntry",
+                    path: "OutsourcingProcessingContractEntry",
                     icon: "el-icon-document",
                     name: "委外加工合同录入"
                   }
@@ -362,7 +362,7 @@ export default {
                 {
                   entity: {
                     id: "gysdab",
-                    path: "WarehouseReceiptEntry",
+                    path: "OutsourcingProcessingContractSummary",
                     icon: "el-icon-document",
                     name: "委外加工合同汇总"
                   }

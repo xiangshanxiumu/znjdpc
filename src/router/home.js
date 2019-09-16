@@ -2,9 +2,15 @@
 const Home = () =>import('@/views/home');
 
 // 合同管理模块路由
-import contractManagement from './contractManagement';
+// import contractManagement from './contractManagement';
+// 资金管理
+import fundManagement from './fundManagement';
 // 
 import warehousingManagement from './warehousingManagement';
+//
+import warehouseManagement from './warehouseManagement';
+//
+import processingManagement from './processingManagement';
 export default [
       {
         path: '/',
@@ -12,8 +18,11 @@ export default [
         component:Home,
         // 子路由
         children:[
-          ...contractManagement,
-          ...warehousingManagement
+          // ...contractManagement,
+          ...fundManagement,
+          ...warehousingManagement,
+          ...warehouseManagement,
+          ...processingManagement
         ]
       }
 ]

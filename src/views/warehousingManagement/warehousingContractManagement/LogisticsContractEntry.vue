@@ -1,0 +1,357 @@
+<!--
+ * @Description: In User Settings Edit
+ * @Author: your name
+ * @Date: 2019-09-14 09:30:21
+ * @LastEditTime: 2019-09-15 17:53:55
+ * @LastEditors: Please set LastEditors
+ -->
+<template>
+  <div class="page-wrap">
+    <h1>物流合同录入</h1>
+    <div class="page-topPart">
+      <div class="left-box">
+        <div class="input-item">
+          <div class="input-box">
+            <div class="input-label">供方:</div>
+            <el-input v-model="supplier" placeholder="请输入内容"></el-input>
+          </div>
+        </div>
+        <div class="input-item">
+          <div class="input-box">
+            <div class="input-label">需方:</div>
+            <el-input v-model="demander" placeholder="请输入内容"></el-input>
+          </div>
+        </div>
+      </div>
+      <div class="right-box">
+        <div class="input-item">
+          <div class="input-box">
+            <div class="input-label">合同编号:</div>
+            <el-input v-model="contractNumber" placeholder="请输入内容"></el-input>
+          </div>
+        </div>
+        <div class="input-item">
+          <div class="input-box">
+            <div class="input-label">签订地址:</div>
+            <el-input v-model="signingAddress" placeholder="请输入内容"></el-input>
+          </div>
+        </div>
+        <div class="input-item">
+          <div class="input-box">
+            <div class="input-label">签订时间:</div>
+            <el-date-picker v-model="signingTime" type="date" placeholder="选择日期"></el-date-picker>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!---->
+    <div class="page-content">
+      <!--表格顶部按钮-->
+      <div class="table-top-btns">
+        <el-button size="mini" @click="addOneRow">新增一行</el-button>
+      </div>
+      <!--表格顶部按钮-->
+      <!--表格-->
+      <el-table :data="tableData" border show-summary :summary-method="getSummaries" style="width: 100%">
+        <el-table-column
+          v-for="(item,index) in tableTitle"
+          :key="index"
+          :prop="item.prop"
+          :label="item.label"
+        ></el-table-column>
+        <el-table-column label="操作" width="180" fixed="right">
+          <template slot-scope="scope">
+            <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--表格-->
+      <!--合同条款动态生成-->
+      <p>
+        <span class="page-title">第一条、</span>产品名称、厂家、牌号、规格(mm)、单位(元/顿)、数量(顿)、金额(元)
+      </p>
+      <p>
+        <span class="page-title">第二条、</span>质量要求：除合同明确约定外、执行标准外的其他附加技术要求不作为本合同标的物的技术标准；供方提供的质量证明书对质量负责。
+      </p>
+      <p>
+        <span class="page-title">第三条、</span>交提货地址计算方式：供方仓库供货；计量方式：小件计量。
+      </p>
+      <p>
+        <span class="page-title">第四条、</span>运输方式及费用负担：供方承担运费；若运输及其他不可抗因素造成无法按时将货物送达需方指定地点时，供方不承担逾期交货的违约责任。
+      </p>
+      <p>
+        <span class="page-title">第五条、</span>验收及提出异议期限、处理方式：按本合同双方约定标准验收；如有异议，需方应于货到30天内以书面形式向供方提出，否则视供方所交货物符合合同规定，质量异议处理按GB/T 17505执行。
+      </p>
+      <!--合同条款动态生成-->
+      <!--合同附件-->
+      <h3>附件</h3>
+      <div class="enclosure-box">
+        <FileUpload></FileUpload>
+      </div>
+      <!--合同附件-->
+      <!--按钮区-->
+      <div class="footer-btns">
+        <el-button @click="backHandle">返回</el-button>
+        <el-button type="primary" @click="submitHandle">提交</el-button>
+      </div>
+      <!--按钮区-->
+    </div>
+    <!--dialog对话框-->
+    <el-dialog title="编辑" :visible.sync="dialogFormVisible" class="page-dialog" width="30%">
+      <el-form :model="form">
+        <el-form-item label="产品名称" :label-width="formLabelWidth">
+          <el-input v-model="form.productName" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="厂家" :label-width="formLabelWidth">
+          <el-input v-model="form.manufactor" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="牌号" :label-width="formLabelWidth">
+          <el-input v-model="form.brandName" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="规格" :label-width="formLabelWidth">
+          <el-input v-model="form.specifications" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="number" :label-width="formLabelWidth">
+          <el-input v-model="form.number" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="单价(含税)" :label-width="formLabelWidth">
+          <el-input v-model="form.unitPrice" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="合计金额" :label-width="formLabelWidth">
+          <el-input v-model="form.totalSum" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="备注" :label-width="formLabelWidth">
+          <el-input v-model="form.remarks" auto-complete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogFormOkHandle">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!--dialog对话框-->
+  </div>
+</template>
+<script>
+import FileUpload from '@/components/common/FileUpload';
+export default {
+  // 仓储合同录入
+  name: "warehousingContractManagementEntry",
+  components:{
+    FileUpload,
+  },
+  data() {
+    return {
+      supplier: "", // 供方
+      demander: "福建中鞍科技有限公司", // 需方
+      contractNumber: "", // 合同编号
+      signingAddress: "", // 合同签订地址
+      signingTime: "", // 签订时间
+      tableTitle: [
+        {
+          prop: "productName",
+          label: "产品名称"
+        },
+        {
+          prop: "manufactor",
+          label: "厂家"
+        },
+        {
+          prop: "brandName",
+          label: "牌号"
+        },
+        {
+          prop: "specifications",
+          label: "规格"
+        },
+        {
+          prop: "number",
+          label: "数量"
+        },
+        {
+          prop: "unitPrice",
+          label: "单价(含税)"
+        },
+        {
+          prop: "totalSum",
+          label: "合计金额"
+        },
+        {
+          prop: "remarks",
+          label: "备注"
+        }
+      ], // 表格标题
+      tableData: [
+        {
+          productName: "冷轧电工钢",
+          manufactor: "新余中冶",
+          brandName: "50ZW600",
+          specifications: "0.5*1200",
+          number: "14.615",
+          unitPrice: "5000",
+          totalSum: "73075",
+          remarks: "款到发货"
+        },
+        {
+          productName: "冷轧电工钢",
+          manufactor: "新余中冶",
+          brandName: "50ZW600",
+          specifications: "0.5*1200",
+          number: "18.665",
+          unitPrice: "4800",
+          totalSum: "89592",
+          remarks: "款到发货"
+        },
+        // {
+        //   productName: "",
+        //   manufactor: "",
+        //   brandName: "",
+        //   specifications: "",
+        //   number: "",
+        //   unitPrice: "",
+        //   totalSum: "",
+        //   remarks: ""
+        // },
+      ],
+      dialogFormVisible: false, // dialog 对话框显示或隐藏
+      editIndex:0, // 当前编辑表格数据index
+      form: {
+        productName: "",
+        manufactor: "",
+        number: "",
+        brandName: "",
+        remarks: "",
+        specifications: "",
+        totalSum: "",
+        unitPrice:""
+      },
+      formLabelWidth: "100px"
+    };
+  },
+  mounted(){
+    // console.log($('.page-wrap'))
+  },
+  methods: {
+    // 表格新增一行
+    addOneRow() {
+      let row = {
+        productName: "",
+        manufactor: "",
+        number: "",
+        brandName: "",
+        remarks: "",
+        specifications: "",
+        totalSum: "",
+        unitPrice:""
+      };
+      this.tableData.push(row);
+    },
+    // 表单合计自定义统计计算方法
+    getSummaries(param) {
+      const { columns, data } = param;
+      const sums = [];
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = "合计";
+          return;
+        } else if (index >= 4) {
+          const values = data.map(item => Number(item[column.property]));
+          if (!values.every(value => isNaN(value))) {
+            sums[index] = values.reduce((prev, curr) => {
+              const value = Number(curr);
+              if (!isNaN(value)) {
+                return prev + curr;
+              } else {
+                return prev;
+              }
+            }, 0);
+            if(column.label =="数量"){
+              sums[index] += ' 吨';
+            } else {
+              sums[index] += ' 元';
+            }
+          }
+        } else {
+          sums[index] = "";
+        }
+      });
+
+      return sums;
+    },
+    // 合同表单 编辑事件
+    handleEdit(index, row) {
+      this.editIndex = index;
+      this.form = row;
+      this.dialogFormVisible = true;
+    },
+    // 合同表单 删除事件
+    handleDelete(index, row) {
+      this.tableData.splice(index, 1);
+    },
+    // dialog 对话框确定事件
+    dialogFormOkHandle(){
+      this.tableData[this.editIndex] = this.form;
+      this.dialogFormVisible = false;
+    },
+    // 返回按钮
+    backHandle(){
+      this.$router.go(-1);
+    },
+    // 提交按钮
+    submitHandle(){
+      console.log("提交")
+    }
+  }
+};
+</script>
+<style scoped>
+.page-wrap {
+  width:100%;
+  height:100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.page-topPart {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+}
+.left-box {
+  flex: 1;
+  display: block;
+}
+.right-box {
+  flex: 1;
+}
+.input-item {
+  text-align: center;
+}
+.input-box {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 0rem;
+}
+.input-label {
+  min-width: 5rem;
+  text-align: right;
+  padding-right: 1rem;
+}
+.page-content {
+  padding: 1rem;
+  text-align: left;
+}
+.page-title {
+  font-weight: 700;
+}
+.page-dialog{
+  text-align: left;
+}
+.enclosure-box{
+  background-color: #fff;
+}
+.footer-btns{
+  padding:1rem;
+  text-align: right;
+}
+</style>

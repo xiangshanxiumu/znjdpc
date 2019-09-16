@@ -7,7 +7,7 @@
  -->
 <template>
   <div class="page-wrap">
-    <h1>商品采购合同</h1>
+    <h1>合同录入</h1>
     <div class="page-topPart">
       <div class="left-box">
         <div class="input-item">
