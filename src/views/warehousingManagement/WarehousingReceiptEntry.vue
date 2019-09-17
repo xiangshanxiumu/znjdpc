@@ -7,14 +7,14 @@
  -->
 <template>
   <div class="page-wrap">
-    <h1>出仓单信息录入</h1>
+    <h1>入仓单信息录入</h1>
     <el-form :model="InStore" :rules="rules" ref="ruleForm">
       <div class="page-topPart">
         <!--顶部input输入区域-->
         <div class="page-topPart-inputArea">
           <div class="left-box">
             <div class="input-box">
-              <el-form-item label="销售合同编号" prop="contractId" class="form-item">
+              <el-form-item label="采购合同编号" prop="contractId" class="form-item">
                 <el-input v-model="InStore.contractId" placeholder="请输入内容"></el-input>
               </el-form-item>
             </div>
@@ -31,7 +31,7 @@
           </div>
           <div class="middle-box">
             <div class="input-box">
-              <el-form-item label="出仓单编号" prop="Id" class="form-item">
+              <el-form-item label="入仓单编号" prop="Id" class="form-item">
                 <el-input v-model="InStore.Id" placeholder="请输入内容"></el-input>
               </el-form-item>
             </div>
@@ -48,13 +48,8 @@
           </div>
           <div class="right-box">
             <div class="input-box">
-              <el-form-item label="接收人姓名" prop="RecUnitPerson" class="form-item">
+              <el-form-item label="货物接收入库单位" prop="RecUnitPerson" class="form-item">
                 <el-input v-model="InStore.RecUnitPerson" placeholder="请输入内容"></el-input>
-              </el-form-item>
-            </div>
-            <div class="input-box">
-              <el-form-item label="接收人身份证" prop="RecPersonID" class="form-item">
-                <el-input v-model="InStore.RecPersonID" placeholder="请输入内容"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
@@ -172,11 +167,10 @@
 </template>
 <script>
 import FileUpload from "@/components/common/FileUpload";
-import { postOutputWarehouseReceipt } from "@/api/warehouseManagement";
 import { mapGetters } from "vuex";
 export default {
   // 入仓单录入
-  name: "WarehouseReceiptEntry",
+  name: "WarehousingReceiptEntry",
   components: {
     FileUpload
   },
@@ -291,9 +285,6 @@ export default {
         RecUnitPerson: [
           { required: true, message: "请输入货物接收入库单位", trigger: "blur" }
         ],
-        RecPersonID:[
-          { required: true, message: "请输入货物接收入库单位", trigger: "blur" }
-        ],
         // RecDate: [
         //   {
         //     type: "date",
@@ -364,14 +355,10 @@ export default {
       files: [] // 附件文件组
     };
   },
-  computed: {
-    ...mapGetters(["outWarehouseList", "warehouseReceiptList"])
-  },
+  // computed: {
+  //   ...mapGetters(["outWarehouseList", "warehouseReceiptList"])
+  // },
   mounted() {
-    // 初始渲染表格 出仓操作的钢卷
-    this.InStore.ISGoods = this.outWarehouseList;
-    // 仓库名称
-    // this.inputForm.RecDepo = this.tableData[0].RecDepo;
   },
   methods: {
     // 表格新增一行
@@ -453,23 +440,6 @@ export default {
       if (isValid) {
         console.log(this.InStore);
         // 调用录入API
-        let result = await postOutputWarehouseReceipt(this.InStore);
-        console.log(result);
-        if (result.StatusCode == 200) {
-          this.$alert("出仓单录入成功", "操作成功", {
-            confirmButtonText: "确定",
-            type: "success",
-            // center: true,
-            callback: action => {
-              this.$message({
-                type: "info",
-                message: `出仓单录入成功`
-              });
-              // 返回上一页面
-              this.$router.go(-1);
-            }
-          });
-        }
       }
     }
   }

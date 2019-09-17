@@ -103,7 +103,6 @@
 <script>
 import {
   getWarehouseReceiptList,
-  outOfStock
 } from "@/api/warehousingManagement";
 export default {
   // 仓储合同汇总

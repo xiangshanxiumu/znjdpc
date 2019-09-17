@@ -14,15 +14,15 @@
         <div class="page-search-item">
           <el-form :model="searchFrom">
             <div class="input-box">
-              <div class="input-label">入仓单编号:</div>
+              <div class="input-label">出仓单编号:</div>
               <el-input v-model="searchFrom.warehouseReceiptId" placeholder="请输入内容"></el-input>
             </div>
             <div class="input-box">
-              <div class="input-label">合同编号:</div>
+              <div class="input-label">销售合同编号:</div>
               <el-input v-model="searchFrom.contractId" placeholder="请输入内容"></el-input>
             </div>
             <div class="input-box">
-              <div class="input-label">采购单位:</div>
+              <div class="input-label">销售单位:</div>
               <el-input v-model="searchFrom.Buyby" placeholder="请输入内容"></el-input>
             </div>
             <div class="input-box">
@@ -103,7 +103,6 @@
 <script>
 import {
   getWarehouseReceiptList,
-  outOfStock
 } from "@/api/warehousingManagement";
 export default {
   // 出仓单汇总表
@@ -121,15 +120,15 @@ export default {
       tableTitle: [
         {
           prop: "warehouseReceiptId",
-          label: "入仓单编号"
+          label: "出仓单编号"
         },
         {
           prop: "contractId",
-          label: "合同编号"
+          label: "销售合同编号"
         },
         {
           prop: "Buyby",
-          label: "采购单位"
+          label: "销售单位"
         },
         {
           prop: "RecDate",

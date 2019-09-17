@@ -46,10 +46,12 @@
           </div>
         </div>
         <div class="home-content">
-          <keep-alive>
-            <router-view v-if="$route.meta.KeepAlive"></router-view>
-          </keep-alive>
-          <router-view v-if="!$route.meta.KeepAlive"></router-view>
+          <div class="home-page-content">
+            <keep-alive>
+              <router-view v-if="$route.meta.KeepAlive"></router-view>
+            </keep-alive>
+            <router-view v-if="!$route.meta.KeepAlive"></router-view>
+          </div>
         </div>
       </div>
     </div>
@@ -184,7 +186,7 @@ export default {
             {
               entity: {
                 id: "gysdab",
-                path: "WarehouseReceiptEntry",
+                path: "WarehousingReceiptEntry",
                 icon: "el-icon-document",
                 name: "入仓单录入"
               }
@@ -519,6 +521,7 @@ export default {
   flex: 1;
   display: flex;
   box-sizing: border-box;
+  overflow-y: auto;
 }
 .home-left {
   background-color: #d3dce6;
@@ -538,7 +541,12 @@ export default {
 .home-content {
   flex: 1;
   box-sizing: border-box;
+  overflow-y: auto;
+}
+.home-page-content{
   text-align: center;
+  width:100%;
+  height:auto;
 }
 .home-navBar {
   width: 100%;

@@ -27,7 +27,12 @@
             </div>
             <div class="input-box">
               <div class="input-label">仓单日期:</div>
-              <el-date-picker v-model="searchFrom.RecDate" type="date" placeholder="选择日期"></el-date-picker>
+              <el-date-picker
+                v-model="searchFrom.RecDate"
+                value-format="yyyy-MM-dd"
+                type="date"
+                placeholder="选择日期"
+              ></el-date-picker>
             </div>
             <div class="input-box">
               <div class="input-label">收货仓库:</div>
@@ -48,11 +53,11 @@
       <div class="table-top-area">
         <div class="table-top-btns">
           <el-button size="mini" type="primary" @click="machiningHandle()">加工</el-button>
-          <el-button size="mini" type="danger" @click="outOfStockHandle()">出库</el-button>
+          <el-button size="mini" type="danger" @click="outOfStockHandle()">出仓</el-button>
         </div>
         <div class="table-top-status">
           <div class="status-item">
-            <span class="status-item-label">总吨位: </span>
+            <span class="status-item-label">总吨位:</span>
             <span>{{totalTon}}吨</span>
           </div>
         </div>
@@ -63,7 +68,7 @@
         :data="tableData"
         border
         show-summary
-        height="450"
+        height="600"
         :summary-method="getSummaries"
         style="width: 100%"
         @selection-change="handleSelectionChange"
@@ -101,10 +106,7 @@
   </div>
 </template>
 <script>
-import {
-  getWarehouseReceiptList,
-  outOfStock
-} from "@/api/warehousingManagement";
+import { getWarehouseReceiptList } from "@/api/warehousingManagement";
 export default {
   // 入仓汇总表情况
   name: "WarehousingSummary",
@@ -113,10 +115,10 @@ export default {
       searchFrom: {
         warehouseReceiptId: "",
         contractId: "",
-        Buyby:"",
-        RecDate:"",
-        RecDepo:"",
-        Id:"",
+        Buyby: "",
+        RecDate: "",
+        RecDepo: "",
+        Id: ""
       },
       tableTitle: [
         {
@@ -156,34 +158,34 @@ export default {
           label: "吨位"
         },
         {
-          prop:"GStatus",
-          label:"状态"
+          prop: "GStatus",
+          label: "单价"
         }
       ],
       tableData: [],
       currentPage: 1, //当前页index
-      pageIndex:1,
+      pageIndex: 1,
       pageSize: 20, // 单次页面展示页面数据条数据
-      pageStart:0,
-      pageEnd:19,
+      pageStart: 0,
+      pageEnd: 19,
       total: 10, // 总数据条数
-      goodsList:[], // 总钢卷列表数据
-      multipleSelection:[], // 表格勾选内容数组
+      goodsList: [], // 总钢卷列表数据
+      multipleSelection: [] // 表格勾选内容数组
     };
   },
-  computed:{
-    totalTon(){ // 总吨位
+  computed: {
+    totalTon() {
+      // 总吨位
       let count = 0;
-      if(this.goodsList.length>0){
-        this.goodsList.map(item=>{
+      if (this.goodsList.length > 0) {
+        this.goodsList.map(item => {
           count += parseFloat(item.Ton);
-        })
+        });
       }
       return count;
     }
   },
   mounted() {
-    console.log(getWarehouseReceiptList);
     // 初始获取列表数据
     this.getList(1);
   },
@@ -217,81 +219,123 @@ export default {
       return sums;
     },
     // 搜索
-    searchHandle(){
+    searchHandle() {
       console.log(this.searchFrom);
     },
     // 计算获取钢卷号的列表数据
-    getGoods(data){
+    getGoods(data) {
       let gootList = [];
-      if(data==undefined || !Array.isArray(data)) return false;
-      if(Array.isArray(data)){
-        if(data.length>0){
-          data.map(item1=>{
+      if (data == undefined || !Array.isArray(data)) return false;
+      if (Array.isArray(data)) {
+        if (data.length > 0) {
+          data.map(item1 => {
             // Id
             // SignTime
             // Supply
-            if(item1.InStores && Array.isArray(item1.InStores) && (item1.InStores.length>0)){
-              item1.InStores.map(item2=>{
+            if (
+              item1.InStores &&
+              Array.isArray(item1.InStores) &&
+              item1.InStores.length > 0
+            ) {
+              item1.InStores.map(item2 => {
                 // Id
                 // Buyby
                 // RecDate
                 // RecDepo
-                if(item2.ISGoods&& Array.isArray(item2.ISGoods) && (item2.ISGoods.length>0)){
-                  item2.ISGoods.map(item3=>{
+                if (
+                  item2.ISGoods &&
+                  Array.isArray(item2.ISGoods) &&
+                  item2.ISGoods.length > 0
+                ) {
+                  item2.ISGoods.map(item3 => {
                     item3.contractId = item1.Id; // 合同编号 id
-                    item3.SignTime =  item1.SignTime; // 合同签订时间
+                    item3.SignTime = item1.SignTime; // 合同签订时间
                     item3.Supply = item1.Supply; // 供应商
 
                     item3.warehouseReceiptId = item2.Id; // 入仓单编号 id
                     item3.Buyby = item2.Buyby; // 采购单位
                     item3.RecDate = item2.RecDate; // 采购日期
                     item3.RecDepo = item2.RecDepo; // 收货仓库
-                  })
+                  });
                   gootList = gootList.concat(item2.ISGoods);
                 }
-              })
+              });
             }
-          })
+          });
         }
       }
       return gootList;
     },
     // 获取列表数据
-    async getList(pageIndex,pageSize) {
-      let result = await getWarehouseReceiptList(pageIndex,pageSize);
-      if(result.StatusCode == 200){
+    async getList(pageIndex, pageSize) {
+      let result = await getWarehouseReceiptList(pageIndex, pageSize);
+      if (result.StatusCode == 200) {
         let data = result.Result;
+        // 把三层结构数据摊平 获取所有钢卷数据组列表
         this.goodsList = this.getGoods(data);
-        this.total = this.goodsList.length;
-        this.tableData = this.goodsList.slice(this.pageStart,this.pageEnd);
+        this.total = this.goodsList.length; // 总钢卷数据条数
+        this.tableData = this.goodsList.slice(this.pageStart, this.pageEnd); // 截取数据
+        // 入仓单列表 提交store
+        this.$store.commit('updateWarehouseReceiptList',{"warehouseReceiptList":data});
       }
     },
     // 加工
     machiningHandle() {
-      console.log(this.multipleSelection)
-      this.multipleSelection.map(item=>{
-
-      })
-      let Id = "";
-      this.$router.push({
-        path: "WarehousingProcessing",
-        query: {
-          Id: Id
-        }
-      });
+      console.log(this.multipleSelection);
+      // 判断是否有勾选要出仓加工的钢卷
+      if (this.multipleSelection.length == 0) {
+        this.$message({
+          message: "请选择要加工的钢卷",
+          type: "warning",
+          showClose: true,
+          center: true
+        });
+        return false;
+      }
+      // let Id = "";
+      // this.$router.push({
+      //   path: "WarehousingProcessing",
+      //   query: {
+      //     Id: Id
+      //   }
+      // });
     },
-    // 出库
-    async outOfStockHandle() {
-      console.log(this.multipleSelection)
-      console.log("出库")
-      let result = await outOfStock();
-      console.log(result);
-      this.$message({
-        message: "出库操作成功",
-        type: "success",
-        duration: 1000
+    // 出库出仓操作 路由跳转到 "出仓单录入"
+    outOfStockHandle() {
+      // 判断是否有勾选要出仓加工的钢卷
+      if (this.multipleSelection.length == 0) {
+        this.$message({
+          message: "请选择要出仓的钢卷",
+          type: "warning",
+          showClose: true,
+          center: true
+        });
+        return false;
+      }
+      // 判断收货仓库是否一致 不一致的不能出仓操作
+      if (this.multipleSelection.length >= 2) {
+        let RecDepo = this.multipleSelection[0].RecDepo;
+        let isAgreement = this.multipleSelection.every(item => {
+          return item.RecDepo == RecDepo;
+        });
+        if (!isAgreement) {
+          this.$message({
+            message: "出仓钢卷的收货仓库不一致！",
+            type: "error",
+            showClose: true,
+            center: true
+          });
+          return false;
+        }
+      }
+      // 提交全局store
+      this.$store.commit("updateOutWarehouseList", {
+        outWarehouseList: this.multipleSelection
       });
-      // this.getList(currentPage);
+      // 路由跳转 "出仓单录入"
+      this.$router.push({
+        path: "WarehouseEntry"
+      });
     },
     // 表格勾选事件
     handleSelectionChange(val) {
@@ -304,9 +348,9 @@ export default {
     },
     // 分页面页面index触发跳转
     handleCurrentChange(val) {
-      this.pageStart = this.pageSize*(val-1);
-      this.pageEnd = this.pageSize*val-1;
-      this.tableData = this.goodsList.slice(this.pageStart,this.pageEnd);
+      this.pageStart = this.pageSize * (val - 1);
+      this.pageEnd = this.pageSize * val - 1;
+      this.tableData = this.goodsList.slice(this.pageStart, this.pageEnd);
     },
     // 返回按钮
     backHandle() {
@@ -329,7 +373,7 @@ export default {
 .input-label {
   min-width: 7rem;
 }
-.search-Box{
-  padding:1rem 2rem;
+.search-Box {
+  padding: 1rem 2rem;
 }
 </style>

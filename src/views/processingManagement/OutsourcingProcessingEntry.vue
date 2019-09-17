@@ -36,12 +36,6 @@
             <el-date-picker v-model="receivingDate" type="date" placeholder="选择日期"></el-date-picker>
           </div>
         </div>
-        <!-- <div class="input-item">
-          <div class="input-box">
-            <div class="input-label">供应商出仓单编号:</div>
-            <el-input v-model="vendorWarehouseReleaseNumber" placeholder="请输入内容"></el-input>
-          </div>
-        </div> -->
         <div class="input-item">
           <div class="input-box">
             <div class="input-label">收货地点:</div>

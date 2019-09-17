@@ -121,7 +121,7 @@ export default {
           initSizeMB: file.initSizeMB
         };
         this.Files.push(fileItem);
-        console.log(this.Files);
+        
       };
       reader.readAsDataURL(file);
     },

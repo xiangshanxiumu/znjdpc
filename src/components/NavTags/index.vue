@@ -71,7 +71,6 @@ export default {
   methods: {
     // tag 删除 关闭页面事件
     handleClose(index, item) {
-      console.log("11", index);
       let curPath = item.path;
       let INDEX = index;
       // 删除
@@ -95,8 +94,6 @@ export default {
     },
     // tag 点击触发事件
     tabClickHandle(index) {
-      console.log("22", index);
-      console.log(this.DynamicTags);
       this.ActiveIndex = index;
       let path = "/";
       if (index >= 0) {
@@ -108,7 +105,6 @@ export default {
       // if(path.match('/')==null){
       //   path = '/'+path;
       // }
-      console.log("33", path);
       this.$router.push({
         path: path
       });
@@ -135,7 +131,8 @@ export default {
   flex-wrap: wrap;
 }
 .NavTags-item {
-  margin-right: 0.5rem;
+  margin:0.5rem;
+  // margin-right: 0.5rem;
   cursor: pointer;
 }
 .NavTags-active {

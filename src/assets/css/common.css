@@ -10,9 +10,13 @@
     align-items: center;
     padding: 1rem;
   }
+  .page-topPart-inputArea{
+    display: inline-flex;
+    text-align: left;
+    padding:1rem 0rem;
+  }
   .left-box {
     flex: 1;
-    display: block;
   }
   .right-box {
     flex: 1;
@@ -47,8 +51,11 @@
     background-color: #fff;
   }
   .footer-btns {
-    padding: 1rem;
+    padding: 2rem 1rem;
     text-align: right;
+  }
+  .button{
+    margin-right:2rem;
   }
   .page-device{
     padding:2rem 0rem;

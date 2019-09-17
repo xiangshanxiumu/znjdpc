@@ -2,7 +2,7 @@
 // 入仓汇总
 const WarehousingSummary = ()=>import('@/views/warehousingManagement/WarehousingSummary');
 // 入仓录入
-const WarehouseReceiptEntry = ()=>import('@/views/warehousingManagement/WarehouseReceiptEntry');
+const WarehousingReceiptEntry = ()=>import('@/views/warehousingManagement/WarehousingReceiptEntry');
 // 入仓加工
 const WarehousingProcessing = ()=>import('@/views/warehousingManagement/WarehousingProcessing');
 // 采购合同
@@ -20,9 +20,9 @@ export default [
         component:WarehousingSummary
     },
     {
-        path:'WarehouseReceiptEntry',
-        name:'WarehouseReceiptEntry',
-        component:WarehouseReceiptEntry
+        path:'WarehousingReceiptEntry',
+        name:'WarehousingReceiptEntry',
+        component:WarehousingReceiptEntry
     },
     {
         path:'WarehousingProcessing',

@@ -5,7 +5,7 @@
  * @LastEditTime: 2019-09-14 16:19:45
  * @LastEditors: Please set LastEditors
  */
-export default{
+export default {
     state:{
         // 菜单路由映射表,
         menuMap:[],
@@ -31,7 +31,7 @@ export default{
         },
     },
     actions:{
-        submitUpdateMenuMap(context,payload){
+        changeUpdateMenuMap(context,payload){
             context.commit('updateMenuMap',payload)
         }
     }
