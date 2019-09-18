@@ -7,7 +7,7 @@
  -->
 <template>
   <div class="page-wrap">
-    <h1>出仓单信息录入</h1>
+    <h1>出仓单录入</h1>
     <el-form :model="InStore" :rules="rules" ref="ruleForm">
       <div class="page-topPart">
         <!--顶部input输入区域-->
@@ -132,7 +132,7 @@
     <el-dialog title="编辑" :visible.sync="dialogFormVisible" class="page-dialog" width="30%">
       <el-form :model="form">
         <el-form-item label="品名" :label-width="formLabelWidth">
-          <el-input v-model="form.CEName" auto-complete="off"></el-input>
+          <el-input v-model="form.GName" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="牌号" :label-width="formLabelWidth">
           <el-input v-model="form.Brand" auto-complete="off"></el-input>
@@ -156,7 +156,7 @@
           <el-input v-model="form.RecInfo" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="异议反馈" :label-width="formLabelWidth">
-          <el-input v-model="form.GStatus" auto-complete="off"></el-input>
+          <el-input v-model="form.RecInfoBack" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="备注" :label-width="formLabelWidth">
           <el-input v-model="form.GInfo" auto-complete="off"></el-input>
@@ -172,105 +172,109 @@
 </template>
 <script>
 import FileUpload from "@/components/common/FileUpload";
-import { postOutputWarehouseReceipt } from "@/api/warehouseManagement";
+import { addOutputWarehouseReceipt } from "@/api/warehouseManagement";
 import { mapGetters } from "vuex";
 export default {
-  // 入仓单录入
-  name: "WarehouseReceiptEntry",
+  // 出仓单录入
+  name: "WarehouseEntry",
   components: {
     FileUpload
   },
   data() {
     return {
-      // 出仓单表单数据
-      warehouseReceiptForm: {
-        Id: "", // 合同编号
-        Supply: "", // 供应方
-        Demand: "", //需求方
-        Address: "", //签订地址
-        SignTime: "", //签订时间
-        CEPath: "", //附件地址
-        InStores: {
-          Id: "", // 出入仓单Id
-          RecDate: "", //接收日期
-          RecDepo: "", //接收仓库
-          RecPersonID: "", //接收人身份证号码
-          Buyby: "", //采购单位
-          SupplierOutID: "", //采购单位出仓编号
-          StoreName: "", //仓库名称
-          RecPlace: "", // 接收地址
-          CarBoatID: "", // 车船号
-          BuyPerson: "", // 采购人
-          RecUnitPerson: "", //接收单位签收人
-          Ext: "", //扩展字段
-          ISGoods: [
-            {
-              Id: "", // 钢卷号
-              GName: "", // 品名
-              Brand: "", // 牌号
-              Standards: "", //规格
-              Ton: "", //吨位
-              UnitPrice: null, //单价
-              ProfitAndLossTon: "", //货物盈亏
-              PackStatus: "", //包裹状态
-              RecInfo: null, //接收异议/拍照
-              GInfo: null, //备注
-              GStatus: null, //货物状态 退货/库存/加工/再入库
-              ProRollNo: null, // 加工分条号
-              RollPackNo: null, //卷包号
-              OutDate: "" //出库日期
-            }
-          ]
-        },
+      // 合同=》仓库=》钢卷 数据模型
+      Contract: {
+        Supply: "string", // 供应方
+        Demand: "string", // 需求方
+        Address: "string", // 签订地址
+        SignTime: "2019-09-18T02:27:28.808Z", // 签订时间
+        CEPath: "string", // 附件地址
+        Type: "string", // 合同类型 采购/销售
         Extentions: [
-          // 合同附件
           {
-            Id: "",
-            CEName: "", //品名
-            CEFactroyName: "", //厂家
-            CEBrand: "", //牌号
-            CEStandards: "", //规格
-            CETon: 0, //吨位
-            CEUnitPrice: 0, //单价
-            CETotalPrice: 0, //合计金额
-            CEInfo: "" //备注
+            CEName: "string", // 品名
+            CEFactroyName: "string", // 厂家
+            CEBrand: "string", // 牌号
+            CEStandards: "string", // 规格
+            CETon: 0, // 吨位
+            CEUnitPrice: 0, // 单价
+            CETotalPrice: 0, // 合计金额
+            CEInfo: "string", // 备注
+            Id: "string" // id
           }
-        ]
+        ],
+        InStores: [
+          {
+            RecDate: "2019-09-18T02:27:28.808Z", //接收日期
+            RecDepo: "string", // 接收仓库
+            RecPersonID: "string", // 接收人身份证号码
+            Buyby: "string", // 采购单位
+            SupplierOutID: "string", // 采购单位出仓编号
+            StoreName: "string", // 仓库名称
+            RecPlace: "string", // 接收地址
+            CarBoatID: "string", // 车船号
+            RecUnitPerson: "string", // 接收单位签收人
+            BuyPerson: "string", // 采购人
+            ISGoods: [
+              {
+                GName: "string", // 品名
+                Brand: "string", // 牌号
+                Standards: "string", // 规格
+                Ton: 0, //吨位
+                ProfitAndLossTon: 0, //货物盈亏
+                PackStatus: "string", //包裹状态
+                RecInfo: "string", //接收异议/拍照
+                RecInfoBack: "string", // 异议反馈
+                GInfo: "string", //备注
+                GStatus: "string", // 货物状态 退货/库存/加工/再入库
+                ProRollNo: "string", // 加工分条号
+                RollPackNo: "string", // 卷包号
+                UnitPrice: 0, // 单价
+                OutDate: "2019-09-18T02:27:28.808Z", // 出库日期
+                Id: "string" // 钢卷号
+              }
+            ],
+            Ext: "string", // 扩展字段
+            Id: "string" // 出入仓编号id
+          }
+        ],
+        Id: "string" // 合同编号id
       },
-      // 出入仓单数据信息
+      // 当前page入仓单数据模型
       InStore: {
         contractId: "", // 合同编号id
-        Id: "", // 出入仓单Id
         RecDate: "", //接收日期
-        RecDepo: "", //接收仓库
-        RecPersonID: "", //接收人身份证号码
-        Buyby: "", //采购单位
-        SupplierOutID: "", //采购单位出仓编号
-        StoreName: "", //仓库名称
+        RecDepo: "", // 接收仓库
+        RecPersonID: "", // 接收人身份证号码
+        Buyby: "", // 采购单位
+        SupplierOutID: "", // 采购单位出仓编号
+        StoreName: "", // 仓库名称
         RecPlace: "", // 接收地址
         CarBoatID: "", // 车船号
+        RecUnitPerson: "", // 接收单位签收人
         BuyPerson: "", // 采购人
-        RecUnitPerson: "", //接收单位签收人
-        Ext: "", //扩展字段
-        Enclosure: [], // 附件
         ISGoods: [
           {
-            Id: "", // 钢卷号
             GName: "", // 品名
             Brand: "", // 牌号
-            Standards: "", //规格
-            Ton: "", //吨位
-            UnitPrice: null, //单价
-            ProfitAndLossTon: "", //货物盈亏
+            Standards: "", // 规格
+            Ton: 0, //吨位
+            ProfitAndLossTon: 0, //货物盈亏
             PackStatus: "", //包裹状态
-            RecInfo: null, //接收异议/拍照
-            GInfo: null, //备注
-            GStatus: null, //货物状态 退货/库存/加工/再入库
-            ProRollNo: null, // 加工分条号
-            RollPackNo: null, //卷包号
-            OutDate: "" //出库日期
+            RecInfo: "", //接收异议/拍照
+            RecInfoBack: "", // 异议反馈
+            GInfo: "", //备注
+            GStatus: "", // 货物状态 退货/库存/加工/再入库
+            ProRollNo: "", // 加工分条号
+            RollPackNo: "", // 卷包号
+            UnitPrice: 0, // 单价
+            OutDate: "", // 出库日期
+            Id: "" // 钢卷号
           }
-        ]
+        ],
+        Ext: "", // 扩展字段
+        Enclosure: [], // 新增附件
+        Id: "" // 出入仓编号id
       }, // 仓单对象数据
       // 校验规则
       rules: {
@@ -291,17 +295,9 @@ export default {
         RecUnitPerson: [
           { required: true, message: "请输入货物接收入库单位", trigger: "blur" }
         ],
-        RecPersonID:[
+        RecPersonID: [
           { required: true, message: "请输入货物接收入库单位", trigger: "blur" }
-        ],
-        // RecDate: [
-        //   {
-        //     type: "date",
-        //     required: true,
-        //     message: "请选择收货日期",
-        //     trigger: "blur"
-        //   }
-        // ]
+        ]
       },
       // 表头
       tableTitle: [
@@ -338,27 +334,27 @@ export default {
           label: "接收异议/拍照"
         },
         {
-          prop: "GStatus",
+          prop: "RecInfoBack",
           label: "异议反馈"
         },
         {
           prop: "GInfo",
           label: "备注"
         }
-      ], // 表格标题
+      ],
       dialogFormVisible: false, // dialog 对话框显示或隐藏
       editIndex: 0, // 当前编辑表格数据index
       form: {
-        Id: "",
-        GName: "",
-        Brand: "",
-        Standards: "",
-        Ton: "",
-        ProfitAndLossTon: "",
-        PackStatus: "",
-        RecInfo: "",
-        GStatus: "",
-        GInfo: ""
+        Id: "", // 钢卷号
+        GName: "", // 品名
+        Brand: "", // 牌号
+        Standards: "", // 规格(厚*宽)
+        Ton: "", // 吨位
+        ProfitAndLossTon: 0, // 接收盈亏
+        PackStatus: "", // 包装状态
+        RecInfo: "", //  接收异议/拍照
+        RecInfoBack: "", // 异议反馈
+        GInfo: "" // 备注
       },
       formLabelWidth: "120px", // 表单 label宽度
       files: [] // 附件文件组
@@ -368,25 +364,36 @@ export default {
     ...mapGetters(["outWarehouseList", "warehouseReceiptList"])
   },
   mounted() {
-    // 初始渲染表格 出仓操作的钢卷
-    this.InStore.ISGoods = this.outWarehouseList;
-    // 仓库名称
-    // this.inputForm.RecDepo = this.tableData[0].RecDepo;
+  },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      // 通过 `vm` 访问组件实例
+      if(from.name == 'WarehousingSummary' && to.name == 'WarehouseEntry'){
+        // 初始渲染表格 出仓操作的钢卷
+        vm.InStore.ISGoods = vm.outWarehouseList;
+        // 初始填充 仓库名称
+        if(vm.InStore.ISGoods.length>0){
+          if(vm.InStore.ISGoods[0].RecDepo){
+            vm.InStore.StoreName = vm.InStore.ISGoods[0].RecDepo;
+          }
+        }
+      }
+    });
   },
   methods: {
     // 表格新增一行
     addOneRow() {
       let row = {
-        productName: "",
-        brandName: "",
-        coilNumber: "",
-        specifications: "",
-        tonnage: "",
-        receiptAndLoss: "",
-        packagingState: "",
-        receptionObjection: "",
-        objectionFeedback: "",
-        remarks: ""
+        Id: "",
+        GName: "",
+        Brand: "",
+        Standards: "",
+        Ton: "",
+        ProfitAndLossTon: "",
+        PackStatus: "",
+        RecInfo: "",
+        RecInfoBack: "",
+        GInfo: ""
       };
       this.InStore.ISGoods.push(row);
     },
@@ -451,23 +458,42 @@ export default {
       });
       // 验证通过 调用接口
       if (isValid) {
-        console.log(this.InStore);
+        let Contract = {};
+        Contract.Id = this.InStore.contractId;
+        Contract.InStores = [this.InStore];
+        console.log(Contract);
         // 调用录入API
-        let result = await postOutputWarehouseReceipt(this.InStore);
-        console.log(result);
+        let result = await addOutputWarehouseReceipt(Contract);
+        const loading = this.$loading({
+          lock: true,
+          text: "出仓单录入",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)"
+        });
         if (result.StatusCode == 200) {
-          this.$alert("出仓单录入成功", "操作成功", {
-            confirmButtonText: "确定",
-            type: "success",
-            // center: true,
-            callback: action => {
-              this.$message({
-                type: "info",
-                message: `出仓单录入成功`
-              });
-              // 返回上一页面
-              this.$router.go(-1);
-            }
+          setTimeout(() => {
+            loading.close();
+            this.$alert(result.Message, "出仓单录入", {
+              confirmButtonText: "确定",
+              type: "success",
+              // center: true,
+              callback: action => {
+                this.$message({
+                  type: "success",
+                  message: `出仓单录入成功`
+                });
+                // 返回上一页面 或返回汇总表
+                // this.$router.go(-1);
+                this.$router.push({
+                  path: "WarehouseSummary"
+                });
+              }
+            });
+          }, 1000);
+        } else {
+          this.$message({
+            type: "info",
+            message: result.Message
           });
         }
       }

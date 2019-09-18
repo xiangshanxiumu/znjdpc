@@ -8,134 +8,153 @@
 <template>
   <div class="page-wrap">
     <h1>委外加工单录入</h1>
-    <div class="page-topPart">
-      <div class="left-box">
-        <div class="input-item">
-          <div class="input-box">
-            <div class="input-label">合同编号:</div>
-            <el-input v-model="contractNumber" placeholder="请输入内容"></el-input>
+    <el-form :model="InStore" :rules="rules" ref="ruleForm">
+      <div class="page-topPart">
+        <!--顶部input输入区域-->
+        <div class="page-topPart-inputArea">
+          <div class="left-box">
+            <div class="input-box">
+              <el-form-item label="采购合同编号" prop="contractId" class="form-item">
+                <el-input v-model="InStore.contractId" placeholder="请输入内容"></el-input>
+              </el-form-item>
+            </div>
+            <div class="input-box">
+              <el-form-item label="仓库名称" prop="StoreName" class="form-item">
+                <el-input v-model="InStore.StoreName" placeholder="请输入内容"></el-input>
+              </el-form-item>
+            </div>
+            <div class="input-box">
+              <el-form-item label="销售单位" prop="Buyby" class="form-item">
+                <el-input v-model="InStore.Buyby" placeholder="请输入内容"></el-input>
+              </el-form-item>
+            </div>
+          </div>
+          <div class="middle-box">
+            <div class="input-box">
+              <el-form-item label="入仓单编号" prop="Id" class="form-item">
+                <el-input v-model="InStore.Id" placeholder="请输入内容"></el-input>
+              </el-form-item>
+            </div>
+            <div class="input-box">
+              <el-form-item label="收货地点" prop="RecPlace" class="form-item">
+                <el-input v-model="InStore.RecPlace" placeholder="请输入内容"></el-input>
+              </el-form-item>
+            </div>
+            <div class="input-box">
+              <el-form-item label="车船号" prop="CarBoatID" class="form-item">
+                <el-input v-model="InStore.CarBoatID" placeholder="请输入内容"></el-input>
+              </el-form-item>
+            </div>
+          </div>
+          <div class="right-box">
+            <div class="input-box">
+              <el-form-item label="货物接收入库单位" prop="RecUnitPerson" class="form-item">
+                <el-input v-model="InStore.RecUnitPerson" placeholder="请输入内容"></el-input>
+              </el-form-item>
+            </div>
+            <div class="input-box">
+              <el-form-item label="收货日期" prop="RecDate" class="form-item">
+                <el-date-picker
+                  v-model="InStore.RecDate"
+                  value-format="yyyy-MM-dd"
+                  type="date"
+                  placeholder="选择日期"
+                ></el-date-picker>
+              </el-form-item>
+            </div>
           </div>
         </div>
-        <div class="input-item">
-          <div class="input-box">
-            <div class="input-label">销售单位:</div>
-            <el-input v-model="purchasingUnit" placeholder="请输入内容"></el-input>
-          </div>
-        </div>
-        <div class="input-item">
-          <div class="input-box">
-            <div class="input-label">仓库名称:</div>
-            <el-input v-model="warehouseName" placeholder="请输入内容"></el-input>
-          </div>
-        </div>
+        <!--顶部input输入区域-->
       </div>
-      <div class="middle-box">
-        <div class="input-item">
-          <div class="input-box">
-            <div class="input-label">收货日期:</div>
-            <el-date-picker v-model="receivingDate" type="date" placeholder="选择日期"></el-date-picker>
+      <!--顶部区域-->
+      <!--页面内容区域-->
+      <div class="page-content">
+        <!--表格顶部区域-->
+        <div class="table-top-area">
+          <div class="table-top-btns">
+            <el-button size="mini" type="primary" @click="addOneRow">新增一行</el-button>
           </div>
+          <div class="table-top-status"></div>
         </div>
-        <div class="input-item">
-          <div class="input-box">
-            <div class="input-label">收货地点:</div>
-            <el-input v-model="placeOfReceipt" placeholder="请输入内容"></el-input>
-          </div>
+        <!--表格顶部区域-->
+        <!--表格-->
+        <el-table
+          :data="InStore.ISGoods"
+          border
+          show-summary
+          :summary-method="getSummaries"
+          style="width: 100%"
+        >
+          <el-table-column
+            v-for="(item,index) in tableTitle"
+            :key="index"
+            :prop="item.prop"
+            :label="item.label"
+          ></el-table-column>
+          <el-table-column label="操作" width="180" fixed="right">
+            <template slot-scope="scope">
+              <el-button
+                size="mini"
+                @click="handleEdit(scope.$index, scope.row)"
+                type="primary"
+                round
+              >编辑</el-button>
+              <el-button
+                size="mini"
+                type="danger"
+                @click="handleDelete(scope.$index, scope.row)"
+                round
+              >删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <!--表格-->
+        <!--合同附件-->
+        <h3>附件</h3>
+        <div class="enclosure-box">
+          <FileUpload v-model="InStore.Enclosure"></FileUpload>
         </div>
-      </div>
-      <div class="right-box">
-        <div class="input-item">
-          <div class="input-box">
-            <div class="input-label">入仓单编号:</div>
-            <el-input v-model="warehouseReceiptNumber" placeholder="请输入内容"></el-input>
-          </div>
+        <!--合同附件-->
+        <!--按钮区-->
+        <div class="footer-btns">
+          <el-button @click="backHandle">返回</el-button>
+          <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
         </div>
-        <div class="input-item">
-          <div class="input-box">
-            <div class="input-label">货物接收入库单位:</div>
-            <el-input v-model="goodsReceivingAndStoringUnit" placeholder="请输入内容"></el-input>
-          </div>
-        </div>
-        <div class="input-item">
-          <div class="input-box">
-            <div class="input-label">车船号:</div>
-            <el-input v-model="vehicleNumber" placeholder="请输入内容"></el-input>
-          </div>
-        </div>
+        <!--按钮区-->
       </div>
-    </div>
-    <!---->
-    <div class="page-content">
-      <div class="table-top-btns">
-        <el-button size="mini" @click="addOneRow">新增一行</el-button>
-      </div>
-      <!--表格-->
-      <el-table
-        :data="tableData"
-        border
-        show-summary
-        :summary-method="getSummaries"
-        style="width: 100%"
-      >
-        <el-table-column
-          v-for="(item,index) in tableTitle"
-          :key="index"
-          :prop="item.prop"
-          :label="item.label"
-        ></el-table-column>
-        <el-table-column label="操作" width="180" fixed="right">
-          <template slot-scope="scope">
-            <el-button size="mini" @click="handleEdit(scope.$index, scope.row)" type="primary" round>编辑</el-button>
-            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)" round>删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <!--表格-->
-      <!--合同附件-->
-      <h3>附件</h3>
-      <div class="enclosure-box">
-        <FileUpload></FileUpload>
-      </div>
-      <!--合同附件-->
-      <!--按钮区-->
-      <div class="footer-btns">
-        <el-button @click="backHandle">返回</el-button>
-        <el-button type="primary" @click="submitHandle">提交</el-button>
-      </div>
-      <!--按钮区-->
-    </div>
+    </el-form>
     <!--dialog对话框-->
     <el-dialog title="编辑" :visible.sync="dialogFormVisible" class="page-dialog" width="30%">
       <el-form :model="form">
         <el-form-item label="品名" :label-width="formLabelWidth">
-          <el-input v-model="form.productName" auto-complete="off"></el-input>
+          <el-input v-model="form.GName" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="牌号" :label-width="formLabelWidth">
-          <el-input v-model="form.brandName" auto-complete="off"></el-input>
+          <el-input v-model="form.Brand" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="钢卷号" :label-width="formLabelWidth">
-          <el-input v-model="form.coilNumber" auto-complete="off"></el-input>
+          <el-input v-model="form.Id" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="规格(厚*宽)" :label-width="formLabelWidth">
-          <el-input v-model="form.specifications" auto-complete="off"></el-input>
+          <el-input v-model="form.Standards" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="吨位" :label-width="formLabelWidth">
-          <el-input v-model="form.tonnage" auto-complete="off"></el-input>
+          <el-input v-model="form.Ton" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="接收盈亏" :label-width="formLabelWidth">
-          <el-input v-model="form.receiptAndLoss" auto-complete="off"></el-input>
+          <el-input v-model="form.ProfitAndLossTon" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="包装状态" :label-width="formLabelWidth">
-          <el-input v-model="form.packagingState" auto-complete="off"></el-input>
+          <el-input v-model="form.PackStatus" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="接收异议/拍照" :label-width="formLabelWidth">
-          <el-input v-model="form.receptionObjection" auto-complete="off"></el-input>
+          <el-input v-model="form.RecInfo" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="异议反馈" :label-width="formLabelWidth">
-          <el-input v-model="form.objectionFeedback" auto-complete="off"></el-input>
+          <el-input v-model="form.RecInfoBack" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="备注" :label-width="formLabelWidth">
-          <el-input v-model="form.remarks" auto-complete="off"></el-input>
+          <el-input v-model="form.GInfo" auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -148,6 +167,9 @@
 </template>
 <script>
 import FileUpload from "@/components/common/FileUpload";
+import { addWarehouseReceipt } from "@/api/warehousingManagement";
+import {getContractList,searchContractList} from '@/api/Contract';
+import { mapGetters } from "vuex";
 export default {
   // 委外加工单录入
   name: "OutsourcingProcessingEntry",
@@ -156,117 +178,209 @@ export default {
   },
   data() {
     return {
-      contractNumber: "", // 合同编号
-      purchasingUnit: "", // 采购单位
-      warehouseName: "", // 仓库名称
-      receivingDate: "", // 收货日期
-      vendorWarehouseReleaseNumber: "", // 供应商出仓单编号
-      placeOfReceipt: "", // 收货地点
-      warehouseReceiptNumber: "", // 入仓单编号
-      goodsReceivingAndStoringUnit: "", // 货物接收入库单位
-      vehicleNumber: "", // 车船号
+      // 合同=》仓库=》钢卷 数据模型
+      Contract: {
+        Supply: "string", // 供应方
+        Demand: "string", // 需求方
+        Address: "string", // 签订地址
+        SignTime: "2019-09-18T02:27:28.808Z", // 签订时间
+        CEPath: "string", // 附件地址
+        Type: "string", // 合同类型 采购/销售
+        Extentions: [
+          {
+            CEName: "string", // 品名
+            CEFactroyName: "string", // 厂家
+            CEBrand: "string", // 牌号
+            CEStandards: "string", // 规格
+            CETon: 0, // 吨位
+            CEUnitPrice: 0, // 单价
+            CETotalPrice: 0, // 合计金额
+            CEInfo: "string", // 备注
+            Id: "string" // id
+          }
+        ],
+        InStores: [
+          {
+            RecDate: "2019-09-18T02:27:28.808Z", //接收日期
+            RecDepo: "string", // 接收仓库
+            RecPersonID: "string", // 接收人身份证号码
+            Buyby: "string", // 采购单位
+            SupplierOutID: "string", // 采购单位出仓编号
+            StoreName: "string", // 仓库名称
+            RecPlace: "string", // 接收地址
+            CarBoatID: "string", // 车船号
+            RecUnitPerson: "string", // 接收单位签收人
+            BuyPerson: "string", // 采购人
+            ISGoods: [
+              {
+                GName: "string", // 品名
+                Brand: "string", // 牌号
+                Standards: "string", // 规格
+                Ton: 0, //吨位
+                ProfitAndLossTon: 0, //货物盈亏
+                PackStatus: "string", //包裹状态
+                RecInfo: "string", //接收异议/拍照
+                RecInfoBack: "string", // 异议反馈
+                GInfo: "string", //备注
+                GStatus: "string", // 货物状态 退货/库存/加工/再入库
+                ProRollNo: "string", // 加工分条号
+                RollPackNo: "string", // 卷包号
+                UnitPrice: 0, // 单价
+                OutDate: "2019-09-18T02:27:28.808Z", // 出库日期
+                Id: "string" // 钢卷号
+              }
+            ],
+            Ext: "string", // 扩展字段
+            Id: "string" // 出入仓编号id
+          }
+        ],
+        Id: "string" // 合同编号id
+      },
+      // 当前page入仓单数据模型
+      InStore: {
+        contractId: "", // 合同编号id
+        RecDate: "", //接收日期
+        RecDepo: "", // 接收仓库
+        RecPersonID: "", // 接收人身份证号码
+        Buyby: "", // 采购单位
+        SupplierOutID: "", // 采购单位出仓编号
+        StoreName: "", // 仓库名称
+        RecPlace: "", // 接收地址
+        CarBoatID: "", // 车船号
+        RecUnitPerson: "", // 接收单位签收人
+        BuyPerson: "", // 采购人
+        ISGoods: [
+          {
+            GName: "", // 品名
+            Brand: "", // 牌号
+            Standards: "", // 规格
+            Ton: 0, //吨位
+            ProfitAndLossTon: 0, //货物盈亏
+            PackStatus: "", //包裹状态
+            RecInfo: "", //接收异议/拍照
+            RecInfoBack: "", // 异议反馈
+            GInfo: "", //备注
+            GStatus: "", // 货物状态 退货/库存/加工/再入库
+            ProRollNo: "", // 加工分条号
+            RollPackNo: "", // 卷包号
+            UnitPrice: 0, // 单价
+            OutDate: "", // 出库日期
+            Id: "" // 钢卷号
+          }
+        ],
+        Ext: "", // 扩展字段
+        Enclosure: [], // 新增附件
+        Id: "" // 出入仓编号id
+      },
+      // 校验规则
+      rules: {
+        contractId: [
+          { required: true, message: "请输入合同编号", trigger: "blur" }
+        ],
+        Id: [{ required: true, message: "请输入仓单编号", trigger: "blur" }],
+        StoreName: [
+          { required: true, message: "请输入仓库名称", trigger: "blur" }
+        ],
+        Buyby: [{ required: true, message: "请输入销售单位", trigger: "blur" }],
+        RecPlace: [
+          { required: true, message: "请输入收货地点", trigger: "blur" }
+        ],
+        CarBoatID: [
+          { required: true, message: "请输入车船号", trigger: "blur" }
+        ],
+        RecUnitPerson: [
+          { required: true, message: "请输入货物接收入库单位", trigger: "blur" }
+        ]
+        // RecDate: [
+        //   {
+        //     type: "date",
+        //     required: true,
+        //     message: "请选择收货日期",
+        //     trigger: "change"
+        //   }
+        // ]
+      },
       // 表头
       tableTitle: [
         {
-          prop: "productName",
+          prop: "GName",
           label: "品名"
         },
         {
-          prop: "brandName",
+          prop: "Brand",
           label: "牌号"
         },
         {
-          prop: "coilNumber",
+          prop: "Id",
           label: "钢卷号"
         },
         {
-          prop: "specifications",
+          prop: "Standards",
           label: "规格(厚*宽)"
         },
         {
-          prop: "tonnage",
+          prop: "Ton",
           label: "吨位"
         },
         {
-          prop: "receiptAndLoss",
+          prop: "ProfitAndLossTon",
           label: "接收盈亏"
         },
         {
-          prop: "packagingState",
+          prop: "PackStatus",
           label: "包装状态"
         },
         {
-          prop: "receptionObjection",
+          prop: "RecInfo",
           label: "接收异议/拍照"
         },
         {
-          prop: "objectionFeedback",
+          prop: "RecInfoBack",
           label: "异议反馈"
         },
         {
-          prop: "remarks",
+          prop: "GInfo",
           label: "备注"
         }
-      ], // 表格标题
-      tableData: [
-        {
-          productName: "冷轧硅钢",
-          brandName: "DD750",
-          coilNumber: "810332455",
-          specifications: "0.5*1200*c",
-          tonnage: "7.05",
-          receiptAndLoss: "",
-          packagingState: "",
-          receptionObjection: "",
-          objectionFeedback: "",
-          remarks: "备注"
-        },
-        {
-          productName: "冷轧硅钢",
-          brandName: "50ZW470",
-          coilNumber: "810332456",
-          specifications: "0.5*1200*c",
-          tonnage: "6.8",
-          receiptAndLoss: "",
-          packagingState: "",
-          receptionObjection: "",
-          objectionFeedback: "",
-          remarks: "备注"
-        }
-      ],
+      ], 
       dialogFormVisible: false, // dialog 对话框显示或隐藏
       editIndex: 0, // 当前编辑表格数据index
       form: {
-        productName: "",
-        brandName: "",
-        coilNumber: "",
-        specifications: "",
-        tonnage: "",
-        receiptAndLoss: "",
-        packagingState: "",
-        receptionObjection: "",
-        objectionFeedback: "",
-        remarks: ""
+        Id: "", // 钢卷号
+        GName: "", // 品名
+        Brand: "", // 牌号
+        Standards: "", // 规格(厚*宽)
+        Ton: "", // 吨位
+        ProfitAndLossTon: 0, // 接收盈亏
+        PackStatus: "", // 包装状态
+        RecInfo: "", //  接收异议/拍照
+        RecInfoBack: "", // 异议反馈
+        GInfo: "" // 备注
       },
       formLabelWidth: "120px", // 表单 label宽度
+      files: [] // 附件文件组
     };
   },
+  // computed: {
+  //   ...mapGetters(["outWarehouseList", "warehouseReceiptList"])
+  // },
+  mounted() {},
   methods: {
     // 表格新增一行
     addOneRow() {
       let row = {
-        productName: "",
-        brandName: "",
-        coilNumber: "",
-        specifications: "",
-        tonnage: "",
-        receiptAndLoss: "",
-        packagingState: "",
-        receptionObjection: "",
-        objectionFeedback: "",
-        remarks: ""
+        Id: "",
+        GName: "",
+        Brand: "",
+        Standards: "",
+        Ton: "",
+        ProfitAndLossTon: "",
+        PackStatus: "",
+        RecInfo: "",
+        RecInfoBack: "",
+        GInfo: ""
       };
-      this.tableData.push(row);
+      this.InStore.ISGoods.push(row);
     },
     // 表单合计自定义统计计算方法
     getSummaries(param) {
@@ -304,11 +418,11 @@ export default {
     },
     // 合同表单 删除事件
     handleDelete(index, row) {
-      this.tableData.splice(index, 1);
+      this.InStore.ISGoods.splice(index, 1);
     },
     // dialog 对话框确定事件
     dialogFormOkHandle() {
-      this.tableData[this.editIndex] = this.form;
+      this.InStore.ISGoods[this.editIndex] = this.form;
       this.dialogFormVisible = false;
     },
     // 返回按钮
@@ -316,27 +430,67 @@ export default {
       this.$router.go(-1);
     },
     // 提交按钮
-    submitHandle() {
-      console.log("提交");
+    async submitForm(formName) {
+      // 非空检测
+      let isValid = false;
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          isValid = valid;
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
+      // 验证通过 调用接口
+      if (isValid) {
+        let Contract = {};
+        Contract.Id = this.InStore.contractId;
+        Contract.InStores = [this.InStore];
+        // 调用录入API
+        let result = await addWarehouseReceipt(Contract);
+        const loading = this.$loading({
+          lock: true,
+          text: "入仓单录入",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)"
+        });
+        if (result.StatusCode == 200) {
+          setTimeout(() => {
+            loading.close(); // 关闭加载动画
+            this.$alert(result.Message, "入仓单录入", {
+              confirmButtonText: "确定",
+              type: "success",
+              // center: true,
+              callback: action => {
+                this.$message({
+                  type: "success",
+                  message: `入仓单录入成功`
+                });
+                // 返回上一页面 或返回入仓单汇总表
+                this.$router.push({
+                  path:"WarehousingSummary"
+                });
+              }
+            });
+          }, 1000);
+        } else {
+          this.$message({
+            type: "info",
+            message: result.Message
+          });
+        }
+      }
     }
   }
 };
 </script>
 <style scoped>
-.page-wrap {
+.page-topPart-inputArea {
   width: 100%;
-  height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-.page-topPart {
   display: flex;
-  align-items: center;
-  padding: 1rem;
 }
 .left-box {
   flex: 1;
-  display: block;
 }
 .right-box {
   flex: 1;
@@ -344,34 +498,16 @@ export default {
 .middle-box {
   flex: 1;
 }
-.input-item {
-  text-align: center;
-}
 .input-box {
+  display: block;
+  text-align: right;
+  position: relative;
+  right: 30%;
+}
+.form-item {
   display: inline-flex;
-  align-items: center;
-  padding: 0.5rem 0rem;
 }
-.input-label {
-  min-width: 9rem;
-  text-align: right;
-  padding-right: 1rem;
-}
-.page-content {
-  padding: 1rem;
-  text-align: left;
-}
-.page-title {
-  font-weight: 700;
-}
-.page-dialog {
-  text-align: left;
-}
-.enclosure-box {
-  background-color: #fff;
-}
-.footer-btns {
-  padding: 1rem;
-  text-align: right;
+.el-form-item__label {
+  min-width: 5rem;
 }
 </style>

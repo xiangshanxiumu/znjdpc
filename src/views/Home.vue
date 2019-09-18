@@ -135,18 +135,18 @@ export default {
           childs: [
             {
               entity: {
-                id: "ContractSummary",
-                path: "ContractSummary",
-                icon: "el-icon-document",
-                name: "合同汇总"
-              }
-            },
-            {
-              entity: {
                 id: "ContractEntry",
                 path: "ContractEntry",
                 icon: "el-icon-document",
                 name: "合同录入"
+              }
+            },
+            {
+              entity: {
+                id: "ContractSummary",
+                path: "ContractSummary",
+                icon: "el-icon-document",
+                name: "合同汇总"
               }
             },
             {

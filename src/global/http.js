@@ -7,8 +7,7 @@ axios.defaults.timeout = projectConfig.timeout;
 axios.defaults.baseURL = projectConfig[projectConfig.mode].baseURL;
 
 axios.interceptors.request.use((config) => {
-    console.log("config",config)
-    // config.baseURL = projectConfig[projectConfig.mode].baseURL;
+    config.headers['Content-Type'] = 'application/json';
     return config;
 },
 (err)=>{
@@ -16,6 +15,7 @@ axios.interceptors.request.use((config) => {
 }
 );
 axios.interceptors.response.use((response) => {
+    console.log(response.status)
     return response.data;
   },
   (err) => {

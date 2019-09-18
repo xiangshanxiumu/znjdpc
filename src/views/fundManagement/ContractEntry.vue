@@ -8,121 +8,142 @@
 <template>
   <div class="page-wrap">
     <h1>合同录入</h1>
-    <div class="page-topPart">
-      <div class="left-box">
-        <div class="input-item">
-          <div class="input-box">
-            <div class="input-label">供方:</div>
-            <el-input v-model="supplier" placeholder="请输入内容"></el-input>
+    <el-form :model="Contract" :rules="rules" ref="ruleForm">
+      <div class="page-topPart">
+        <div class="left-box">
+          <div class="input-item">
+            <div class="input-box">
+              <el-form-item label="供方" prop="Supply" class="form-item">
+                <el-input v-model="Contract.Supply" placeholder="请输入内容"></el-input>
+              </el-form-item>
+            </div>
+          </div>
+          <div class="input-item">
+            <div class="input-box">
+              <el-form-item label="需方" prop="Demand" class="form-item">
+                <el-input v-model="Contract.Demand" placeholder="请输入内容"></el-input>
+              </el-form-item>
+            </div>
           </div>
         </div>
-        <div class="input-item">
-          <div class="input-box">
-            <div class="input-label">需方:</div>
-            <el-input v-model="demander" placeholder="请输入内容"></el-input>
+        <div class="right-box">
+          <div class="input-item">
+            <div class="input-box">
+              <el-form-item label="合同编号" prop="Id" class="form-item">
+                <el-input v-model="Contract.Id" placeholder="请输入内容"></el-input>
+              </el-form-item>
+            </div>
+          </div>
+          <div class="input-item">
+            <div class="input-box">
+              <el-form-item label="签订地址" prop="Address" class="form-item">
+                <el-input v-model="Contract.Address" placeholder="请输入内容"></el-input>
+              </el-form-item>
+            </div>
+          </div>
+          <div class="input-item">
+            <div class="input-box">
+              <el-form-item label="签订时间" prop="SignTime" class="form-item">
+                <el-date-picker
+                  v-model="Contract.SignTime"
+                  value-format="yyyy-MM-dd"
+                  type="date"
+                  placeholder="选择日期"
+                ></el-date-picker>
+              </el-form-item>
+            </div>
           </div>
         </div>
       </div>
-      <div class="right-box">
-        <div class="input-item">
-          <div class="input-box">
-            <div class="input-label">合同编号:</div>
-            <el-input v-model="contractNumber" placeholder="请输入内容"></el-input>
+      <!---->
+      <div class="page-content">
+        <!--表格顶部区域-->
+        <div class="table-top-area">
+          <div class="table-top-btns">
+            <el-button size="mini" type="primary" @click="addOneRow">新增一行</el-button>
           </div>
+          <div class="table-top-status"></div>
         </div>
-        <div class="input-item">
-          <div class="input-box">
-            <div class="input-label">签订地址:</div>
-            <el-input v-model="signingAddress" placeholder="请输入内容"></el-input>
-          </div>
+        <!--表格顶部区域-->
+        <!--表格-->
+        <el-table
+          :data="Contract.Extentions"
+          border
+          show-summary
+          :summary-method="getSummaries"
+          style="width: 100%"
+        >
+          <el-table-column
+            v-for="(item,index) in tableTitle"
+            :key="index"
+            :prop="item.prop"
+            :label="item.label"
+          ></el-table-column>
+          <el-table-column label="操作" width="180" fixed="right">
+            <template slot-scope="scope">
+              <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+              <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <!--表格-->
+        <!--合同条款动态生成-->
+        <p>
+          <span class="page-title">第一条、</span>产品名称、厂家、牌号、规格(mm)、单位(元/顿)、数量(顿)、金额(元)
+        </p>
+        <p>
+          <span class="page-title">第二条、</span>质量要求：除合同明确约定外、执行标准外的其他附加技术要求不作为本合同标的物的技术标准；供方提供的质量证明书对质量负责。
+        </p>
+        <p>
+          <span class="page-title">第三条、</span>交提货地址计算方式：供方仓库供货；计量方式：小件计量。
+        </p>
+        <p>
+          <span class="page-title">第四条、</span>运输方式及费用负担：供方承担运费；若运输及其他不可抗因素造成无法按时将货物送达需方指定地点时，供方不承担逾期交货的违约责任。
+        </p>
+        <p>
+          <span class="page-title">第五条、</span>验收及提出异议期限、处理方式：按本合同双方约定标准验收；如有异议，需方应于货到30天内以书面形式向供方提出，否则视供方所交货物符合合同规定，质量异议处理按GB/T 17505执行。
+        </p>
+        <!--合同条款动态生成-->
+        <!--合同附件-->
+        <h2>附件</h2>
+        <div class="enclosure-box">
+          <FileUpload v-model="Contract.Enclosure"></FileUpload>
         </div>
-        <div class="input-item">
-          <div class="input-box">
-            <div class="input-label">签订时间:</div>
-            <el-date-picker v-model="signingTime" type="date" placeholder="选择日期"></el-date-picker>
-          </div>
+        <!--合同附件-->
+        <!--按钮区-->
+        <div class="footer-btns">
+          <el-button class="button" @click="backHandle">返回</el-button>
+          <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
         </div>
+        <!--按钮区-->
       </div>
-    </div>
-    <!---->
-    <div class="page-content">
-      <!--表格顶部按钮-->
-      <div class="table-top-btns">
-        <el-button size="mini" @click="addOneRow">新增一行</el-button>
-      </div>
-      <!--表格顶部按钮-->
-      <!--表格-->
-      <el-table :data="tableData" border show-summary :summary-method="getSummaries" style="width: 100%">
-        <el-table-column
-          v-for="(item,index) in tableTitle"
-          :key="index"
-          :prop="item.prop"
-          :label="item.label"
-        ></el-table-column>
-        <el-table-column label="操作" width="180" fixed="right">
-          <template slot-scope="scope">
-            <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <!--表格-->
-      <!--合同条款动态生成-->
-      <p>
-        <span class="page-title">第一条、</span>产品名称、厂家、牌号、规格(mm)、单位(元/顿)、数量(顿)、金额(元)
-      </p>
-      <p>
-        <span class="page-title">第二条、</span>质量要求：除合同明确约定外、执行标准外的其他附加技术要求不作为本合同标的物的技术标准；供方提供的质量证明书对质量负责。
-      </p>
-      <p>
-        <span class="page-title">第三条、</span>交提货地址计算方式：供方仓库供货；计量方式：小件计量。
-      </p>
-      <p>
-        <span class="page-title">第四条、</span>运输方式及费用负担：供方承担运费；若运输及其他不可抗因素造成无法按时将货物送达需方指定地点时，供方不承担逾期交货的违约责任。
-      </p>
-      <p>
-        <span class="page-title">第五条、</span>验收及提出异议期限、处理方式：按本合同双方约定标准验收；如有异议，需方应于货到30天内以书面形式向供方提出，否则视供方所交货物符合合同规定，质量异议处理按GB/T 17505执行。
-      </p>
-      <!--合同条款动态生成-->
-      <!--合同附件-->
-      <h3>附件</h3>
-      <div class="enclosure-box">
-        <FileUpload></FileUpload>
-      </div>
-      <!--合同附件-->
-      <!--按钮区-->
-      <div class="footer-btns">
-        <el-button @click="backHandle">返回</el-button>
-        <el-button type="primary" @click="submitHandle">提交</el-button>
-      </div>
-      <!--按钮区-->
-    </div>
+    </el-form>
     <!--dialog对话框-->
     <el-dialog title="编辑" :visible.sync="dialogFormVisible" class="page-dialog" width="30%">
       <el-form :model="form">
         <el-form-item label="产品名称" :label-width="formLabelWidth">
-          <el-input v-model="form.productName" auto-complete="off"></el-input>
+          <el-input v-model="form.CEName" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="厂家" :label-width="formLabelWidth">
-          <el-input v-model="form.manufactor" auto-complete="off"></el-input>
+          <el-input v-model="form.CEFactroyName" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="牌号" :label-width="formLabelWidth">
-          <el-input v-model="form.brandName" auto-complete="off"></el-input>
+          <el-input v-model="form.CEBrand" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="规格" :label-width="formLabelWidth">
-          <el-input v-model="form.specifications" auto-complete="off"></el-input>
+          <el-input v-model="form.CEStandards" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="number" :label-width="formLabelWidth">
-          <el-input v-model="form.number" auto-complete="off"></el-input>
+        <el-form-item label="数量" :label-width="formLabelWidth">
+          <el-input v-model="form.CETon" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="单价(含税)" :label-width="formLabelWidth">
-          <el-input v-model="form.unitPrice" auto-complete="off"></el-input>
+          <el-input v-model="form.CEUnitPrice" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="合计金额" :label-width="formLabelWidth">
-          <el-input v-model="form.totalSum" auto-complete="off"></el-input>
+          <el-input v-model="form.CETotalPrice" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="备注" :label-width="formLabelWidth">
-          <el-input v-model="form.remarks" auto-complete="off"></el-input>
+          <el-input v-model="form.CEInfo" auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -134,118 +155,187 @@
   </div>
 </template>
 <script>
-import FileUpload from '@/components/common/FileUpload';
+import FileUpload from "@/components/common/FileUpload";
+// 添加合同接口函数
+import { addContract } from "@/api/warehousingManagement";
 export default {
   // 合同录入
-  name: "contractSummary",
-  components:{
-    FileUpload,
+  name: "ContractEntry",
+  components: {
+    FileUpload
   },
   data() {
     return {
-      supplier: "", // 供方
-      demander: "福建中鞍科技有限公司", // 需方
-      contractNumber: "", // 合同编号
-      signingAddress: "", // 合同签订地址
-      signingTime: "", // 签订时间
+      // 合同=》仓库=》钢卷 数据模型
+      contract: {
+        Supply: "string", // 供应方
+        Demand: "string", // 需求方
+        Address: "string", // 签订地址
+        SignTime: "2019-09-18T02:27:28.808Z", // 签订时间
+        CEPath: "string", // 附件地址
+        Type: "string", // 合同类型 采购/销售
+        Extentions: [
+          {
+            CEName: "string", // 品名
+            CEFactroyName: "string", // 厂家
+            CEBrand: "string", // 牌号
+            CEStandards: "string", // 规格
+            CETon: 0, // 吨位
+            CEUnitPrice: 0, // 单价
+            CETotalPrice: 0, // 合计金额
+            CEInfo: "string", // 备注
+            Id: "string" // id
+          }
+        ],
+        InStores: [
+          {
+            RecDate: "2019-09-18T02:27:28.808Z", //接收日期
+            RecDepo: "string", // 接收仓库
+            RecPersonID: "string", // 接收人身份证号码
+            Buyby: "string", // 采购单位
+            SupplierOutID: "string", // 采购单位出仓编号
+            StoreName: "string", // 仓库名称
+            RecPlace: "string", // 接收地址
+            CarBoatID: "string", // 车船号
+            RecUnitPerson: "string", // 接收单位签收人
+            BuyPerson: "string", // 采购人
+            ISGoods: [
+              {
+                GName: "string", // 品名
+                Brand: "string", // 牌号
+                Standards: "string", // 规格
+                Ton: 0, //吨位
+                ProfitAndLossTon: 0, //货物盈亏
+                PackStatus: "string", //包裹状态
+                RecInfo: "string", //接收异议/拍照
+                RecInfoBack: "string", // 异议反馈
+                GInfo: "string", //备注
+                GStatus: "string", // 货物状态 退货/库存/加工/再入库
+                ProRollNo: "string", // 加工分条号
+                RollPackNo: "string", // 卷包号
+                UnitPrice: 0, // 单价
+                OutDate: "2019-09-18T02:27:28.808Z", // 出库日期
+                Id: "string" // 钢卷号
+              }
+            ],
+            Ext: "string", // 扩展字段
+            Id: "string" // 出入仓编号id
+          }
+        ],
+        Id: "string" // 合同编号id
+      },
+      Contract: {
+        Supply: "", // 供应方
+        Demand: "", // 需求方
+        Address: "", // 签订地址
+        SignTime: "", // 签订时间
+        CEPath: "", // 附件地址
+        Type: "采购", // 合同类型 采购/销售
+        Extentions: [
+          {
+            CEName: "", // 品名
+            CEFactroyName: "", // 厂家
+            CEBrand: "", // 牌号
+            CEStandards: "", // 规格
+            CETon: 0, // 吨位
+            CEUnitPrice: 0, // 单价
+            CETotalPrice: 0, // 合计金额
+            CEInfo: "", // 备注
+            Id: "" // id
+          }
+        ],
+        InStores: [], // 出入仓数据
+        Enclosure: [], // 新增附件
+        Id: "" // 合同编号id
+      },
+      // 校验规则
+      rules: {
+        Id: [{ required: true, message: "请输入合同编号", trigger: "blur" }],
+        Supply: [
+          { required: true, message: "请输入供方信息", trigger: "blur" }
+        ],
+        Demand: [
+          { required: true, message: "请输入需方信息", trigger: "blur" }
+        ],
+        Address: [
+          { required: true, message: "请输入合同签订地址", trigger: "blur" }
+        ]
+        // SignTime: [
+        //   {
+        //     type: "date",
+        //     required: true,
+        //     message: "请选择合同签订日期",
+        //     trigger: "blur"
+        //   }
+        // ]
+      },
+      // 表头信息
       tableTitle: [
         {
-          prop: "productName",
+          prop: "CEName",
           label: "产品名称"
         },
         {
-          prop: "manufactor",
+          prop: "CEFactroyName",
           label: "厂家"
         },
         {
-          prop: "brandName",
+          prop: "CEBrand",
           label: "牌号"
         },
         {
-          prop: "specifications",
+          prop: "CEStandards",
           label: "规格"
         },
         {
-          prop: "number",
+          prop: "CETon",
           label: "数量"
         },
         {
-          prop: "unitPrice",
+          prop: "CEUnitPrice",
           label: "单价(含税)"
         },
         {
-          prop: "totalSum",
+          prop: "CETotalPrice",
           label: "合计金额"
         },
         {
-          prop: "remarks",
+          prop: "CEInfo",
           label: "备注"
         }
       ], // 表格标题
-      tableData: [
-        {
-          productName: "冷轧电工钢",
-          manufactor: "新余中冶",
-          brandName: "50ZW600",
-          specifications: "0.5*1200",
-          number: "14.615",
-          unitPrice: "5000",
-          totalSum: "73075",
-          remarks: "款到发货"
-        },
-        {
-          productName: "冷轧电工钢",
-          manufactor: "新余中冶",
-          brandName: "50ZW600",
-          specifications: "0.5*1200",
-          number: "18.665",
-          unitPrice: "4800",
-          totalSum: "89592",
-          remarks: "款到发货"
-        },
-        // {
-        //   productName: "",
-        //   manufactor: "",
-        //   brandName: "",
-        //   specifications: "",
-        //   number: "",
-        //   unitPrice: "",
-        //   totalSum: "",
-        //   remarks: ""
-        // },
-      ],
       dialogFormVisible: false, // dialog 对话框显示或隐藏
-      editIndex:0, // 当前编辑表格数据index
+      editIndex: 0, // 当前编辑表格数据index
       form: {
-        productName: "",
-        manufactor: "",
-        number: "",
-        brandName: "",
-        remarks: "",
-        specifications: "",
-        totalSum: "",
-        unitPrice:""
+        CEName: "", // 品名
+        CEFactroyName: "", // 厂家
+        CEBrand: "", // 牌号
+        CEStandards: "", // 规格
+        CETon: 0, // 吨位
+        CEUnitPrice: 0, // 单价
+        CETotalPrice: 0, // 合计金额
+        CEInfo: "" // 备注
       },
       formLabelWidth: "100px"
     };
   },
-  mounted(){
+  mounted() {
     // console.log($('.page-wrap'))
   },
   methods: {
     // 表格新增一行
     addOneRow() {
       let row = {
-        productName: "",
-        manufactor: "",
-        number: "",
-        brandName: "",
-        remarks: "",
-        specifications: "",
-        totalSum: "",
-        unitPrice:""
+        CEName: "", // 品名
+        CEFactroyName: "", // 厂家
+        CEBrand: "", // 牌号
+        CEStandards: "", // 规格
+        CETon: 0, // 吨位
+        CEUnitPrice: 0, // 单价
+        CETotalPrice: 0, // 合计金额
+        CEInfo: "" // 备注
       };
-      this.tableData.push(row);
+      this.Contract.Extentions.push(row);
     },
     // 表单合计自定义统计计算方法
     getSummaries(param) {
@@ -255,7 +345,7 @@ export default {
         if (index === 0) {
           sums[index] = "合计";
           return;
-        } else if (index >= 4) {
+        } else if (index == 4) {
           const values = data.map(item => Number(item[column.property]));
           if (!values.every(value => isNaN(value))) {
             sums[index] = values.reduce((prev, curr) => {
@@ -266,17 +356,16 @@ export default {
                 return prev;
               }
             }, 0);
-            if(column.label =="数量"){
-              sums[index] += ' 吨';
+            if (column.label == "数量") {
+              sums[index] += " 吨";
             } else {
-              sums[index] += ' 元';
+              sums[index] += " 元";
             }
           }
         } else {
           sums[index] = "";
         }
       });
-
       return sums;
     },
     // 合同表单 编辑事件
@@ -287,79 +376,84 @@ export default {
     },
     // 合同表单 删除事件
     handleDelete(index, row) {
-      this.tableData.splice(index, 1);
+      this.Contract.Extentions.splice(index, 1);
     },
     // dialog 对话框确定事件
-    dialogFormOkHandle(){
-      this.tableData[this.editIndex] = this.form;
+    dialogFormOkHandle() {
+      this.Contract.Extentions[this.editIndex] = this.form;
       this.dialogFormVisible = false;
     },
     // 返回按钮
-    backHandle(){
+    backHandle() {
       this.$router.go(-1);
     },
     // 提交按钮
-    submitHandle(){
-      console.log("提交")
+    async submitForm(formName) {
+      // 非空检测
+      let isValid = false;
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          isValid = valid;
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
+      // 验证通过 调用接口
+      if (isValid) {
+        console.log(this.Contract);
+        let result = await addContract(this.Contract);
+        const loading = this.$loading({
+          lock: true,
+          text: "采购合同录入",
+          spinner: "el-icon-loading",
+          background: "rgba(0, 0, 0, 0.7)"
+        });
+        console.log(result);
+        // Message;
+        if (result.StatusCode == 200) {
+          loading.close(); // 关闭加载动画
+          this.$alert(result.Message, "采购合同录入", {
+            confirmButtonText: "确定",
+            type: "success",
+            callback: action => {
+              this.$message({
+                  type: "success",
+                  message: `采购合同录入成功`
+              });
+              // 返回上一页面
+              this.$router.go(-1);
+              // this.$forceUpdate();
+            }
+          });
+        } else{
+          this.$message({
+            type: "info",
+            message: result.Message
+          });
+        }
+      }
     }
   }
 };
 </script>
 <style scoped>
-.page-wrap {
-  width:100%;
-  height:100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-.page-topPart {
-  display: flex;
-  align-items: center;
-  padding: 1rem;
-}
-.left-box {
-  flex: 1;
-  display: block;
-}
-.right-box {
-  flex: 1;
-}
 .input-item {
-  text-align: center;
+  text-align: left;
 }
 .input-box {
   display: inline-flex;
   align-items: center;
   padding: 0.5rem 0rem;
+  position: relative;
+  left: 30%;
 }
 .input-label {
-  min-width: 5rem;
+  min-width: 6rem;
   text-align: right;
   padding-right: 1rem;
 }
-.page-content {
-  padding: 1rem;
-  text-align: left;
+.form-item {
+  display: inline-flex;
 }
-.page-title {
-  font-weight: 700;
-}
-.page-dialog{
-  text-align: left;
-}
-.enclosure-box{
-  background-color: #fff;
-}
-.footer-btns{
-  padding:1rem;
-  text-align: right;
-}
-
-
-
-
-
-
-
-
 </style>
