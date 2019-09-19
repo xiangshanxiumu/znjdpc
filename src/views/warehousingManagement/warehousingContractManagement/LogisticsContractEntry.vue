@@ -81,8 +81,8 @@
           ></el-table-column>
           <el-table-column label="操作" width="180" fixed="right">
             <template slot-scope="scope">
-              <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-              <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+              <el-button size="mini" type="warning" plain @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+              <el-button size="mini" type="danger" plain @click="handleDelete(scope.$index, scope.row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -230,7 +230,7 @@ export default {
         Address: "", // 签订地址
         SignTime: "", // 签订时间
         CEPath: "", // 附件地址
-        Type: "采购", // 合同类型 采购/销售
+        Type: "物流", // 合同类型 采购/销售
         Extentions: [
           {
             CEName: "", // 品名
@@ -405,7 +405,7 @@ export default {
         let result = await addContract(this.Contract);
         const loading = this.$loading({
           lock: true,
-          text: "采购合同录入",
+          text: "物流合同录入",
           spinner: "el-icon-loading",
           background: "rgba(0, 0, 0, 0.7)"
         });
@@ -413,13 +413,13 @@ export default {
         // Message;
         if (result.StatusCode == 200) {
           loading.close(); // 关闭加载动画
-          this.$alert(result.Message, "采购合同录入", {
+          this.$alert(result.Message, "物流合同录入", {
             confirmButtonText: "确定",
             type: "success",
             callback: action => {
               this.$message({
                   type: "success",
-                  message: `采购合同录入成功`
+                  message: `物流合同录入成功`
               });
               // 返回上一页面
               this.$router.go(-1);
@@ -427,6 +427,7 @@ export default {
             }
           });
         } else{
+          loading.close(); // 关闭加载动画
           this.$message({
             type: "info",
             message: result.Message

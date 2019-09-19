@@ -42,8 +42,8 @@
         ></el-table-column>
         <el-table-column label="操作" width="180" fixed="right">
           <template slot-scope="scope">
-            <el-button size="mini" @click="handleEdit(scope.$index, scope.row)" round>编辑</el-button>
-            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)" round>删除</el-button>
+            <el-button size="mini" type="waring" @click="handleEdit(scope.$index, scope.row)" plain>编辑</el-button>
+            <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)" plain>删除</el-button>
           </template>
         </el-table-column>
       </el-table>

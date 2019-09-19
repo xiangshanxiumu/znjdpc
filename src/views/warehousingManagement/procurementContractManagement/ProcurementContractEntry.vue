@@ -81,8 +81,8 @@
           ></el-table-column>
           <el-table-column label="操作" width="180" fixed="right">
             <template slot-scope="scope">
-              <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-              <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+              <el-button size="mini" type="warning" plain @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+              <el-button size="mini" type="danger" plain @click="handleDelete(scope.$index, scope.row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -409,7 +409,6 @@ export default {
           spinner: "el-icon-loading",
           background: "rgba(0, 0, 0, 0.7)"
         });
-        console.log(result);
         // Message;
         if (result.StatusCode == 200) {
           loading.close(); // 关闭加载动画
@@ -421,12 +420,15 @@ export default {
                   type: "success",
                   message: `采购合同录入成功`
               });
-              // 返回上一页面
-              this.$router.go(-1);
+              // 返回上一页面 或汇总表
+              this.$router.push({
+                path:"ProcurementContractSummary"
+              });
               // this.$forceUpdate();
             }
           });
         } else{
+          loading.close(); // 关闭加载动画
           this.$message({
             type: "info",
             message: result.Message

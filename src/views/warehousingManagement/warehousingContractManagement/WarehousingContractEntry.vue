@@ -81,8 +81,8 @@
           ></el-table-column>
           <el-table-column label="操作" width="180" fixed="right">
             <template slot-scope="scope">
-              <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-              <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+              <el-button size="mini" type="warning" plain @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+              <el-button size="mini" type="danger" plain @click="handleDelete(scope.$index, scope.row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -230,7 +230,7 @@ export default {
         Address: "", // 签订地址
         SignTime: "", // 签订时间
         CEPath: "", // 附件地址
-        Type: "采购", // 合同类型 采购/销售
+        Type: "仓储", // 合同类型 采购/销售
         Extentions: [
           {
             CEName: "", // 品名
@@ -409,7 +409,6 @@ export default {
           spinner: "el-icon-loading",
           background: "rgba(0, 0, 0, 0.7)"
         });
-        console.log(result);
         // Message;
         if (result.StatusCode == 200) {
           loading.close(); // 关闭加载动画
@@ -427,6 +426,7 @@ export default {
             }
           });
         } else{
+          loading.close(); // 关闭加载动画
           this.$message({
             type: "info",
             message: result.Message

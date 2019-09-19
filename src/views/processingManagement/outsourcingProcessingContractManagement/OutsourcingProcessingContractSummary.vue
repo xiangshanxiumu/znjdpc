@@ -60,7 +60,7 @@
       <!--表格顶部区域-->
       <div class="table-top-area">
         <div class="table-top-btns">
-          <el-button size="mini" type="primary" @click="machiningHandle()">加工</el-button>
+          <el-button size="mini" type="warning" @click="machiningHandle()">加工</el-button>
           <el-button size="mini" type="danger" @click="outOfStockHandle()">出仓</el-button>
         </div>
         <div class="table-top-status">

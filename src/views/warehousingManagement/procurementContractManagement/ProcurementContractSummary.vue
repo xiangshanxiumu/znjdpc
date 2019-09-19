@@ -355,6 +355,10 @@ export default {
                   gootList = gootList.concat(item2.ISGoods);
                 }
               });
+            } else {
+              // InStores 为[]
+              item1.ContractID = item1.Id; // 合同编号 id
+              gootList = gootList.concat(item1);
             }
           });
         }

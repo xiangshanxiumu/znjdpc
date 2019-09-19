@@ -79,9 +79,9 @@
         ></el-table-column>
         <el-table-column fixed="right" label="操作"  width="250">
           <template slot-scope="scope">
-            <el-button size="mini" type="primary" plain round @click="examineHandle(scope.$index, scope.row)">审核</el-button>
-            <el-button size="mini" type="warning" plain round @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-button size="mini"  type="danger" plain round @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+            <el-button size="mini" type="primary" plain  @click="examineHandle(scope.$index, scope.row)">审核</el-button>
+            <el-button size="mini" type="warning" plain  @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+            <el-button size="mini"  type="danger" plain  @click="handleDelete(scope.$index, scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -335,6 +335,10 @@ export default {
                   gootList = gootList.concat(item2.ISGoods);
                 }
               });
+            } else {
+              // InStores 为[]
+              item1.ContractID = item1.Id; // 合同编号 id
+              gootList = gootList.concat(item1);
             }
           });
         }

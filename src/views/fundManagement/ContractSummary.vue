@@ -361,6 +361,10 @@ export default {
                   gootList = gootList.concat(item2.ISGoods);
                 }
               });
+            } else {
+              // InStores 为[]
+              item1.ContractID = item1.Id; // 合同编号 id
+              gootList = gootList.concat(item1);
             }
           });
         }
@@ -376,7 +380,7 @@ export default {
     },
     // 获取列表数据
     async getList() {
-      let type = "采购"; // 合同type
+      let type = ""; // 合同type
       let result = await getContractList(type);
       const loading = this.$loading({
         lock: true,

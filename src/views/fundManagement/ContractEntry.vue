@@ -10,38 +10,42 @@
     <h1>合同录入</h1>
     <el-form :model="Contract" :rules="rules" ref="ruleForm">
       <div class="page-topPart">
-        <div class="left-box">
-          <div class="input-item">
+        <div class="page-topPart-inputArea">
+          <div class="left-box">
             <div class="input-box">
               <el-form-item label="供方" prop="Supply" class="form-item">
                 <el-input v-model="Contract.Supply" placeholder="请输入内容"></el-input>
               </el-form-item>
             </div>
-          </div>
-          <div class="input-item">
             <div class="input-box">
               <el-form-item label="需方" prop="Demand" class="form-item">
                 <el-input v-model="Contract.Demand" placeholder="请输入内容"></el-input>
               </el-form-item>
             </div>
+            <div class="input-box">
+              <el-form-item label="合同类型" prop="Type" class="form-item">
+                <el-select v-model="Contract.Type" clearable filterable placeholder="请选择合同类型">
+                  <el-option label="采购" value="采购"></el-option>
+                  <el-option label="销售" value="销售"></el-option>
+                  <el-option label="加工" value="加工"></el-option>
+                  <el-option label="仓储" value="仓储"></el-option>
+                  <el-option label="物流" value="物流"></el-option>
+                </el-select>
+                <!-- <el-input v-model="Contract.Type" placeholder="请输入合同类型"></el-input> -->
+              </el-form-item>
+            </div>
           </div>
-        </div>
-        <div class="right-box">
-          <div class="input-item">
+          <div class="right-box">
             <div class="input-box">
               <el-form-item label="合同编号" prop="Id" class="form-item">
                 <el-input v-model="Contract.Id" placeholder="请输入内容"></el-input>
               </el-form-item>
             </div>
-          </div>
-          <div class="input-item">
             <div class="input-box">
               <el-form-item label="签订地址" prop="Address" class="form-item">
                 <el-input v-model="Contract.Address" placeholder="请输入内容"></el-input>
               </el-form-item>
             </div>
-          </div>
-          <div class="input-item">
             <div class="input-box">
               <el-form-item label="签订时间" prop="SignTime" class="form-item">
                 <el-date-picker
@@ -81,8 +85,8 @@
           ></el-table-column>
           <el-table-column label="操作" width="180" fixed="right">
             <template slot-scope="scope">
-              <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-              <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+              <el-button size="mini" plain type="warning" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+              <el-button size="mini" plain type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -230,7 +234,7 @@ export default {
         Address: "", // 签订地址
         SignTime: "", // 签订时间
         CEPath: "", // 附件地址
-        Type: "采购", // 合同类型 采购/销售
+        Type: "", // 合同类型 采购/销售
         Extentions: [
           {
             CEName: "", // 品名
@@ -256,6 +260,9 @@ export default {
         ],
         Demand: [
           { required: true, message: "请输入需方信息", trigger: "blur" }
+        ],
+        Type: [
+            { required: true, message: '请选择合同类型', trigger: 'change' }
         ],
         Address: [
           { required: true, message: "请输入合同签订地址", trigger: "blur" }
@@ -418,15 +425,18 @@ export default {
             type: "success",
             callback: action => {
               this.$message({
-                  type: "success",
-                  message: `采购合同录入成功`
+                type: "success",
+                message: `采购合同录入成功`
               });
               // 返回上一页面
-              this.$router.go(-1);
+              this.$router.push({
+                path: "ContractSummary"
+              });
               // this.$forceUpdate();
             }
           });
-        } else{
+        } else {
+          loading.close(); // 关闭加载动画
           this.$message({
             type: "info",
             message: result.Message
@@ -438,22 +448,29 @@ export default {
 };
 </script>
 <style scoped>
-.input-item {
-  text-align: left;
+.page-topPart-inputArea {
+  width: 100%;
+  display: flex;
+}
+.left-box {
+  flex: 1;
+}
+.right-box {
+  flex: 1;
+}
+.middle-box {
+  flex: 1;
 }
 .input-box {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.5rem 0rem;
-  position: relative;
-  left: 30%;
-}
-.input-label {
-  min-width: 6rem;
+  display: block;
   text-align: right;
-  padding-right: 1rem;
+  position: relative;
+  right: 30%;
 }
 .form-item {
   display: inline-flex;
+}
+.el-form-item__label {
+  min-width: 5rem;
 }
 </style>

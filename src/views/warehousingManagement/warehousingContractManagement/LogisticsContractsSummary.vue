@@ -60,7 +60,7 @@
       <!--表格顶部区域-->
       <div class="table-top-area">
         <div class="table-top-btns">
-          <el-button size="mini" type="primary" @click="machiningHandle()">加工</el-button>
+          <el-button size="mini" type="warning" @click="machiningHandle()">加工</el-button>
           <el-button size="mini" type="danger" @click="outOfStockHandle()">出仓</el-button>
         </div>
         <div class="table-top-status">
@@ -324,6 +324,10 @@ export default {
                   gootList = gootList.concat(item2.ISGoods);
                 }
               });
+            } else {
+              // InStores 为[]
+              item1.ContractID = item1.Id; // 合同编号 id
+              gootList = gootList.concat(item1);
             }
           });
         }
