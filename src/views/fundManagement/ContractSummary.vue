@@ -14,37 +14,27 @@
         <div class="page-search-item">
           <el-form :model="searchFrom">
             <div class="input-box">
-              <el-form-item label="采购合同编号" prop="contractID" class="form-item">
-                <el-input v-model="searchFrom.contractID" placeholder="请输入采购合同编号"></el-input>
+              <el-form-item label="合同编号" prop="ContractID" class="form-item">
+                <el-input v-model="searchFrom.ContractID" placeholder="请输入采购合同编号"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
-              <el-form-item label="采购单位" prop="Buyby" class="form-item">
-                <el-input v-model="searchFrom.Buyby" placeholder="请输入采购单位"></el-input>
+              <el-form-item label="供应商名称" prop="Supply" class="form-item">
+                <el-input v-model="searchFrom.Supply" placeholder="请输入采购单位"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
-              <el-form-item label="入仓单编号" prop="InStoreID" class="form-item">
-                <el-input v-model="searchFrom.InStoreID" placeholder="请输入仓单编号"></el-input>
+              <el-form-item label="未履行量" prop="NoPerformNum" class="form-item">
+                <el-input v-model="searchFrom.NoPerformNum" placeholder="请输入仓单编号"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
-              <el-form-item label="钢卷号" prop="GoodsID" class="form-item">
-                <el-input v-model="searchFrom.GoodsID" placeholder="请输入钢卷号"></el-input>
-              </el-form-item>
-            </div>
-            <div class="input-box">
-              <el-form-item label="收货仓库" prop="RecDepo" class="form-item">
-                <el-input v-model="searchFrom.RecDepo" placeholder="请输入收货仓库"></el-input>
-              </el-form-item>
-            </div>
-            <div class="input-box">
-              <el-form-item label="仓单日期" prop="RecDate" class="form-item">
+              <el-form-item label="签订结束时间" prop="SignEndTime" class="form-item">
                 <el-date-picker
-                  v-model="searchFrom.RecDate"
+                  v-model="searchFrom.SignEndTime"
                   value-format="yyyy-MM-dd"
                   type="date"
-                  placeholder="选择仓单日期"
+                  placeholder="选择结束时间"
                 ></el-date-picker>
               </el-form-item>
             </div>
@@ -59,14 +49,14 @@
       <!--搜索区-->
       <!--表格顶部区域-->
       <div class="table-top-area">
-        <div class="table-top-btns">
-          <el-button size="mini" type="primary" @click="machiningHandle()">加工</el-button>
-          <el-button size="mini" type="danger" @click="outOfStockHandle()">出仓</el-button>
-        </div>
         <div class="table-top-status">
           <div class="status-item">
             <span class="status-item-label">总吨位:</span>
-            <span>{{totalTon}}吨</span>
+            <span>{{totalTon}} 吨</span>
+          </div>
+          <div class="status-item">
+            <span class="status-item-label">总金额:</span>
+            <span>{{totalMoney}} 元</span>
           </div>
         </div>
       </div>
@@ -82,13 +72,13 @@
         @selection-change="handleSelectionChange"
       >
         >
-        <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column
           v-for="(item,index) in tableTitle"
           :key="index"
           sortable
           :prop="item.prop"
           :label="item.label"
+          :width="item.width"
         ></el-table-column>
       </el-table>
       <!--列表-->
@@ -177,7 +167,11 @@ export default {
       },
       // 页面顶部搜索区 数据模型
       searchFrom: {
-        contractID: "", // 合同编号id
+        ContractID: "", // 合同编号id
+        Supply: "", //供应商单位
+        NoPerformNum: "", //未履行量
+        SignEndTime: "", // 签订结束时间
+
         InStoreID: "", // 仓单编号id
         GoodsID: "", // 钢卷号id
         Buyby: "", // 采购单位
@@ -186,47 +180,82 @@ export default {
       },
       tableTitle: [
         {
-          prop: "InStoreID", // 仓单编号id
-          label: "入仓单编号"
+          prop: "ContractID", // 合同编号id
+          label: "合同编号",
+          width: "120"
         },
         {
-          prop: "contractID", // 合同编号id
-          label: "采购合同编号"
-        },
-        {
-          prop: "Buyby",
-          label: "采购单位"
-        },
-        {
-          prop: "RecDate",
-          label: "仓单日期"
-        },
-        {
-          prop: "RecDepo",
-          label: "收货仓库"
+          prop: "Supply",
+          label: "供应商单位",
+          width: "200"
         },
         {
           prop: "Brand",
-          label: "牌号"
-        },
-        {
-          prop: "Standards",
-          label: "规格"
-        },
-        {
-          prop: "GoodsID", // GoodsID
-          label: "钢卷号"
+          label: "牌号",
+          width: "120"
         },
         {
           prop: "Ton",
-          label: "吨位"
+          label: "数量(吨)",
+          width: "120"
         },
         {
-          prop: "GStatus",
-          label: "单价"
+          prop: "CETotalPrice",
+          label: "总金额(单位:元)",
+          width: "180"
+        },
+        {
+          prop: "SignEndTime", // 签订结束时间
+          label: "结束时间",
+          width: "150"
+        },
+        {
+          prop: "SupplementaryContract", // 补充合同
+          label: "补充合同",
+          width: "180"
+        },
+        {
+          prop: "ContractEnclosure", // 合同附件
+          label: "合同附件",
+          width: "180"
+        },
+        {
+          prop: "NoPerformNum", // 未履行量
+          label: "未履行量",
+          width: "180"
+        },
+        {
+          prop: "CEInfo", // 备注
+          label: "备注",
+          width: ""
         }
       ],
-      tableData: [],
+      tableData: [
+        {
+          ContractID: "", // 合同编号id
+          Supply: "", //供应商单位
+          Brand: "", //牌号
+          Ton: "", //数量 吨
+          CETotalPrice: "", //总金额(单位:元)
+          SignEndTime: "", //签订结束时间
+          SupplementaryContract: "", //补充合同
+          ContractEnclosure: "", //合同附件
+          NoPerformNum: "", //未履行量
+          CEInfo: "" //备注
+        }
+      ],
+      from: {
+        ContractID: "", // 合同编号id
+        Supply: "", //供应商单位
+        Brand: "", //牌号
+        Ton: "", //数量 吨
+        CETotalPrice: "", //总金额(单位:元)
+        SignEndTime: "", //签订结束时间
+        SupplementaryContract: "", //补充合同
+        ContractEnclosure: "", //合同附件
+        NoPerformNum: "", //未履行量
+        CEInfo: "" //备注
+      },
       currentPage: 1, //当前页index
       pageIndex: 1, // 页码
       pageSize: 20, // 单次页面展示页面数据条数据
@@ -246,13 +275,18 @@ export default {
         this.curList.map(item => {
           count += parseFloat(item.Ton);
         });
+        count = count.toFixed(3);
       }
       return count;
+    },
+    // 总金额
+    totalMoney() {
+      return 0;
     }
   },
   mounted() {
     // 初始获取列表数据
-    this.getList(1);
+    this.getList();
   },
   methods: {
     // 表单合计自定义统计计算方法
@@ -263,7 +297,7 @@ export default {
         if (index === 0) {
           sums[index] = "合计";
           return;
-        } else if (index == 9) {
+        } else if(index == 3 || index == 4 ||index==8) {
           const values = data.map(item => Number(item[column.property]));
           if (!values.every(value => isNaN(value))) {
             sums[index] = values.reduce((prev, curr) => {
@@ -274,7 +308,12 @@ export default {
                 return prev;
               }
             }, 0);
-            sums[index] += " 吨";
+            if(index == 3){
+              sums[index] = sums[index].toFixed(3);
+              sums[index] += " 吨";
+            } else if(index == 4) {
+              sums[index] += " 元";
+            }
           }
         } else {
           sums[index] = "";
@@ -309,7 +348,7 @@ export default {
                   item2.ISGoods.length > 0
                 ) {
                   item2.ISGoods.map(item3 => {
-                    item3.contractID = item1.Id; // 合同编号 id
+                    item3.ContractID = item1.Id; // 合同编号 id
                     item3.SignTime = item1.SignTime; // 合同签订时间
                     item3.Supply = item1.Supply; // 供应商
 
@@ -340,17 +379,18 @@ export default {
       let type = "采购"; // 合同type
       let result = await getContractList(type);
       const loading = this.$loading({
-          lock: true,
-          text: "加载中",
-          spinner: "el-icon-loading",
-          background: "rgba(0, 0, 0, 0.7)"
-        });
+        lock: true,
+        text: "加载中",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)"
+      });
       if (result.StatusCode == 200) {
         loading.close(); // 关闭加载动画
         let data = result.Result;
         // 把三层结构数据摊平 获取所有钢卷数据组列表
         this.goodsList = this.getGoods(data);
-        this.GoodsPaging(this.goodsList);
+        this.curList = this.curList.concat(this.goodsList);
+        this.GoodsPaging(this.curList);
       }
     },
     // 多重条件刷选
@@ -522,5 +562,8 @@ export default {
 .form-item {
   display: inline-flex;
   margin-right: 3rem;
+}
+.table-top-status {
+  display: inline-flex;
 }
 </style>

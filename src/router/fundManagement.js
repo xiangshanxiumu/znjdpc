@@ -13,7 +13,10 @@ export default [
     {
         path:'ContractSummary',
         name:'ContractSummary',
-        component:ContractSummary
+        component:ContractSummary,
+        // meta:{
+        //     KeepAlive:true,
+        // }
     },
     {
         path:'ContractEntry',

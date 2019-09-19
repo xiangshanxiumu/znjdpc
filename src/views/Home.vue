@@ -55,55 +55,6 @@
         </div>
       </div>
     </div>
-    <!-- <el-container class="home-container">
-      <el-header>
-        <div class="home-logo">
-          <img src="@/assets/logo.png" />
-          <span>福建中鞍科技(御管家)管理系统</span>
-        </div>
-        <div class="personal-msg">个人信息区域</div>
-      </el-header>
-      <el-container class="home-content">
-        <div class="home-aside">
-          <el-menu
-            :collapse="isCollapse"
-            @open="handleOpen"
-            @close="handleClose"
-            @select="handleSelect"
-            background-color="#545c64"
-            text-color="#fff"
-            active-text-color="#ffd04b"
-            :default-active="activeMenuIndex"
-            router
-          >
-            <NavMenu :navMenus="menuData"></NavMenu>
-          </el-menu>
-        </div>
-        <el-main>
-          <div>
-            <div class="home-navBar">
-              <div class="navBar-Btn" @click="collapseClickHandle">
-                <img src="@/assets/img/home/cdzk.png" v-show="isCollapse" />
-                <img src="@/assets/img/home/cdsq.png" v-show="!isCollapse" />
-              </div>
-              <div class="navBar-breadcrumb">
-                <BreadCrumb v-model="breadList" />
-              </div>
-            </div>
-            <div class="home-tags">
-              <NavTags :dynamicTags="dynamicTags" :activeTagIndex="activeTagIndex" />
-            </div>
-          </div>
-          <div class="main-content">
-            <keep-alive>
-              <router-view v-if="$route.meta.KeepAlive"></router-view>
-            </keep-alive>
-
-            <router-view v-if="!$route.meta.KeepAlive"></router-view>
-          </div>
-        </el-main>
-      </el-container>
-    </el-container>-->
   </div>
 </template>
 <script>
@@ -441,13 +392,11 @@ export default {
         });
         this.dynamicTags.push(tagItem);
         this.activeTagIndex = this.dynamicTags.length - 1;
-        console.log("44", this.dynamicTags);
       } else {
         // tags已经添加的情况下
         this.activeTagIndex = this.dynamicTags.findIndex((item, index) => {
           return item.path == path;
         });
-        console.log("55", this.dynamicTags);
       }
     },
     // 菜单展开或收起

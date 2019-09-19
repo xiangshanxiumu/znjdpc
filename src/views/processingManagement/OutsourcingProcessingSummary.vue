@@ -14,8 +14,8 @@
         <div class="page-search-item">
           <el-form :model="searchFrom">
             <div class="input-box">
-              <el-form-item label="采购合同编号" prop="contractID" class="form-item">
-                <el-input v-model="searchFrom.contractID" placeholder="请输入采购合同编号"></el-input>
+              <el-form-item label="采购合同编号" prop="ContractID" class="form-item">
+                <el-input v-model="searchFrom.ContractID" placeholder="请输入采购合同编号"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
@@ -177,7 +177,7 @@ export default {
       },
       // 页面顶部搜索区 数据模型
       searchFrom: {
-        contractID: "", // 合同编号id
+        ContractID: "", // 合同编号id
         InStoreID: "", // 仓单编号id
         GoodsID: "", // 钢卷号id
         Buyby: "", // 采购单位
@@ -190,7 +190,7 @@ export default {
           label: "入仓单编号"
         },
         {
-          prop: "contractID", // 合同编号id
+          prop: "ContractID", // 合同编号id
           label: "采购合同编号"
         },
         {
@@ -246,13 +246,14 @@ export default {
         this.curList.map(item => {
           count += parseFloat(item.Ton);
         });
+        count = count.toFixed(3);
       }
       return count;
     }
   },
-  mounted() {
+  created(){
     // 初始获取列表数据
-    this.getList(1);
+    this.getList();
   },
   methods: {
     // 表单合计自定义统计计算方法
@@ -274,6 +275,7 @@ export default {
                 return prev;
               }
             }, 0);
+            sums[index] = sums[index].toFixed(3);
             sums[index] += " 吨";
           }
         } else {
@@ -309,7 +311,7 @@ export default {
                   item2.ISGoods.length > 0
                 ) {
                   item2.ISGoods.map(item3 => {
-                    item3.contractID = item1.Id; // 合同编号 id
+                    item3.ContractID = item1.Id; // 合同编号 id
                     item3.SignTime = item1.SignTime; // 合同签订时间
                     item3.Supply = item1.Supply; // 供应商
 
@@ -350,7 +352,8 @@ export default {
         let data = result.Result;
         // 把三层结构数据摊平 获取所有钢卷数据组列表
         this.goodsList = this.getGoods(data);
-        this.GoodsPaging(this.goodsList);
+        this.curList = this.curList.concat(this.goodsList)
+        this.GoodsPaging(this.curList);
       }
     },
     // 多重条件刷选

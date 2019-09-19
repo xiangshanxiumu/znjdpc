@@ -260,14 +260,6 @@ export default {
         Address: [
           { required: true, message: "请输入合同签订地址", trigger: "blur" }
         ]
-        // SignTime: [
-        //   {
-        //     type: "date",
-        //     required: true,
-        //     message: "请选择合同签订日期",
-        //     trigger: "blur"
-        //   }
-        // ]
       },
       // 表头信息
       tableTitle: [

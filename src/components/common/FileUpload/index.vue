@@ -9,11 +9,36 @@
   <div class="FileUpload-wrap">
     <div class="FileUpload-showItem" v-for="(item,index) in Files" :key="index">
       <div class="FileUpload-showItem-box">
-        <img class="FileUpload-showItem-img" :src="item.base64" :title="item.fileName" v-if="item.fileType=='image'"/>
-        <img class="FileUpload-showItem-img" src="@/assets/img/common/pdf.png" :title="item.fileName" v-if="item.fileType=='pdf'"/>
-        <img class="FileUpload-showItem-img" src="@/assets/img/common/excel.png" :title="item.fileName" v-if="item.fileType=='sheet'"/>
-        <img class="FileUpload-showItem-img" src="@/assets/img/common/word.png" :title="item.fileName" v-if="item.fileType=='document'"/>
-        <img class="FileUpload-showItem-img" src="@/assets/img/common/ppt.png" :title="item.fileName" v-if="item.fileType=='ppt'"/>
+        <img
+          class="FileUpload-showItem-img"
+          :src="item.base64"
+          :title="item.fileName"
+          v-if="item.fileType=='image'"
+        />
+        <img
+          class="FileUpload-showItem-img"
+          src="@/assets/img/common/pdf.png"
+          :title="item.fileName"
+          v-if="item.fileType=='pdf'"
+        />
+        <img
+          class="FileUpload-showItem-img"
+          src="@/assets/img/common/excel.png"
+          :title="item.fileName"
+          v-if="item.fileType=='sheet'"
+        />
+        <img
+          class="FileUpload-showItem-img"
+          src="@/assets/img/common/word.png"
+          :title="item.fileName"
+          v-if="item.fileType=='document'"
+        />
+        <img
+          class="FileUpload-showItem-img"
+          src="@/assets/img/common/ppt.png"
+          :title="item.fileName"
+          v-if="item.fileType=='ppt'"
+        />
       </div>
       <!-- <span class="FileUpload-showItem-name">{{item.fileName}}</span> -->
       <img
@@ -109,21 +134,16 @@ export default {
       file.initSizeMB = initSizeMB;
       // fileType
       file.fileType = this.fileTypeCheck(file);
-      let reader = new FileReader();
-      reader.onload = e => {
-        let base64 = e.target.result;
-        let fileItem = {
-          type:file.type,
-          fileType: file.fileType,
-          fileName: file.name,
-          base64: base64,
-          initSizeKB: file.initSizeKB,
-          initSizeMB: file.initSizeMB
+      if (file.fileType == "image") {
+        let reader = new FileReader();
+        reader.onload = e => {
+          file.base64 = e.target.result;
+          this.Files.push(file);
         };
-        this.Files.push(fileItem);
-        
-      };
-      reader.readAsDataURL(file);
+        reader.readAsDataURL(file);
+      } else {
+        this.Files.push(file);
+      }
     },
     // 图片文件添加处理
     ImgFileAdd(file) {
@@ -140,7 +160,7 @@ export default {
       this.compress(file)
         .then(res => {
           let imgFile = {
-            type:file.type,
+            type: file.type,
             fileType: file.fileType,
             fileName: file.name,
             base64: res,
@@ -280,23 +300,4 @@ export default {
   top: -0.5rem;
   left: -0.5rem;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </style>

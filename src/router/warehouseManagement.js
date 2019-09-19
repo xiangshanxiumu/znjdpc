@@ -1,4 +1,6 @@
-// 出仓管理
+/**
+ * 出仓管理 模块
+ */
 const WarehouseEntry = ()=>import('@/views/warehouseManagement/WarehouseEntry');
 const WarehouseSummary= ()=>import('@/views/warehouseManagement/WarehouseSummary');
 

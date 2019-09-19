@@ -1,4 +1,6 @@
-// 加工管理
+/**
+ * 加工管理 模块
+ */
 const OutsourcingProcessingEntry = ()=>import('@/views/processingManagement/OutsourcingProcessingEntry');
 const OutsourcingProcessingSummary = ()=>import('@/views/processingManagement/OutsourcingProcessingSummary');
 const OutsourcingProcessingContractEntry = ()=>import('@/views/processingManagement/outsourcingProcessingContractManagement/OutsourcingProcessingContractEntry');

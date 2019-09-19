@@ -2,14 +2,13 @@
 const Home = () =>import('@/views/home');
 
 // 合同管理模块路由
-// import contractManagement from './contractManagement';
 // 资金管理
 import fundManagement from './fundManagement';
-// 
+// 入仓管理模块
 import warehousingManagement from './warehousingManagement';
-//
+// 出仓管理模块
 import warehouseManagement from './warehouseManagement';
-//
+// 加工管理模块
 import processingManagement from './processingManagement';
 export default [
       {
@@ -23,6 +22,9 @@ export default [
           ...warehousingManagement,
           ...warehouseManagement,
           ...processingManagement
-        ]
+        ],
+        // meta:{
+        //     KeepAlive:true,
+        // }
       }
 ]

@@ -7,18 +7,18 @@
  -->
 <template>
   <div id="app-box">
-          <transition name="fade">
+          <!-- <transition name="fade"> -->
             <!--需要缓存的-->
             <keep-alive>
               <router-view v-if="$route.meta.KeepAlive"></router-view>
             </keep-alive>
             <!--需要缓存的-->
-          </transition>
-          <transition name="fade">
+          <!-- </transition>
+          <transition name="fade"> -->
             <!--不需要缓存的-->
             <router-view v-if="!$route.meta.KeepAlive"></router-view>
             <!--不需要缓存的-->
-          </transition>
+          <!-- </transition> -->
   </div>
 </template>
 
