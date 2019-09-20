@@ -85,7 +85,7 @@
             border
             show-summary
             :summary-method="getSummaries"
-            style="width:100%"
+            style="width: 100%;"
           >
             <el-table-column  prop="Brand" label="牌号" width="120" fixed ="left"></el-table-column>
             <el-table-column prop="Standards" label="规格(厚*宽/单位mm)" width="180" fixed ="left"></el-table-column>
@@ -351,17 +351,17 @@ export default {
             {
               prop: "Striping1",
               label: "分条规格1(30mm)",
-              width: "200"
+              width: "150"
             },
             {
               prop: "Striping2",
               label: "分条规格2(60mm)",
-              width: "200"
+              width: "150"
             },
             {
               prop: "Striping3",
               label: "分条规格3(90mm)",
-              width: "200"
+              width: "150"
             }
           ]
         }
@@ -427,7 +427,7 @@ export default {
       let column = {
         prop: `Striping`,
         label: `分条${len + 1}`,
-        width: "200"
+        width: "150"
       };
       this.tableTitle[0].children.push(column);
     },
@@ -560,9 +560,13 @@ export default {
   min-width: 5rem;
 }
 .tableWrap{
-  width: 90%;
+  width:90%;
   display: block;
-  overflow: auto;
   box-sizing: border-box;
+  overflow: auto;
+}
+.el-table__body-wrapper{
+  overflow: auto !important;
+  position: relative;
 }
 </style>
