@@ -409,6 +409,7 @@ export default {
           spinner: "el-icon-loading",
           background: "rgba(0, 0, 0, 0.7)"
         });
+        console.log(result);
         // Message;
         if (result.StatusCode == 200) {
           loading.close(); // 关闭加载动画

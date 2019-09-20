@@ -5,6 +5,11 @@ export default [
         name:'NotFund',
         component:()=>import('@/views/common/NotFund'),
     },
+    {   // 登录
+        path:"/Login",
+        name:"Login",
+        component:()=>import('@/views/common/Login')
+    },
     {
         path:'/TimeOut', // 超时
         name:'TimeOut',

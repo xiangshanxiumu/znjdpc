@@ -61,7 +61,7 @@
       <div class="table-top-area">
         <div class="table-top-btns">
           <el-button size="mini" type="warning" @click="machiningHandle()">加工</el-button>
-          <el-button size="mini" type="danger" @click="outOfStockHandle()">出仓</el-button>
+          <el-button size="mini" type="danger" @click="outWarehouseHandle()">出仓</el-button>
         </div>
         <div class="table-top-status">
           <div class="status-item">
@@ -222,8 +222,16 @@ export default {
           label: "吨位"
         },
         {
-          prop: "GStatus",
+          prop: "UnitPrice",
           label: "单价"
+        },
+        {
+          prop: "TotalPrice",
+          label: "总金额"
+        },
+        {
+          prop: "GStatus",
+          label: "状态"
         }
       ],
       tableData: [],
@@ -231,7 +239,7 @@ export default {
       pageIndex: 1, // 页码
       pageSize: 20, // 单次页面展示页面数据条数据
       pageStart: 0, // 起始数据条数
-      pageEnd: 19, // 结束数据条数
+      pageEnd: 20, // 结束数据条数
       total: 10, // 总数据条数
       goodsList: [], // 总钢卷列表数据
       curList: [], // 搜索操作后的列表数据
@@ -251,7 +259,7 @@ export default {
       return count;
     }
   },
-  created(){
+  created() {
     // 初始获取列表数据
     this.getList();
   },
@@ -320,6 +328,8 @@ export default {
                     item3.Buyby = item2.Buyby; // 采购单位
                     item3.RecDate = item2.RecDate; // 采购日期
                     item3.RecDepo = item2.RecDepo; // 收货仓库
+                    item3.TotalPrice = item3.Ton * item3.UnitPrice; // 总金额 吨位*单价 计算出来
+                    item3.TotalPrice = item3.TotalPrice.toFixed(1);
                   });
                   gootList = gootList.concat(item2.ISGoods);
                 }
@@ -342,17 +352,17 @@ export default {
       let type = "采购"; // 合同type
       let result = await getContractList(type);
       const loading = this.$loading({
-          lock: true,
-          text: "加载中",
-          spinner: "el-icon-loading",
-          background: "rgba(0, 0, 0, 0.7)"
-        });
+        lock: true,
+        text: "加载中",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)"
+      });
       if (result.StatusCode == 200) {
         loading.close(); // 关闭加载动画
         let data = result.Result;
         // 把三层结构数据摊平 获取所有钢卷数据组列表
         this.goodsList = this.getGoods(data);
-        this.curList = this.curList.concat(this.goodsList)
+        this.curList = this.curList.concat(this.goodsList);
         this.GoodsPaging(this.curList);
       }
     },
@@ -444,10 +454,19 @@ export default {
           center: true
         });
         return false;
+      } else {
+        // 加工钢卷列表数据提交全局store
+        this.$store.commit("updateSteelCoilMachiningList", {
+          steelCoilMachiningList: this.multipleSelection
+        });
+        // 路由跳转到 委外加工单录入
+        this.$router.push({
+          path: "OutsourcingProcessingEntry"
+        });
       }
     },
     // 出库出仓操作 路由跳转到 "出仓单录入"
-    outOfStockHandle() {
+    outWarehouseHandle() {
       // 判断是否有勾选要出仓加工的钢卷
       if (this.multipleSelection.length == 0) {
         this.$message({
@@ -474,7 +493,7 @@ export default {
           return false;
         }
       }
-      // 提交全局store
+      // 出仓钢卷列表数据提交全局store
       this.$store.commit("updateOutWarehouseList", {
         outWarehouseList: this.multipleSelection
       });

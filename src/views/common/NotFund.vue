@@ -15,7 +15,7 @@ export default {
   methods:{
       backHome(){
           this.$router.replace({
-              path:"/"
+              path:"/Home"
           })
       }
   }

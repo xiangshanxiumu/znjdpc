@@ -9,21 +9,33 @@ export default [
     {
         path:'OutsourcingProcessingEntry',
         name:'OutsourcingProcessingEntry',
-        component:OutsourcingProcessingEntry
+        component:OutsourcingProcessingEntry,
+        meta:{
+            auth:true,
+        }
     },
     {
         path:'OutsourcingProcessingSummary',
         name:'OutsourcingProcessingSummary',
-        component:OutsourcingProcessingSummary
+        component:OutsourcingProcessingSummary,
+        meta:{
+            auth:true,
+        }
     },
     {
         path:'OutsourcingProcessingContractEntry',
         name:'OutsourcingProcessingContractEntry',
-        component:OutsourcingProcessingContractEntry
+        component:OutsourcingProcessingContractEntry,
+        meta:{
+            auth:true,
+        }
     },
     {
         path:'OutsourcingProcessingContractSummary',
         name:'OutsourcingProcessingContractSummary',
-        component:OutsourcingProcessingContractSummary
+        component:OutsourcingProcessingContractSummary,
+        meta:{
+            auth:true,
+        }
     },
 ]

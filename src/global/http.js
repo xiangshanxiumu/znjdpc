@@ -25,11 +25,11 @@ axios.interceptors.response.use((response) => {
   },
   (err) => {
     console.log(err) // Error: Network Error
-    let originalRequest = error.config;
-    if(error.code == 'ECONNABORTED' && error.message.indexOf('timeout')!=-1 && !originalRequest._retry){
-            originalRequest._retry = true
-            return axios.request(originalRequest);
-    }
+    // let originalRequest = error.config;
+    // if(error.code == 'ECONNABORTED' && error.message.indexOf('timeout')!=-1 && !originalRequest._retry){
+    //         originalRequest._retry = true
+    //         return axios.request(originalRequest);
+    // }
     return Promise.reject(err);
   }
 );

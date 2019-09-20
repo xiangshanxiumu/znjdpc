@@ -7,7 +7,6 @@
  -->
 <template>
   <div class="NavTags-wrap">
-    <el-tag class="NavTags-item" @click="homeClickHandle">首页</el-tag>
     <el-tag
       class="NavTags-item"
       :class="{'NavTags-active':ActiveIndex==index}"
@@ -54,13 +53,6 @@ export default {
       immediate: true,
       deep: true
     },
-    // DynamicTags: {
-    //   handler(val) {
-    //     this.$emit("change", val);
-    //   },
-    //   immediate: true,
-    //   deep: true
-    // },
     activeTagIndex: {
       handler(val) {
         this.ActiveIndex = val;
@@ -115,10 +107,9 @@ export default {
     },
     //首页点击事件
     homeClickHandle(){
-      location.href = '/';
-      // this.$router.push({
-      //   path:'/'
-      // })
+      this.$router.replace({
+        path:'/Home'
+      })
     }
   }
 };

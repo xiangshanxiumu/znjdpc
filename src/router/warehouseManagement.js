@@ -10,21 +10,33 @@ export default [
     {
         path:'WarehouseEntry',
         name:'WarehouseEntry',
-        component:WarehouseEntry
+        component:WarehouseEntry,
+        meta:{
+            auth:true,
+        }
     },
     {
         path:'WarehouseSummary',
         name:'WarehouseSummary',
-        component:WarehouseSummary
+        component:WarehouseSummary,
+        meta:{
+            auth:true,
+        }
     },
     {
         path:'SalesContractEntry',
         name:'SalesContractEntry',
-        component:SalesContractEntry
+        component:SalesContractEntry,
+        meta:{
+            auth:true,
+        }
     },
     {
         path:'SalesContractSummary',
         name:'SalesContractSummary',
-        component:SalesContractSummary
+        component:SalesContractSummary,
+        meta:{
+            auth:true,
+        }
     },
 ]

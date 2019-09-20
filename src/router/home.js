@@ -12,19 +12,19 @@ import warehouseManagement from './warehouseManagement';
 import processingManagement from './processingManagement';
 export default [
       {
-        path: '/',
+        path: '/Home',
         name: 'Home',
         component:Home,
         // 子路由
         children:[
-          // ...contractManagement,
           ...fundManagement,
           ...warehousingManagement,
           ...warehouseManagement,
           ...processingManagement
         ],
-        // meta:{
-        //     KeepAlive:true,
-        // }
+        meta:{
+            // KeepAlive:true,
+            auth:true,
+        }
       }
 ]

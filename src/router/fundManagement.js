@@ -14,28 +14,40 @@ export default [
         path:'ContractSummary',
         name:'ContractSummary',
         component:ContractSummary,
-        // meta:{
-        //     KeepAlive:true,
-        // }
+        meta:{
+            auth:true,
+        }
     },
     {
         path:'ContractEntry',
         name:'ContractEntry',
-        component:ContractEntry
+        component:ContractEntry,
+        meta:{
+            auth:true,
+        }
     },
     {
         path:'PaymentApplicationFormEntry',
         name:'PaymentApplicationFormEntry',
-        component:PaymentApplicationFormEntry
+        component:PaymentApplicationFormEntry,
+        meta:{
+            auth:true,
+        }
     },
     {
         path:'ReceivingApplicationFormEntry',
         name:'ReceivingApplicationFormEntry',
-        component:ReceivingApplicationFormEntry
+        component:ReceivingApplicationFormEntry,
+        meta:{
+            auth:true,
+        }
     },
     {
         path:'SummaryOfReceiptsAndPayments',
         name:'SummaryOfReceiptsAndPayments',
-        component:SummaryOfReceiptsAndPayments
+        component:SummaryOfReceiptsAndPayments,
+        meta:{
+            auth:true,
+        }
     }
 ]
