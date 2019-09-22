@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:30:21
- * @LastEditTime: 2019-09-15 16:04:59
+ * @LastEditTime: 2019-09-22 12:48:28
  * @LastEditors: Please set LastEditors
  -->
 <template>
@@ -74,6 +74,8 @@
           <div class="table-top-btns">
             <el-button size="mini" type="primary" @click="addOneRow">新增一行</el-button>
             <el-button size="mini" type="warning" @click="addOneColumn">分条+</el-button>
+            <el-button size="mini" type="warning" @click="deleteOneColumn">分条-</el-button>
+            <el-button size="mini" type="danger" @click="stripingEdit">分条方案编辑</el-button>
           </div>
           <div class="table-top-status"></div>
         </div>
@@ -87,10 +89,10 @@
             :summary-method="getSummaries"
             style="width: 100%;"
           >
-            <el-table-column  prop="Brand" label="牌号" width="120" fixed ="left"></el-table-column>
-            <el-table-column prop="Standards" label="规格(厚*宽/单位mm)" width="180" fixed ="left"></el-table-column>
-            <el-table-column  prop="Id" label="钢卷号" width="120" fixed ="left"></el-table-column>
-            <el-table-column  prop="Ton" label="吨数" width="120" fixed ="left"></el-table-column>
+            <el-table-column prop="Brand" label="牌号" width="120" fixed="left"></el-table-column>
+            <el-table-column prop="Standards" label="规格(厚*宽/单位mm)" width="180" fixed="left"></el-table-column>
+            <el-table-column prop="Id" label="钢卷号" width="120" fixed="left"></el-table-column>
+            <el-table-column prop="Ton" label="吨数" width="120" fixed="left"></el-table-column>
             <!--动态分条区-->
             <el-table-column
               v-for="(item,index) in tableTitle"
@@ -148,37 +150,10 @@
       </div>
     </el-form>
     <!--dialog对话框-->
-    <el-dialog title="编辑" :visible.sync="dialogFormVisible" class="page-dialog" width="30%">
-      <el-form :model="form">
-        <el-form-item label="品名" :label-width="formLabelWidth">
-          <el-input v-model="form.GName" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="牌号" :label-width="formLabelWidth">
-          <el-input v-model="form.Brand" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="钢卷号" :label-width="formLabelWidth">
-          <el-input v-model="form.Id" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="规格(厚*宽)" :label-width="formLabelWidth">
-          <el-input v-model="form.Standards" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="吨位" :label-width="formLabelWidth">
-          <el-input v-model="form.Ton" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="接收盈亏" :label-width="formLabelWidth">
-          <el-input v-model="form.ProfitAndLossTon" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="包装状态" :label-width="formLabelWidth">
-          <el-input v-model="form.PackStatus" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="接收异议/拍照" :label-width="formLabelWidth">
-          <el-input v-model="form.RecInfo" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="异议反馈" :label-width="formLabelWidth">
-          <el-input v-model="form.RecInfoBack" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="备注" :label-width="formLabelWidth">
-          <el-input v-model="form.GInfo" auto-complete="off"></el-input>
+    <el-dialog title="编辑" :visible.sync="dialogFormVisible" class="page-dialog">
+      <el-form :model="rowForm">
+        <el-form-item v-for="(item,index) in rowForm.formItem" :label="item.label" :key="index" :label-width="formLabelWidth">
+          <el-input v-model="item.value" auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -188,22 +163,23 @@
     </el-dialog>
     <!--dialog对话框-->
     <!--分条对话框-->
-    <!-- <el-dialog title="分条" :visible.sync="dialogFormVisible" class="page-dialog" width="30%">
-
-    </el-dialog>-->
+    <el-dialog title="分条方案" :visible.sync="dialogFormVisible2" class="page-dialog">
+      <DynaactionForm :formData="formData" @submit="Submit"></DynaactionForm>
+    </el-dialog>
     <!--分条对话框-->
   </div>
 </template>
 <script>
 import FileUpload from "@/components/common/FileUpload";
-import { addWarehouseReceipt } from "@/api/warehousingManagement";
+import DynaactionForm from "@/components/DynaactionForm";
 import { getContractList, searchContractList } from "@/api/Contract";
 import { mapGetters } from "vuex";
 export default {
   // 委外加工单录入
   name: "OutsourcingProcessingEntry",
   components: {
-    FileUpload
+    FileUpload,
+    DynaactionForm
   },
   data() {
     return {
@@ -350,17 +326,17 @@ export default {
           children: [
             {
               prop: "Striping1",
-              label: "分条规格1(30mm)",
+              label: "分条1",
               width: "150"
             },
             {
               prop: "Striping2",
-              label: "分条规格2(60mm)",
+              label: "分条2",
               width: "150"
             },
             {
               prop: "Striping3",
-              label: "分条规格3(90mm)",
+              label: "分条3",
               width: "150"
             }
           ]
@@ -368,17 +344,66 @@ export default {
       ],
       dialogFormVisible: false, // dialog 对话框显示或隐藏
       editIndex: 0, // 当前编辑表格数据index
-      form: {
-        Id: "", // 钢卷号
-        Brand: "", // 牌号
-        Standards: "", // 规格(厚*宽)
-        Ton: "", // 吨位
-        Striping1: "",
-        Striping2: "",
-        Striping3: ""
+      rowForm: { // 行数据表
+        formItem:[
+          { 
+            prop:"Brand",
+            label:"牌号",
+            value:""
+          },
+          {
+            prop:"Standards",
+            label:"规格(厚*宽)",
+            value:""
+          },
+          {
+            prop:"Id",
+            label:"钢卷号",
+            value:""
+          },
+          {
+            prop:"Ton",
+            label:"吨位",
+            value:""
+          },
+        ],
+      },
+      RowForm: { // 行数据表 当作原始数据
+        formItem:[
+          { 
+            prop:"Brand",
+            label:"牌号",
+            value:""
+          },
+          {
+            prop:"Standards",
+            label:"规格(厚*宽)",
+            value:""
+          },
+          {
+            prop:"Id",
+            label:"钢卷号",
+            value:""
+          },
+          {
+            prop:"Ton",
+            label:"吨位",
+            value:""
+          },
+        ],
       },
       formLabelWidth: "120px", // 表单 label宽度
-      tableWidth: ""
+      tableWidth: "",
+      // 分条 title 编辑
+      dialogFormVisible2: false,
+      formData: { // 
+        domains: [
+          { 
+            label:"分条",
+            value: ""
+          },
+        ]
+      } //
     };
   },
   computed: {
@@ -431,6 +456,37 @@ export default {
       };
       this.tableTitle[0].children.push(column);
     },
+    // 删除列 减少分条
+    deleteOneColumn() {
+      let len = this.tableTitle[0].children.length;
+      if (len > 0) {
+        this.tableTitle[0].children.splice(len - 1, 1);
+      }
+    },
+    // 分条方案 编辑 from title
+    stripingEdit() {
+      console.log(this.tableTitle[0].children)
+      this.formData.domains = [];
+      this.tableTitle[0].children.map(item=>{
+        let obj = {
+          prop:item.prop,
+          label:"分条",
+          value:item.label,
+        }
+        this.formData.domains.push(obj);
+      })
+      this.dialogFormVisible2 = true;
+    },
+    // 分条方案 表单确定提交 事件
+    Submit(value){
+      console.log("value",value);
+      this.formData.domains.map(item=>{
+        item.label = item.value;
+        return;
+      })
+      this.tableTitle[0].children = this.formData.domains;
+      this.dialogFormVisible2 = false;
+    },
     // 表单合计自定义统计计算方法
     getSummaries(param) {
       const { columns, data } = param;
@@ -459,10 +515,27 @@ export default {
 
       return sums;
     },
-    // 合同表单 编辑事件
+    // 表单行 编辑事件
     handleEdit(index, row) {
+      console.log(index,row)
+      let StripingArr = []
+      this.tableTitle[0].children.map(item=>{
+        let obj = {
+          prop:item.prop,
+          label:item.label,
+          value:""
+        }
+        StripingArr.push(obj);
+      })
+      // SurplusMaterial 分条余料
+      StripingArr.push({
+        prop:"SurplusMaterial",
+        label:"分条余料",
+        value:""
+      });
+      this.rowForm.formItem = this.RowForm.formItem.concat(StripingArr);
       this.editIndex = index;
-      this.form = row;
+      // this.form = row;
       this.dialogFormVisible = true;
     },
     // 合同表单 删除事件
@@ -559,13 +632,13 @@ export default {
 .el-form-item__label {
   min-width: 5rem;
 }
-.tableWrap{
-  width:90%;
+.tableWrap {
+  width: 90%;
   display: block;
   box-sizing: border-box;
   overflow: auto;
 }
-.el-table__body-wrapper{
+.el-table__body-wrapper {
   overflow: auto !important;
   position: relative;
 }
