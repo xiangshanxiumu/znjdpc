@@ -360,6 +360,7 @@ export default {
       if (result.StatusCode == 200) {
         loading.close(); // 关闭加载动画
         let data = result.Result;
+        console.log(data)
         // 把三层结构数据摊平 获取所有钢卷数据组列表
         this.goodsList = this.getGoods(data);
         this.curList = this.curList.concat(this.goodsList);

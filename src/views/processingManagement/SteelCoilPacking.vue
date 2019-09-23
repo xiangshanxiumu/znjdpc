@@ -6,7 +6,7 @@
       <div class="table-top-area">
         <div class="table-top-btns">
           <el-button size="mini" type="primary" @click="coilpacking">打包</el-button>
-          <el-button size="mini" type="danger" @click="coilpacking">重置</el-button>
+          <el-button size="mini" type="danger" @click="resetCheckBox">重置</el-button>
         </div>
         <div class="table-top-status"></div>
       </div>
@@ -16,6 +16,7 @@
         :data="ISGoods"
         border
         @cell-click="cellClick"
+        id="Table"
       >
         <el-table-column prop="Brand" label="牌号" width="120" align="center" fixed="left"></el-table-column>
         <el-table-column
@@ -41,6 +42,7 @@
           <template slot-scope="scope">
             <el-checkbox
               v-if="item.isCheck"
+              size="medium"
               :key="index"
               v-model="scope.checked"
               :checked="item.checked"
@@ -194,22 +196,32 @@ export default {
     // 钢卷打包
     coilpacking() {
       console.log(this.checkedList);
-      
       // 打包后的钢条小卷 禁用
-      this.checkedList.map(item=>{
-          
-      })
-      this.tableTitle
-      // packingList
+     let tabel = $('#Table');
+     let checkBoxs = $('#Table').find('input:checked');
+     checkBoxs.each(function(){
+       $(this).attr("disabled",true);
+       $(this).parent().addClass("is-disabled is-checked");
+     })
       let arr = [].concat(this.checkedList)
       let item = {packing:arr}
       this.packingList.push(item);
       this.checkedList = [] // 重置清空
       console.log(this.packingList); // 打包后的数据
     },
+    // 重置 checkBox
+    resetCheckBox(){
+      this.packingList = [];
+      // checkBox 去disabled
+      let checkBoxs = $('#Table').find('input:checked');
+      checkBoxs.each(function(){
+       $(this).attr("disabled",false);
+       $(this).parent().removeClass("is-disabled is-checked");
+     })
+    },
     // checkBox 勾选事件
     checkBoxChange(scope,item) {
-        console.log(scope,item)
+      console.log(scope,item)
       let rowIndex = scope.$index;
       let isChecked = scope.checked;
       // 勾选情况下 添加到数据列表
@@ -236,7 +248,9 @@ export default {
     // 某小格cell点击事件
     cellClick(row, column, cell, event) {
       console.log(cell);
-      console.log($(cell).find('input'))
+      console.log($(cell).find('input'));
+      // $(cell).find('input').attr("disabled",true);
+
     },
   }
 };
