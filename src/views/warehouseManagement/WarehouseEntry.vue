@@ -36,7 +36,7 @@
               </el-form-item>
             </div>
             <div class="input-box">
-              <el-form-item label="收货地点" prop="RecPlace" class="form-item">
+              <el-form-item label="收到货地点" prop="RecPlace" class="form-item">
                 <el-input v-model="InStore.RecPlace" placeholder="请输入内容"></el-input>
               </el-form-item>
             </div>
@@ -320,6 +320,14 @@ export default {
         {
           prop: "Ton",
           label: "吨位"
+        },
+        {
+          prop: "UnitPrice",
+          label: "单价"
+        },
+        {
+          prop: "TotalPrice",
+          label: "总金额"
         },
         {
           prop: "ProfitAndLossTon",

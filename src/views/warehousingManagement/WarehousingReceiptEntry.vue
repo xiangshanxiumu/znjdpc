@@ -323,6 +323,14 @@ export default {
           label: "吨位"
         },
         {
+          prop: "UnitPrice",
+          label: "单价"
+        },
+        {
+          prop: "TotalPrice",
+          label: "总金额"
+        },
+        {
           prop: "ProfitAndLossTon",
           label: "接收盈亏"
         },

@@ -3,10 +3,15 @@
  */
 const OutsourcingProcessingEntry = ()=>import('@/views/processingManagement/OutsourcingProcessingEntry');
 const OutsourcingProcessingSummary = ()=>import('@/views/processingManagement/OutsourcingProcessingSummary');
+// 钢条小卷 打包
+const SteelCoilPacking = ()=>import('@/views/processingManagement/SteelCoilPacking');
+
 const OutsourcingProcessingContractEntry = ()=>import('@/views/processingManagement/outsourcingProcessingContractManagement/OutsourcingProcessingContractEntry');
 const OutsourcingProcessingContractSummary = ()=>import('@/views/processingManagement/outsourcingProcessingContractManagement/OutsourcingProcessingContractSummary');
+
 export default [
-    {
+    {   
+        // 委外加工单录入
         path:'OutsourcingProcessingEntry',
         name:'OutsourcingProcessingEntry',
         component:OutsourcingProcessingEntry,
@@ -14,7 +19,7 @@ export default [
             auth:true,
         }
     },
-    {
+    {   // 委外加工单汇总
         path:'OutsourcingProcessingSummary',
         name:'OutsourcingProcessingSummary',
         component:OutsourcingProcessingSummary,
@@ -22,7 +27,16 @@ export default [
             auth:true,
         }
     },
-    {
+    {   // 委外加工单汇总
+        path:'SteelCoilPacking',
+        name:'SteelCoilPacking',
+        component:SteelCoilPacking,
+        meta:{
+            auth:true,
+        }
+    },
+
+    {   // 委外加工合同录入
         path:'OutsourcingProcessingContractEntry',
         name:'OutsourcingProcessingContractEntry',
         component:OutsourcingProcessingContractEntry,
@@ -30,7 +44,7 @@ export default [
             auth:true,
         }
     },
-    {
+    {   // 委外加工合同汇总
         path:'OutsourcingProcessingContractSummary',
         name:'OutsourcingProcessingContractSummary',
         component:OutsourcingProcessingContractSummary,

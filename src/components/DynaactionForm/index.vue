@@ -25,7 +25,7 @@
     </el-form-item>
     <el-form-item class="submit-btn">
       <el-button @click="addDomain">新增一项</el-button>
-      <el-button type="warning" @click="resetForm('FormData')">重置</el-button>
+      <!-- <el-button type="warning" @click="resetForm('FormData')">重置</el-button> -->
       <el-button type="primary" @click="submitForm('FormData')">确定</el-button>
     </el-form-item>
   </el-form>
@@ -113,7 +113,10 @@ export default {
           let value = this.formatData(this.FormData.domains);
           this.$emit("submit", value);
         } else {
-          alert("表单项不能为空！！！");
+          this.$message({
+            type: "warning",
+            message: "内容不能为空"
+          });
           return false;
         }
       });
@@ -130,8 +133,8 @@ export default {
 .form-dynamic {
   width: 650px;
   background: #fff;
-  padding: 1rem;
-  padding-top: 2rem;
+  padding: 10px;
+  padding-top: 20px;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
@@ -145,8 +148,8 @@ export default {
 }
 .submit-btn {
   text-align: right;
-  padding-top: 2rem;
-  padding-right: 2rem;
+  padding-top: 20px;
+  padding-right: 20px;
 }
 .form-item {
   display: inline-flex;

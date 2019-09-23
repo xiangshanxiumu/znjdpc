@@ -34,7 +34,7 @@
               </el-form-item>
             </div>
             <div class="input-box">
-              <el-form-item label="收货仓库" prop="RecDepo" class="form-item">
+              <el-form-item label="出货仓库" prop="RecDepo" class="form-item">
                 <el-input v-model="searchFrom.RecDepo" placeholder="请输入收货仓库"></el-input>
               </el-form-item>
             </div>
@@ -203,7 +203,7 @@ export default {
         },
         {
           prop: "RecDepo",
-          label: "收货仓库"
+          label: "出货仓库"
         },
         {
           prop: "Brand",
@@ -222,8 +222,16 @@ export default {
           label: "吨位"
         },
         {
-          prop: "GStatus",
+          prop: "UnitPrice",
           label: "单价"
+        },
+        {
+          prop: "TotalPrice",
+          label: "总金额"
+        },
+        {
+          prop: "GStatus",
+          label: "状态"
         }
       ],
       tableData: [],
@@ -320,6 +328,8 @@ export default {
                     item3.Buyby = item2.Buyby; // 采购单位
                     item3.RecDate = item2.RecDate; // 采购日期
                     item3.RecDepo = item2.RecDepo; // 收货仓库
+                    item3.TotalPrice = item3.Ton * item3.UnitPrice; // 总金额 吨位*单价 计算出来
+                    item3.TotalPrice = item3.TotalPrice.toFixed(1);
                   });
                   gootList = gootList.concat(item2.ISGoods);
                 }

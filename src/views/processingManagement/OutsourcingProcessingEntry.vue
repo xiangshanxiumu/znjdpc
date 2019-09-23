@@ -73,9 +73,9 @@
         <div class="table-top-area">
           <div class="table-top-btns">
             <el-button size="mini" type="primary" @click="addOneRow">新增一行</el-button>
-            <el-button size="mini" type="warning" @click="addOneColumn">分条+</el-button>
-            <el-button size="mini" type="warning" @click="deleteOneColumn">分条-</el-button>
-            <el-button size="mini" type="danger" @click="stripingEdit">分条方案编辑</el-button>
+            <!-- <el-button size="mini" type="warning" @click="addOneColumn">分条+</el-button>
+            <el-button size="mini" type="warning" @click="deleteOneColumn">分条-</el-button>-->
+            <el-button size="mini" type="warning" @click="stripingEdit">分条方案编辑</el-button>
           </div>
           <div class="table-top-status"></div>
         </div>
@@ -88,11 +88,8 @@
             show-summary
             :summary-method="getSummaries"
             style="width: 100%;"
+            v-if="tableShow"
           >
-            <el-table-column prop="Brand" label="牌号" width="120" fixed="left"></el-table-column>
-            <el-table-column prop="Standards" label="规格(厚*宽/单位mm)" width="180" fixed="left"></el-table-column>
-            <el-table-column prop="Id" label="钢卷号" width="120" fixed="left"></el-table-column>
-            <el-table-column prop="Ton" label="吨数" width="120" fixed="left"></el-table-column>
             <!--动态分条区-->
             <el-table-column
               v-for="(item,index) in tableTitle"
@@ -101,6 +98,8 @@
               :label="item.label"
               :width="item.width"
               :fixed="item.fixed"
+              resizable
+              algin="center"
             >
               <div v-if="item.children" class="children">
                 <el-table-column
@@ -109,9 +108,8 @@
                   :prop="item2.prop"
                   :label="item2.label"
                   :width="item2.width"
-                >
-                  <el-checkbox label="复选框 A"></el-checkbox>
-                </el-table-column>
+                  algin="center"
+                ></el-table-column>
               </div>
             </el-table-column>
             <!--动态分条区-->
@@ -150,9 +148,14 @@
       </div>
     </el-form>
     <!--dialog对话框-->
-    <el-dialog title="编辑" :visible.sync="dialogFormVisible" class="page-dialog">
+    <el-dialog title="编辑" :visible.sync="dialogFormVisible" class="page-dialog" width="30%">
       <el-form :model="rowForm">
-        <el-form-item v-for="(item,index) in rowForm.formItem" :label="item.label" :key="index" :label-width="formLabelWidth">
+        <el-form-item
+          v-for="(item,index) in rowForm.formItem"
+          :label="item.label"
+          :key="index"
+          :label-width="formLabelWidth"
+        >
           <el-input v-model="item.value" auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
@@ -163,7 +166,7 @@
     </el-dialog>
     <!--dialog对话框-->
     <!--分条对话框-->
-    <el-dialog title="分条方案" :visible.sync="dialogFormVisible2" class="page-dialog">
+    <el-dialog title="分条方案" :visible.sync="dialogFormVisible2" width="700px">
       <DynaactionForm :formData="formData" @submit="Submit"></DynaactionForm>
     </el-dialog>
     <!--分条对话框-->
@@ -256,8 +259,8 @@ export default {
         BuyPerson: "", // 采购人
         ISGoods: [
           {
-            GName: "", // 品名
-            Brand: "", // 牌号
+            GName: "品名", // 品名
+            Brand: "牌号", // 牌号
             Standards: "", // 规格
             Ton: 0, //吨位
             ProfitAndLossTon: 0, //货物盈亏
@@ -270,21 +273,22 @@ export default {
             RollPackNo: "", // 卷包号
             UnitPrice: 0, // 单价
             OutDate: "", // 出库日期
-            Id: "", // 钢卷号,
+            GoodsId: "", // 钢卷编号id,
+            ParentID: "", //父钢卷号 // //
             Striping: [
               // 该钢卷 加工所分小条 数据列表
               {
-                Id: "1001", // 分小条钢卷 Id
+                StripingId: "1001", // 分小条钢卷 Id
                 Standards: "如0.5*30mm", // 分小条钢卷规格
                 RollPackNo: "" // 所属卷包号
               },
               {
-                Id: "1002", // 分小条钢卷 Id
+                StripingId: "1002", // 分小条钢卷 Id
                 Standards: "如0.5*30mm", // 分小条钢卷规格
                 RollPackNo: "" // 所属卷包号
               },
               {
-                Id: "1003", // 分小条钢卷 Id
+                StripingId: "1003", // 分小条钢卷 Id
                 Standards: "如0.5*60mm", // 分小条钢卷规格
                 RollPackNo: "" // 所属卷包号
               }
@@ -319,91 +323,120 @@ export default {
       // 表头
       tableTitle: [
         {
+          prop: "Brand",
+          label: "牌号",
+          width: "100",
+          fixed: "left"
+        },
+        {
+          prop: "Standards",
+          label: "规格(厚*宽/单位mm)",
+          width: "100",
+          fixed: "left"
+        },
+        {
+          prop: "GoodsID",
+          label: "钢卷号",
+          width: "100",
+          fixed: "left"
+        },
+        {
+          prop: "Ton",
+          label: "吨数",
+          width: "100",
+          fixed: "left"
+        },
+        {
           prop: "StripPlan",
           label: "分条方案",
-          fixed: false,
+          fixed: "",
           width: "",
           children: [
             {
               prop: "Striping1",
-              label: "分条1",
-              width: "150"
-            },
-            {
-              prop: "Striping2",
-              label: "分条2",
-              width: "150"
-            },
-            {
-              prop: "Striping3",
-              label: "分条3",
+              label: "30mm",
               width: "150"
             }
+            // {
+            //   prop: "Striping2",
+            //   label: "45mm",
+            //   width: "150"
+            // },
+            // {
+            //   prop: "Striping3",
+            //   label: "50mm",
+            //   width: "150"
+            // }
           ]
         }
       ],
       dialogFormVisible: false, // dialog 对话框显示或隐藏
       editIndex: 0, // 当前编辑表格数据index
-      rowForm: { // 行数据表
-        formItem:[
-          { 
-            prop:"Brand",
-            label:"牌号",
-            value:""
-          },
+      rowForm: {
+        // 行数据表
+        formItem: [
           {
-            prop:"Standards",
-            label:"规格(厚*宽)",
-            value:""
-          },
-          {
-            prop:"Id",
-            label:"钢卷号",
-            value:""
-          },
-          {
-            prop:"Ton",
-            label:"吨位",
-            value:""
-          },
-        ],
-      },
-      RowForm: { // 行数据表 当作原始数据
-        formItem:[
-          { 
-            prop:"Brand",
-            label:"牌号",
-            value:""
-          },
-          {
-            prop:"Standards",
-            label:"规格(厚*宽)",
-            value:""
-          },
-          {
-            prop:"Id",
-            label:"钢卷号",
-            value:""
-          },
-          {
-            prop:"Ton",
-            label:"吨位",
-            value:""
-          },
-        ],
-      },
-      formLabelWidth: "120px", // 表单 label宽度
-      tableWidth: "",
-      // 分条 title 编辑
-      dialogFormVisible2: false,
-      formData: { // 
-        domains: [
-          { 
-            label:"分条",
+            prop: "Brand",
+            label: "牌号",
             value: ""
           },
+          {
+            prop: "Standards",
+            label: "规格(厚*宽)",
+            value: ""
+          },
+          {
+            prop: "GoodsID",
+            label: "钢卷号",
+            value: ""
+          },
+          {
+            prop: "Ton",
+            label: "吨位",
+            value: ""
+          }
         ]
-      } //
+      },
+      RowForm: {
+        // 行数据表 当作原始数据
+        formItem: [
+          {
+            prop: "Brand",
+            label: "牌号",
+            value: ""
+          },
+          {
+            prop: "Standards",
+            label: "规格(厚*宽)",
+            value: ""
+          },
+          {
+            prop: "GoodsID",
+            label: "钢卷号",
+            value: ""
+          },
+          {
+            prop: "Ton",
+            label: "吨位",
+            value: ""
+          }
+        ]
+      },
+      formLabelWidth: "150px", // 表单 label宽度
+      // 分条 title 编辑
+      dialogFormVisible2: false,
+      // 动态分条数据
+      formData: {
+        //
+        domains: [
+          {
+            label: "分条",
+            value: ""
+          }
+        ]
+      },
+      stripingList: [], // 分条数据列表
+      tableShow: true // 控制table显示或隐藏 刷新数据
     };
   },
   computed: {
@@ -417,7 +450,6 @@ export default {
         from.name == "WarehousingSummary" &&
         to.name == "OutsourcingProcessingEntry"
       ) {
-        console.log("ok");
         // 初始渲染表格 加工操作的钢卷
         vm.InStore.ISGoods = vm.steelCoilMachiningList;
         // 初始填充 仓库名称
@@ -437,12 +469,12 @@ export default {
         GName: "",
         Brand: "",
         Standards: "",
-        Ton: "",
-        ProfitAndLossTon: "",
-        PackStatus: "",
-        RecInfo: "",
-        RecInfoBack: "",
-        GInfo: ""
+        Ton: ""
+        // ProfitAndLossTon: "",
+        // PackStatus: "",
+        // RecInfo: "",
+        // RecInfoBack: "",
+        // GInfo: ""
       };
       this.InStore.ISGoods.push(row);
     },
@@ -465,27 +497,127 @@ export default {
     },
     // 分条方案 编辑 from title
     stripingEdit() {
-      console.log(this.tableTitle[0].children)
       this.formData.domains = [];
-      this.tableTitle[0].children.map(item=>{
+      let ITEM = this.tableTitle.find(item => {
+        return item.children;
+      });
+      ITEM.children.map(item => {
         let obj = {
-          prop:item.prop,
-          label:"分条",
-          value:item.label,
-        }
+          prop: item.prop,
+          label: "分条",
+          value: item.label
+        };
         this.formData.domains.push(obj);
-      })
+      });
+      // 分条方案列表数据更新
+      this.stripingList = [].concat(this.formData.domains);
+      // 显示对话框
       this.dialogFormVisible2 = true;
     },
     // 分条方案 表单确定提交 事件
-    Submit(value){
-      console.log("value",value);
-      this.formData.domains.map(item=>{
+    Submit(value) {
+      this.formData.domains.map((item, index) => {
         item.label = item.value;
-        return;
-      })
-      this.tableTitle[0].children = this.formData.domains;
+        if (!item.prop) {
+          item.prop = `Striping${index + 1}`;
+        }
+        return item;
+      });
+      this.tableTitle.map(item => {
+        if (item.children) {
+          item.children = this.formData.domains;
+          item.children.map(item => {
+            (item.value = ""), (item.width = "150");
+          });
+        }
+      });
+      // 分条方案列表数据更新
+      this.stripingList = [].concat(this.formData.domains);
+      // 各小卷大概吨位计算&分条余料计算
+      if (this.InStore.ISGoods.length > 0) {
+        this.InStore.ISGoods.map(item => {
+          // 钢卷吨位 Ton
+          let GoodsTon = item.Ton;
+          // 获取规格
+          if (item.Standards) {
+            let Standards = item.Standards;
+            let index = Standards.indexOf("*");
+            let standardsWidth = Number(Standards.substr(index + 1));
+            let SurplusMaterial = 0; // 余料
+            // 计算各小分条大概吨位
+            this.stripingList.map((item2, index) => {
+              if (item2.label) {
+                // 分条方案 里面规格
+                let width = parseInt(item2.label); // parseInt()从字符串中获取数字，需要数字在前
+                item2[`stripingTon${index + 1}`] =
+                  (width / standardsWidth) * GoodsTon;
+                // 各小分条吨位
+                item[item2.prop] = item2[`stripingTon${index + 1}`];
+                // 余料累加
+                SurplusMaterial += item2[`stripingTon${index + 1}`];
+              }
+            });
+            // 余料
+            item.SurplusMaterial = GoodsTon - SurplusMaterial;
+            // 强制刷新
+            // this.$forceUpdate();
+            this.tableShow = false;
+            this.$nextTick(() => {
+              this.tableShow = true;
+            });
+          }
+        });
+      }
+      // 对话框隐藏
       this.dialogFormVisible2 = false;
+    },
+    // 表单行 编辑事件
+    handleEdit(index, row) {
+      // tableTitle更新 对话框表单项数据
+      let StripingArr = this.tableTitle.filter(item => {
+        return !item.children;
+      });
+      let ITEM = this.tableTitle.find(item => {
+        return item.children;
+      });
+      ITEM.children.map(item => {
+        StripingArr.push(item);
+      });
+      // 添加 分条余料 项
+      StripingArr.push({
+        prop: "SurplusMaterial",
+        label: "分条余料",
+        value: ""
+      });
+      // 赋原始值
+      // StripingArr.map(item=>{
+      //   if(row[item.prop]){
+      //     item.value = row[item.prop];
+      //   }
+      // })
+      this.rowForm.formItem = [].concat(StripingArr);
+      this.editIndex = index;
+      this.dialogFormVisible = true;
+    },
+    // 表单行 编辑 dialog 对话框确定事件 数据没有及时刷新
+    dialogFormOkHandle() {
+      let obj = {};
+      this.rowForm.formItem.map(item => {
+        obj[item.prop] = item.value;
+      });
+      this.InStore.ISGoods[this.editIndex] = obj;
+      // 强制刷新
+      // this.$forceUpdate();
+      this.tableShow = false;
+      this.$nextTick(() => {
+        this.tableShow = true;
+      });
+      this.dialogFormVisible = false;
+      this.rowForm.formItem = [];
+    },
+    // 合同表单 删除事件
+    handleDelete(index, row) {
+      this.InStore.ISGoods.splice(index, 1);
     },
     // 表单合计自定义统计计算方法
     getSummaries(param) {
@@ -515,44 +647,18 @@ export default {
 
       return sums;
     },
-    // 表单行 编辑事件
-    handleEdit(index, row) {
-      console.log(index,row)
-      let StripingArr = []
-      this.tableTitle[0].children.map(item=>{
-        let obj = {
-          prop:item.prop,
-          label:item.label,
-          value:""
-        }
-        StripingArr.push(obj);
-      })
-      // SurplusMaterial 分条余料
-      StripingArr.push({
-        prop:"SurplusMaterial",
-        label:"分条余料",
-        value:""
-      });
-      this.rowForm.formItem = this.RowForm.formItem.concat(StripingArr);
-      this.editIndex = index;
-      // this.form = row;
-      this.dialogFormVisible = true;
-    },
-    // 合同表单 删除事件
-    handleDelete(index, row) {
-      this.InStore.ISGoods.splice(index, 1);
-    },
-    // dialog 对话框确定事件
-    dialogFormOkHandle() {
-      this.InStore.ISGoods[this.editIndex] = this.form;
-      this.dialogFormVisible = false;
-    },
+
     // 返回按钮
     backHandle() {
       this.$router.go(-1);
     },
     // 提交按钮
     async submitForm(formName) {
+      console.log(this.InStore.ISGoods);
+      console.log(this.stripingList);
+      return false;
+      // this.InStore.ISGoods 
+      // stripingList
       // 非空检测
       let isValid = false;
       this.$refs[formName].validate(valid => {
@@ -641,5 +747,9 @@ export default {
 .el-table__body-wrapper {
   overflow: auto !important;
   position: relative;
+}
+.page-dialog {
+  display: inline-flex;
+  flex-direction: column;
 }
 </style>
