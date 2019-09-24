@@ -14,8 +14,8 @@
         <div class="page-search-item">
           <el-form :model="searchFrom">
             <div class="input-box">
-              <el-form-item label="采购合同编号" prop="ContractID" class="form-item">
-                <el-input v-model="searchFrom.ContractID" placeholder="请输入采购合同编号"></el-input>
+              <el-form-item label="采购合同编号" prop="CID" class="form-item">
+                <el-input v-model="searchFrom.CID" placeholder="请输入采购合同编号"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
@@ -24,13 +24,13 @@
               </el-form-item>
             </div>
             <div class="input-box">
-              <el-form-item label="入仓单编号" prop="InStoreID" class="form-item">
-                <el-input v-model="searchFrom.InStoreID" placeholder="请输入仓单编号"></el-input>
+              <el-form-item label="入仓单编号" prop="SID" class="form-item">
+                <el-input v-model="searchFrom.SID" placeholder="请输入仓单编号"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
-              <el-form-item label="钢卷号" prop="GoodsID" class="form-item">
-                <el-input v-model="searchFrom.GoodsID" placeholder="请输入钢卷号"></el-input>
+              <el-form-item label="钢卷号" prop="SteelRollID" class="form-item">
+                <el-input v-model="searchFrom.SteelRollID" placeholder="请输入钢卷号"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
@@ -82,13 +82,14 @@
         @selection-change="handleSelectionChange"
       >
         >
-        <el-table-column type="selection" width="55"></el-table-column>
+        <el-table-column type="selection" width="55" align="center"></el-table-column>
         <el-table-column
           v-for="(item,index) in tableTitle"
           :key="index"
           sortable
           :prop="item.prop"
           :label="item.label"
+          align="center"
         ></el-table-column>
       </el-table>
       <!--列表-->
@@ -104,93 +105,51 @@
         ></el-pagination>
       </div>
       <!--分页器-->
-      <!--按钮区-->
-      <!--按钮区-->
     </div>
   </div>
 </template>
 <script>
-// 导入接口API函数
-import { getContractList, searchContractList } from "@/api/Contract";
+// 导入获取入仓单汇总表API函数
+import { getAllWarehousingReceipt } from "@/api/WarehouseReceipt";
+// 导入合同接口API函数
+import { getAllContractList, searchContractList } from "@/api/Contract";
 export default {
   // 入仓汇总表情况
   name: "WarehousingSummary",
   data() {
     return {
-      // 合同=》仓库=》钢卷 数据模型
-      Contract: {
-        Supply: "string", // 供应方
-        Demand: "string", // 需求方
-        Address: "string", // 签订地址
-        SignTime: "2019-09-18T02:27:28.808Z", // 签订时间
-        CEPath: "string", // 附件地址
-        Type: "string", // 合同类型 采购/销售
-        Extentions: [
-          {
-            CEName: "string", // 品名
-            CEFactroyName: "string", // 厂家
-            CEBrand: "string", // 牌号
-            CEStandards: "string", // 规格
-            CETon: 0, // 吨位
-            CEUnitPrice: 0, // 单价
-            CETotalPrice: 0, // 合计金额
-            CEInfo: "string", // 备注
-            Id: "string" // id
-          }
-        ],
-        InStores: [
-          {
-            RecDate: "2019-09-18T02:27:28.808Z", //接收日期
-            RecDepo: "string", // 接收仓库
-            RecPersonID: "string", // 接收人身份证号码
-            Buyby: "string", // 采购单位
-            SupplierOutID: "string", // 采购单位出仓编号
-            StoreName: "string", // 仓库名称
-            RecPlace: "string", // 接收地址
-            CarBoatID: "string", // 车船号
-            RecUnitPerson: "string", // 接收单位签收人
-            BuyPerson: "string", // 采购人
-            ISGoods: [
-              {
-                GName: "string", // 品名
-                Brand: "string", // 牌号
-                Standards: "string", // 规格
-                Ton: 0, //吨位
-                ProfitAndLossTon: 0, //货物盈亏
-                PackStatus: "string", //包裹状态
-                RecInfo: "string", //接收异议/拍照
-                RecInfoBack: "string", // 异议反馈
-                GInfo: "string", //备注
-                GStatus: "string", // 货物状态 退货/库存/加工/再入库
-                ProRollNo: "string", // 加工分条号
-                RollPackNo: "string", // 卷包号
-                UnitPrice: 0, // 单价
-                OutDate: "2019-09-18T02:27:28.808Z", // 出库日期
-                Id: "string" // 钢卷号
-              }
-            ],
-            Ext: "string", // 扩展字段
-            Id: "string" // 出入仓编号id
-          }
-        ],
-        Id: "string" // 合同编号id
-      },
+      tableData: [
+        {
+          CID: "1234567", // 合同ID
+          SID: "123", // 入仓单ID
+          Buyby: "123", // 采购单位
+          RecDate: "0001-01-01 00:00:00", // 接收日期
+          RecDepo: "", // 接收仓库
+          Brand: "", // 牌号
+          Standards: "", // 规格
+          SteelRollID: "", // 钢卷号
+          Ton: 0, // 吨位
+          UnionPrice: 0, // 单价
+          TotalPrice: 0, // 总金额
+          GStatus: "" // 货物状态 退货/库存/加工/再入库
+        }
+      ],
       // 页面顶部搜索区 数据模型
       searchFrom: {
-        ContractID: "", // 合同编号id
-        InStoreID: "", // 仓单编号id
-        GoodsID: "", // 钢卷号id
+        CID: "", // 合同编号id
+        InsID: "", // 仓单编号id
+        SteelRollID: "", // 钢卷号id
         Buyby: "", // 采购单位
         RecDepo: "", //收货仓库 接收仓库
         RecDate: "" // 仓单日期 接收日期
       },
       tableTitle: [
         {
-          prop: "InStoreID", // 仓单编号id
+          prop: "SID", // 仓单编号id
           label: "入仓单编号"
         },
         {
-          prop: "ContractID", // 合同编号id
+          prop: "CID", // 合同编号CID
           label: "采购合同编号"
         },
         {
@@ -214,7 +173,7 @@ export default {
           label: "规格"
         },
         {
-          prop: "GoodsID", // GoodsID
+          prop: "SteelRollID", // SteelRollID
           label: "钢卷号"
         },
         {
@@ -349,8 +308,7 @@ export default {
     },
     // 获取列表数据
     async getList() {
-      let type = "采购"; // 合同type
-      let result = await getContractList(type);
+      let result = await getAllWarehousingReceipt();
       const loading = this.$loading({
         lock: true,
         text: "加载中",
@@ -359,15 +317,20 @@ export default {
       });
       if (result.StatusCode == 200) {
         loading.close(); // 关闭加载动画
-        let data = result.Result;
-        console.log(data)
-        // 把三层结构数据摊平 获取所有钢卷数据组列表
-        this.goodsList = this.getGoods(data);
-        this.curList = this.curList.concat(this.goodsList);
+        if (result.Result) {
+          this.goodsList = result.Result;
+        }
+        this.curList = [].concat(this.goodsList);
+        // 计算总金额
+        this.curList.map(item => {
+          // 总金额 吨位*单价 计算出来
+          item.TotalPrice = item.Ton * item.UnitPrice;
+          item.TotalPrice = item.TotalPrice.toFixed(1);
+        });
         this.GoodsPaging(this.curList);
       }
     },
-    // 多重条件刷选
+    // 多重条件筛选
     getSearchData(obj, arr) {
       // 先过滤搜索条件 把非空有值得搜索条件 找出来
       let Arr = [];
@@ -395,6 +358,10 @@ export default {
     },
     // 搜索
     searchHandle() {
+      // 搜索条件数据 清空格
+      for (let k in this.searchFrom) {
+        this.searchFrom[k] = this.searchFrom[k].trim();
+      }
       // 空值判断
       let isHas = false;
       let serachJSON = {};
@@ -455,16 +422,31 @@ export default {
           center: true
         });
         return false;
-      } else {
-        // 加工钢卷列表数据提交全局store
-        this.$store.commit("updateSteelCoilMachiningList", {
-          steelCoilMachiningList: this.multipleSelection
-        });
-        // 路由跳转到 委外加工单录入
-        this.$router.push({
-          path: "OutsourcingProcessingEntry"
-        });
       }
+      // 判断收货仓库是否一致 不一致的不能加工操作
+      if (this.multipleSelection.length >= 2) {
+        let RecDepo = this.multipleSelection[0].RecDepo;
+        let isAgreement = this.multipleSelection.every(item => {
+          return item.RecDepo == RecDepo;
+        });
+        if (!isAgreement) {
+          this.$message({
+            message: "钢卷的收货仓库不一致！",
+            type: "error",
+            showClose: true,
+            center: true
+          });
+          return false;
+        }
+      }
+      // 加工钢卷列表数据提交全局store
+      this.$store.commit("updateSteelCoilMachiningList", {
+        steelCoilMachiningList: this.multipleSelection
+      });
+      // 路由跳转到 委外加工单录入
+      this.$router.push({
+        path: "OutsourcingProcessingEntry"
+      });
     },
     // 出库出仓操作 路由跳转到 "出仓单录入"
     outWarehouseHandle() {
@@ -517,14 +499,6 @@ export default {
       this.pageStart = this.pageSize * (val - 1);
       this.pageEnd = this.pageSize * val - 1;
       this.tableData = this.goodsList.slice(this.pageStart, this.pageEnd);
-    },
-    // 返回按钮
-    backHandle() {
-      this.$router.go(-1);
-    },
-    // 提交按钮
-    submitHandle() {
-      console.log("提交");
     }
   }
 };

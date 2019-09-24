@@ -167,8 +167,6 @@
 </template>
 <script>
 import FileUpload from "@/components/common/FileUpload";
-import { addWarehouseReceipt } from "@/api/warehousingManagement";
-import {getContractList,searchContractList} from '@/api/Contract';
 import { mapGetters } from "vuex";
 export default {
   // 付款申请单录入
@@ -447,7 +445,8 @@ export default {
         Contract.Id = this.InStore.contractId;
         Contract.InStores = [this.InStore];
         // 调用录入API
-        let result = await addWarehouseReceipt(Contract);
+        return false;
+        // let result = await addWarehouseReceipt(Contract);
         const loading = this.$loading({
           lock: true,
           text: "入仓单录入",

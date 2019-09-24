@@ -352,11 +352,11 @@ export default {
           fixed: "",
           width: "",
           children: [
-            {
-              prop: "Striping1",
-              label: "30mm",
-              width: "150"
-            }
+            // {
+            //   prop: "Striping1",
+            //   label: "30mm",
+            //   width: "150"
+            // }
             // {
             //   prop: "Striping2",
             //   label: "45mm",
@@ -552,13 +552,13 @@ export default {
                 item2[`stripingTon${index + 1}`] =
                   (width / standardsWidth) * GoodsTon;
                 // 各小分条吨位
-                item[item2.prop] = item2[`stripingTon${index + 1}`];
+                item[item2.prop] = item2[`stripingTon${index + 1}`].toFixed(3);
                 // 余料累加
                 SurplusMaterial += item2[`stripingTon${index + 1}`];
               }
             });
             // 余料
-            item.SurplusMaterial = GoodsTon - SurplusMaterial;
+            item.SurplusMaterial = (GoodsTon - SurplusMaterial).toFixed(3);
             // 强制刷新
             // this.$forceUpdate();
             this.tableShow = false;

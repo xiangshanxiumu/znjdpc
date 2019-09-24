@@ -111,7 +111,7 @@
 </template>
 <script>
 // 导入接口API函数
-import { getContractList, searchContractList } from "@/api/Contract";
+import { getAllContractList, searchContractList } from "@/api/Contract";
 export default {
   // 委外加工单汇总
   name: "OutsourcingProcessingSummary",
@@ -340,7 +340,7 @@ export default {
     // 获取列表数据
     async getList() {
       let type = "采购"; // 合同type
-      let result = await getContractList(type);
+      let result = await getAllContractList(type);
       const loading = this.$loading({
           lock: true,
           text: "加载中",

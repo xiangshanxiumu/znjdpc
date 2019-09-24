@@ -8,7 +8,6 @@ export default {
         timeout:6000,
     },
     production:{ // 生产环境
-        // baseURL:'http://localhost:8001',
         baseURL:'http://47.101.71.38:8001',
         timeout:6000,
     }

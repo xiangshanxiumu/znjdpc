@@ -8,23 +8,23 @@
 <template>
   <div class="page-wrap">
     <h1>合同录入</h1>
-    <el-form :model="Contract" :rules="rules" ref="ruleForm">
+    <el-form :model="ContractData.contract" :rules="rules" ref="ruleForm">
       <div class="page-topPart">
         <div class="page-topPart-inputArea">
           <div class="left-box">
             <div class="input-box">
               <el-form-item label="供方" prop="Supply" class="form-item">
-                <el-input v-model="Contract.Supply" placeholder="请输入内容"></el-input>
+                <el-input v-model="ContractData.contract.Supply" placeholder="请输入内容"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="需方" prop="Demand" class="form-item">
-                <el-input v-model="Contract.Demand" placeholder="请输入内容"></el-input>
+                <el-input v-model="ContractData.contract.Demand" placeholder="请输入内容"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="合同类型" prop="Type" class="form-item">
-                <el-select v-model="Contract.Type" clearable filterable placeholder="请选择合同类型">
+                <el-select v-model="ContractData.contract.Type" clearable filterable placeholder="请选择合同类型">
                   <el-option label="采购" value="采购"></el-option>
                   <el-option label="销售" value="销售"></el-option>
                   <el-option label="加工" value="加工"></el-option>
@@ -37,19 +37,19 @@
           </div>
           <div class="right-box">
             <div class="input-box">
-              <el-form-item label="合同编号" prop="Id" class="form-item">
-                <el-input v-model="Contract.Id" placeholder="请输入内容"></el-input>
+              <el-form-item label="合同编号" prop="CID" class="form-item">
+                <el-input v-model="ContractData.contract.CID" placeholder="请输入内容"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="签订地址" prop="Address" class="form-item">
-                <el-input v-model="Contract.Address" placeholder="请输入内容"></el-input>
+                <el-input v-model="ContractData.contract.Address" placeholder="请输入内容"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="签订时间" prop="SignTime" class="form-item">
                 <el-date-picker
-                  v-model="Contract.SignTime"
+                  v-model="ContractData.contract.SignTime"
                   value-format="yyyy-MM-dd"
                   type="date"
                   placeholder="选择日期"
@@ -71,7 +71,7 @@
         <!--表格顶部区域-->
         <!--表格-->
         <el-table
-          :data="Contract.Extentions"
+          :data="ContractData.contractExt"
           border
           show-summary
           :summary-method="getSummaries"
@@ -111,7 +111,7 @@
         <!--合同附件-->
         <h2>附件</h2>
         <div class="enclosure-box">
-          <FileUpload v-model="Contract.Enclosure"></FileUpload>
+          <FileUpload v-model="Enclosure"></FileUpload>
         </div>
         <!--合同附件-->
         <!--按钮区-->
@@ -161,7 +161,7 @@
 <script>
 import FileUpload from "@/components/common/FileUpload";
 // 添加合同接口函数
-import { addContract } from "@/api/warehousingManagement";
+import { addContract } from "@/api/Contract";
 export default {
   // 合同录入
   name: "ContractEntry",
@@ -170,91 +170,37 @@ export default {
   },
   data() {
     return {
-      // 合同=》仓库=》钢卷 数据模型
-      contract: {
-        Supply: "string", // 供应方
-        Demand: "string", // 需求方
-        Address: "string", // 签订地址
-        SignTime: "2019-09-18T02:27:28.808Z", // 签订时间
-        CEPath: "string", // 附件地址
-        Type: "string", // 合同类型 采购/销售
-        Extentions: [
+      ContractData: {
+        contract: {
+          CID: "",// 合同id
+          Supply: "",// 供应方
+          Demand: "",// 需求方
+          Address: "",// 签订地址
+          SignTime: "",// 签订时间
+          CEPath: "",// 附件地址
+          Type: "采购",// 合同类型 采购/销售
+          // Id: "string"
+        },
+        contractExt: [
           {
-            CEName: "string", // 品名
-            CEFactroyName: "string", // 厂家
-            CEBrand: "string", // 牌号
-            CEStandards: "string", // 规格
-            CETon: 0, // 吨位
-            CEUnitPrice: 0, // 单价
+            CEName: "",// 品名
+            CEFactroyName: "",// 厂家
+            CEBrand: "",// 牌号
+            CEStandards: "",// 规格
+            CETon: 0,// 吨位
+            CEUnitPrice: 0,// 单价
             CETotalPrice: 0, // 合计金额
-            CEInfo: "string", // 备注
-            Id: "string" // id
+            CEInfo: "",// 备注
+            CID: "", // 合同id
+            // Id: "string"
           }
         ],
-        InStores: [
-          {
-            RecDate: "2019-09-18T02:27:28.808Z", //接收日期
-            RecDepo: "string", // 接收仓库
-            RecPersonID: "string", // 接收人身份证号码
-            Buyby: "string", // 采购单位
-            SupplierOutID: "string", // 采购单位出仓编号
-            StoreName: "string", // 仓库名称
-            RecPlace: "string", // 接收地址
-            CarBoatID: "string", // 车船号
-            RecUnitPerson: "string", // 接收单位签收人
-            BuyPerson: "string", // 采购人
-            ISGoods: [
-              {
-                GName: "string", // 品名
-                Brand: "string", // 牌号
-                Standards: "string", // 规格
-                Ton: 0, //吨位
-                ProfitAndLossTon: 0, //货物盈亏
-                PackStatus: "string", //包裹状态
-                RecInfo: "string", //接收异议/拍照
-                RecInfoBack: "string", // 异议反馈
-                GInfo: "string", //备注
-                GStatus: "string", // 货物状态 退货/库存/加工/再入库
-                ProRollNo: "string", // 加工分条号
-                RollPackNo: "string", // 卷包号
-                UnitPrice: 0, // 单价
-                OutDate: "2019-09-18T02:27:28.808Z", // 出库日期
-                Id: "string" // 钢卷号
-              }
-            ],
-            Ext: "string", // 扩展字段
-            Id: "string" // 出入仓编号id
-          }
-        ],
-        Id: "string" // 合同编号id
+        // Enclosure: [], // 新增附件
       },
-      Contract: {
-        Supply: "", // 供应方
-        Demand: "", // 需求方
-        Address: "", // 签订地址
-        SignTime: "", // 签订时间
-        CEPath: "", // 附件地址
-        Type: "", // 合同类型 采购/销售
-        Extentions: [
-          {
-            CEName: "", // 品名
-            CEFactroyName: "", // 厂家
-            CEBrand: "", // 牌号
-            CEStandards: "", // 规格
-            CETon: 0, // 吨位
-            CEUnitPrice: 0, // 单价
-            CETotalPrice: 0, // 合计金额
-            CEInfo: "", // 备注
-            Id: "" // id
-          }
-        ],
-        InStores: [], // 出入仓数据
-        Enclosure: [], // 新增附件
-        Id: "" // 合同编号id
-      },
+      Enclosure: [], // 新增附件
       // 校验规则
       rules: {
-        Id: [{ required: true, message: "请输入合同编号", trigger: "blur" }],
+        CID: [{ required: true, message: "请输入合同编号", trigger: "blur" }],
         Supply: [
           { required: true, message: "请输入供方信息", trigger: "blur" }
         ],
@@ -267,14 +213,6 @@ export default {
         Address: [
           { required: true, message: "请输入合同签订地址", trigger: "blur" }
         ]
-        // SignTime: [
-        //   {
-        //     type: "date",
-        //     required: true,
-        //     message: "请选择合同签订日期",
-        //     trigger: "blur"
-        //   }
-        // ]
       },
       // 表头信息
       tableTitle: [

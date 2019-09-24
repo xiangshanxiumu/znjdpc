@@ -157,7 +157,7 @@
 <script>
 import FileUpload from "@/components/common/FileUpload";
 // 添加合同接口函数
-import { addContract } from "@/api/warehousingManagement";
+import { addContract } from "@/api/Contract";
 export default {
   // 仓储合同录入
   name: "WarehousingContractEntry",

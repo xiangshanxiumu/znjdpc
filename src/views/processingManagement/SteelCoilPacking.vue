@@ -36,7 +36,6 @@
           :width="item.width"
           :fixed="item.fixed"
           :column-key="item.CoilID"
-          resizable
           align="center"
         >
           <template slot-scope="scope">
