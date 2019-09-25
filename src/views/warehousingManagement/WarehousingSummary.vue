@@ -7,7 +7,7 @@
  -->
 <template>
   <div class="page-wrap">
-    <h1>入仓汇总表</h1>
+    <h1>入仓明细汇总表</h1>
     <div class="page-content">
       <!--搜索区-->
       <div class="page-search">
@@ -62,6 +62,7 @@
         <div class="table-top-btns">
           <el-button size="mini" type="warning" @click="machiningHandle()">加工</el-button>
           <el-button size="mini" type="danger" @click="outWarehouseHandle()">出仓</el-button>
+          <el-button size="mini" type="success" @click="editHandle()">编辑</el-button>
         </div>
         <div class="table-top-status">
           <div class="status-item">
@@ -309,14 +310,7 @@ export default {
     // 获取列表数据
     async getList() {
       let result = await getAllWarehousingReceipt();
-      const loading = this.$loading({
-        lock: true,
-        text: "加载中",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)"
-      });
       if (result.StatusCode == 200) {
-        loading.close(); // 关闭加载动画
         if (result.Result) {
           this.goodsList = result.Result;
         }
@@ -373,16 +367,16 @@ export default {
       }
       if (isHas) {
         // 从缓存中计算搜索数据 无需再请求API
-        const loading = this.$loading({
-          lock: true,
-          text: "搜索中",
-          spinner: "el-icon-loading",
-          background: "rgba(0, 0, 0, 0.7)"
-        });
+        // const loading = this.$loading({
+        //   lock: true,
+        //   text: "搜索中",
+        //   spinner: "el-icon-loading",
+        //   background: "rgba(0, 0, 0, 0.7)"
+        // });
         let list = this.getSearchData(this.searchFrom, this.goodsList);
         this.curList = list;
         this.GoodsPaging(this.curList);
-        loading.close(); // 关闭加载动画
+        // loading.close(); // 关闭加载动画
         if (this.curList.length > 0) {
           this.$message({
             message: "搜索完成",
@@ -412,7 +406,6 @@ export default {
     },
     // 加工
     machiningHandle() {
-      console.log(this.multipleSelection);
       // 判断是否有勾选要出仓加工的钢卷
       if (this.multipleSelection.length == 0) {
         this.$message({
@@ -484,6 +477,40 @@ export default {
       this.$router.push({
         path: "WarehouseEntry"
       });
+    },
+    // 编辑 入仓单 跳转到 入仓单录入页面
+    editHandle() {
+      // 判断是否有勾选要出仓加工的钢卷
+      if (this.multipleSelection.length == 0) {
+        this.$message({
+          message: "请选择要编辑的钢卷",
+          type: "warning",
+          showClose: true,
+          center: true
+        });
+        return false;
+      } else if (this.multipleSelection.length >= 2) {
+        this.$message({
+          message: "只能选择一条钢卷编辑",
+          type: "error",
+          showClose: true,
+          center: true
+        });
+        return false;
+      } else {
+        let editSteelCoil = this.multipleSelection[0];
+        // 编辑的钢卷数据 提交store暂存
+        this.$store.commit("updateEditSteelCoil", {
+          editSteelCoil: editSteelCoil
+        });
+        // 跳转到 入仓单录入页面 回显 编辑
+        this.$router.push({
+          name: "WarehousingReceiptEntry",
+          query: {
+            operation: "编辑",
+          }
+        });
+      }
     },
     // 表格勾选事件
     handleSelectionChange(val) {

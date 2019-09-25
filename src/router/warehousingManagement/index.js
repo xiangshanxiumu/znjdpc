@@ -16,7 +16,7 @@ const WarehousingContractEntry = () =>import('@/views/warehousingManagement/ware
 // 仓储合同 汇总
 const WarehousingContractSummary = () =>import('@/views/warehousingManagement/warehousingContractManagement/WarehousingContractSummary');
 export default [
-    {
+    {   //入仓汇总
         path:'WarehousingSummary',
         name:'WarehousingSummary',
         component:WarehousingSummary,

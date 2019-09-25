@@ -78,6 +78,24 @@ export default {
       menuData: [
         {
           entity: {
+            id: "khgl",
+            path: "客户管理",
+            icon: "el-icon-menu",
+            name: "客户管理"
+          },
+          childs: [
+            {
+              entity: {
+                id: "CustomerAccount",
+                path: "/Home/CustomerAccount",
+                icon: "el-icon-document",
+                name: "客户往来账"
+              }
+            },
+          ]
+        },
+        {
+          entity: {
             id: "cggl",
             path: "资金管理",
             icon: "el-icon-menu",
@@ -147,7 +165,7 @@ export default {
                 id: "rcdhz",
                 path: "/Home/WarehousingSummary",
                 icon: "el-icon-document",
-                name: "入仓单汇总"
+                name: "入仓明细汇总表"
               }
             },
             {

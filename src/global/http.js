@@ -1,6 +1,9 @@
 import axios from 'axios';
 import qs from 'qs';
+// 导入项目配置
 import projectConfig from '@/projectConfig';
+// 导入loading函数
+import {startLoading,endLoading} from './loading';
 
 let mode = projectConfig.mode
 axios.defaults.timeout = projectConfig.timeout;
@@ -13,6 +16,8 @@ axios.interceptors.request.use((config) => {
     // if(config.method == "post"){
     //   config.data = qs.stringify(config.data);
     // }
+    // 开启loading
+    startLoading(config.params.loadingText);
     return config;
 },
 (err)=>{
@@ -20,7 +25,9 @@ axios.interceptors.request.use((config) => {
 }
 );
 axios.interceptors.response.use((response) => {
-    console.log(response.status)
+    console.log(response.status);
+    // 关闭loading
+    endLoading();
     return response.data;
   },
   (err) => {

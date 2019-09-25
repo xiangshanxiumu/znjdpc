@@ -178,7 +178,7 @@ export default {
           Address: "",// 签订地址
           SignTime: "",// 签订时间
           CEPath: "",// 附件地址
-          Type: "采购",// 合同类型 采购/销售
+          Type: "",// 合同类型 采购/销售
           // Id: "string"
         },
         contractExt: [

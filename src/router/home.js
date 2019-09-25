@@ -2,6 +2,8 @@
 const Home = () =>import('@/views/home');
 
 // 合同管理模块路由
+// 客户管理
+import customerManagement from './customerManagement';
 // 资金管理
 import fundManagement from './fundManagement';
 // 入仓管理模块
@@ -15,8 +17,9 @@ export default [
         path: '/Home',
         name: 'Home',
         component:Home,
-        // 子路由
+        // 子路由 
         children:[
+          ...customerManagement,
           ...fundManagement,
           ...warehousingManagement,
           ...warehouseManagement,

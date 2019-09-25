@@ -310,14 +310,7 @@ export default {
     // 获取列表数据
     async getList() {
       let result = await getAllWarehouseReceipt();
-      const loading = this.$loading({
-        lock: true,
-        text: "加载中",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)"
-      });
       if (result.StatusCode == 200) {
-        loading.close(); // 关闭加载动画
         console.log(result)
         if(result.Result){
           this.goodsList = result.Result;

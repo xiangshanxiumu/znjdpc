@@ -8,54 +8,49 @@
 <template>
   <div class="page-wrap">
     <h1>委外加工单录入</h1>
-    <el-form :model="InStore" :rules="rules" ref="ruleForm">
+    <el-form :model="StoreData.store" :rules="rules" ref="ruleForm">
       <div class="page-topPart">
         <!--顶部input输入区域-->
         <div class="page-topPart-inputArea">
           <div class="left-box">
             <div class="input-box">
-              <el-form-item label="采购合同编号" prop="contractId" class="form-item">
-                <el-input v-model="InStore.contractId" placeholder="请输入内容"></el-input>
+              <el-form-item label="加工合同编号" prop="CID" class="form-item">
+                <el-input v-model="StoreData.store.CID" placeholder="请输入内容"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
-              <el-form-item label="仓库名称" prop="StoreName" class="form-item">
-                <el-input v-model="InStore.StoreName" placeholder="请输入内容"></el-input>
+              <el-form-item label="委托单位" prop="Buyby" class="form-item">
+                <el-input v-model="StoreData.store.Buyby" placeholder="请输入内容"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
-              <el-form-item label="销售单位" prop="Buyby" class="form-item">
-                <el-input v-model="InStore.Buyby" placeholder="请输入内容"></el-input>
+              <el-form-item label="加工仓库名称" prop="StoreName" class="form-item">
+                <el-input v-model="StoreData.store.StoreName" placeholder="请输入内容"></el-input>
               </el-form-item>
             </div>
           </div>
           <div class="middle-box">
             <div class="input-box">
-              <el-form-item label="入仓单编号" prop="Id" class="form-item">
-                <el-input v-model="InStore.Id" placeholder="请输入内容"></el-input>
+              <el-form-item label="加工单编号" prop="SID" class="form-item">
+                <el-input v-model="StoreData.store.SID" placeholder="请输入内容"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
-              <el-form-item label="收货地点" prop="RecPlace" class="form-item">
-                <el-input v-model="InStore.RecPlace" placeholder="请输入内容"></el-input>
-              </el-form-item>
-            </div>
-            <div class="input-box">
-              <el-form-item label="车船号" prop="CarBoatID" class="form-item">
-                <el-input v-model="InStore.CarBoatID" placeholder="请输入内容"></el-input>
+              <el-form-item label="加工地点" prop="RecPlace" class="form-item">
+                <el-input v-model="StoreData.store.RecPlace" placeholder="请输入内容"></el-input>
               </el-form-item>
             </div>
           </div>
           <div class="right-box">
             <div class="input-box">
-              <el-form-item label="货物接收入库单位" prop="RecUnitPerson" class="form-item">
-                <el-input v-model="InStore.RecUnitPerson" placeholder="请输入内容"></el-input>
+              <el-form-item label="加工单位" prop="RecDepo" class="form-item">
+                <el-input v-model="StoreData.store.RecDepo" placeholder="请输入内容"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
-              <el-form-item label="收货日期" prop="RecDate" class="form-item">
+              <el-form-item label="加工日期" prop="RecDate" class="form-item">
                 <el-date-picker
-                  v-model="InStore.RecDate"
+                  v-model="StoreData.store.RecDate"
                   value-format="yyyy-MM-dd"
                   type="date"
                   placeholder="选择日期"
@@ -83,7 +78,7 @@
         <!--表格-->
         <div class="tableWrap">
           <el-table
-            :data="InStore.ISGoods"
+            :data="StoreData.goodlist"
             border
             show-summary
             :summary-method="getSummaries"
@@ -134,9 +129,9 @@
         </div>
         <!--表格-->
         <!--合同附件-->
-        <h3>附件</h3>
+        <h2>附件</h2>
         <div class="enclosure-box">
-          <FileUpload v-model="InStore.Enclosure"></FileUpload>
+          <FileUpload v-model="Enclosure"></FileUpload>
         </div>
         <!--合同附件-->
         <!--按钮区-->
@@ -173,8 +168,11 @@
   </div>
 </template>
 <script>
+// 导入 附件文件添加组件
 import FileUpload from "@/components/common/FileUpload";
+// 导入 动态表单组件
 import DynaactionForm from "@/components/DynaactionForm";
+// 导入 合同API函数
 import { getContractList, searchContractList } from "@/api/Contract";
 import { mapGetters } from "vuex";
 export default {
@@ -186,139 +184,67 @@ export default {
   },
   data() {
     return {
-      // 合同=》仓库=》钢卷 数据模型
-      Contract: {
-        Supply: "string", // 供应方
-        Demand: "string", // 需求方
-        Address: "string", // 签订地址
-        SignTime: "2019-09-18T02:27:28.808Z", // 签订时间
-        CEPath: "string", // 附件地址
-        Type: "string", // 合同类型 采购/销售
-        Extentions: [
+      StoreData: {
+        store: {
+          SID: "", // 加工单
+          RecDate: "", // 加工日期
+          RecDepo: "", // 加工单位
+          RecPersonID: "",
+          Buyby: "", // 委托单位
+          SupplierOutID: "",
+          StoreName: "", // 加工仓库
+          RecPlace: "", // 加工地点
+          CarBoatID: "",
+          RecUnitPerson: "", 
+          BuyPerson: "",
+          TransPrice: 0,
+          Ext: "",
+          CID: "",
+          Type:"加工",
+          Id: "",
+        },
+        goodlist: [
           {
-            CEName: "string", // 品名
-            CEFactroyName: "string", // 厂家
-            CEBrand: "string", // 牌号
-            CEStandards: "string", // 规格
-            CETon: 0, // 吨位
-            CEUnitPrice: 0, // 单价
-            CETotalPrice: 0, // 合计金额
-            CEInfo: "string", // 备注
-            Id: "string" // id
+            GName: "",
+            Brand: "",
+            Standards: "",
+            Ton: 0,
+            ProfitAndLossTon: 0,
+            PackStatus: "",
+            RecInfo: "",
+            RecInfoBack: "",
+            GInfo: "",
+            GStatus: "",
+            ProRollNo: "",
+            RollPackNo: "s",
+            UnitPrice: 0,
+            OutDate: "",
+            InsID: "",
+            OutsID: "",
+            ProsID:"", // 加工单
+            SeparateSolution:"",// 分条方案 转字符串
+            SteelRollID: "",
+            Id: ""
           }
-        ],
-        InStores: [
-          {
-            RecDate: "2019-09-18T02:27:28.808Z", //接收日期
-            RecDepo: "string", // 接收仓库
-            RecPersonID: "string", // 接收人身份证号码
-            Buyby: "string", // 采购单位
-            SupplierOutID: "string", // 采购单位出仓编号
-            StoreName: "string", // 仓库名称
-            RecPlace: "string", // 接收地址
-            CarBoatID: "string", // 车船号
-            RecUnitPerson: "string", // 接收单位签收人
-            BuyPerson: "string", // 采购人
-            ISGoods: [
-              {
-                GName: "string", // 品名
-                Brand: "string", // 牌号
-                Standards: "string", // 规格
-                Ton: 0, //吨位
-                ProfitAndLossTon: 0, //货物盈亏
-                PackStatus: "string", //包裹状态
-                RecInfo: "string", //接收异议/拍照
-                RecInfoBack: "string", // 异议反馈
-                GInfo: "string", //备注
-                GStatus: "string", // 货物状态 退货/库存/加工/再入库
-                ProRollNo: "string", // 加工分条号
-                RollPackNo: "string", // 卷包号
-                UnitPrice: 0, // 单价
-                OutDate: "2019-09-18T02:27:28.808Z", // 出库日期
-                Id: "string" // 钢卷号
-              }
-            ],
-            Ext: "string", // 扩展字段
-            Id: "string" // 出入仓编号id
-          }
-        ],
-        Id: "string" // 合同编号id
+        ]
       },
-      // 当前page入仓单数据模型
-      InStore: {
-        contractId: "", // 合同编号id
-        RecDate: "", //接收日期
-        RecDepo: "", // 接收仓库
-        RecPersonID: "", // 接收人身份证号码
-        Buyby: "", // 采购单位
-        SupplierOutID: "", // 采购单位出仓编号
-        StoreName: "", // 仓库名称
-        RecPlace: "", // 接收地址
-        CarBoatID: "", // 车船号
-        RecUnitPerson: "", // 接收单位签收人
-        BuyPerson: "", // 采购人
-        ISGoods: [
-          {
-            GName: "品名", // 品名
-            Brand: "牌号", // 牌号
-            Standards: "", // 规格
-            Ton: 0, //吨位
-            ProfitAndLossTon: 0, //货物盈亏
-            PackStatus: "", //包裹状态
-            RecInfo: "", //接收异议/拍照
-            RecInfoBack: "", // 异议反馈
-            GInfo: "", //备注
-            GStatus: "", // 货物状态 退货/库存/加工/再入库
-            ProRollNo: "", // 加工分条号
-            RollPackNo: "", // 卷包号
-            UnitPrice: 0, // 单价
-            OutDate: "", // 出库日期
-            GoodsId: "", // 钢卷编号id,
-            ParentID: "", //父钢卷号 // //
-            Striping: [
-              // 该钢卷 加工所分小条 数据列表
-              {
-                StripingId: "1001", // 分小条钢卷 Id
-                Standards: "如0.5*30mm", // 分小条钢卷规格
-                RollPackNo: "" // 所属卷包号
-              },
-              {
-                StripingId: "1002", // 分小条钢卷 Id
-                Standards: "如0.5*30mm", // 分小条钢卷规格
-                RollPackNo: "" // 所属卷包号
-              },
-              {
-                StripingId: "1003", // 分小条钢卷 Id
-                Standards: "如0.5*60mm", // 分小条钢卷规格
-                RollPackNo: "" // 所属卷包号
-              }
-            ],
-            SurplusMaterial: "" // 分条后的余料
-          }
-        ],
-        Ext: "", // 扩展字段
-        Enclosure: [], // 新增附件
-        Id: "" // 出入仓编号id
-      },
+      Enclosure: [], // 新增附件
       // 校验规则
       rules: {
-        contractId: [
-          { required: true, message: "请输入合同编号", trigger: "blur" }
+        CID: [
+          { required: true, message: "请输入加工合同编号", trigger: "blur" }
         ],
-        Id: [{ required: true, message: "请输入仓单编号", trigger: "blur" }],
+        SID: [{ required: true, message: "请输加工单编号", trigger: "blur" }],
         StoreName: [
-          { required: true, message: "请输入仓库名称", trigger: "blur" }
+          { required: true, message: "请输入加工仓库名称", trigger: "blur" }
         ],
-        Buyby: [{ required: true, message: "请输入销售单位", trigger: "blur" }],
+        Buyby: [{ required: true, message: "请输入委托单位", trigger: "blur" }],
         RecPlace: [
-          { required: true, message: "请输入收货地点", trigger: "blur" }
+          { required: true, message: "请输入加工地点", trigger: "blur" }
         ],
-        CarBoatID: [
-          { required: true, message: "请输入车船号", trigger: "blur" }
+        RecDepo: [
+          { required: true, message: "请输入加工单位", trigger: "blur" }
         ],
-        RecUnitPerson: [
-          { required: true, message: "请输入货物接收入库单位", trigger: "blur" }
-        ]
       },
       // 表头
       tableTitle: [
@@ -335,7 +261,7 @@ export default {
           fixed: "left"
         },
         {
-          prop: "GoodsID",
+          prop: "SteelRollID",
           label: "钢卷号",
           width: "100",
           fixed: "left"
@@ -347,7 +273,7 @@ export default {
           fixed: "left"
         },
         {
-          prop: "StripPlan",
+          prop: "SeparateSolution",
           label: "分条方案",
           fixed: "",
           width: "",
@@ -386,7 +312,7 @@ export default {
             value: ""
           },
           {
-            prop: "GoodsID",
+            prop: "SteelRollID",
             label: "钢卷号",
             value: ""
           },
@@ -411,7 +337,7 @@ export default {
             value: ""
           },
           {
-            prop: "GoodsID",
+            prop: "SteelRollID",
             label: "钢卷号",
             value: ""
           },
@@ -451,11 +377,11 @@ export default {
         to.name == "OutsourcingProcessingEntry"
       ) {
         // 初始渲染表格 加工操作的钢卷
-        vm.InStore.ISGoods = vm.steelCoilMachiningList;
+        vm.StoreData.goodlist = vm.steelCoilMachiningList;
         // 初始填充 仓库名称
-        if (vm.InStore.ISGoods.length > 0) {
-          if (vm.InStore.ISGoods[0].RecDepo) {
-            vm.InStore.StoreName = vm.InStore.ISGoods[0].RecDepo;
+        if (vm.StoreData.goodlist.length > 0) {
+          if (vm.StoreData.goodlist[0].RecDepo) {
+            vm.StoreData.store.StoreName = vm.StoreData.goodlist[0].RecDepo;
           }
         }
       }
@@ -476,7 +402,7 @@ export default {
         // RecInfoBack: "",
         // GInfo: ""
       };
-      this.InStore.ISGoods.push(row);
+      this.StoreData.goodlist.push(row);
     },
     // 新增列 新增分条
     addOneColumn() {
@@ -534,8 +460,8 @@ export default {
       // 分条方案列表数据更新
       this.stripingList = [].concat(this.formData.domains);
       // 各小卷大概吨位计算&分条余料计算
-      if (this.InStore.ISGoods.length > 0) {
-        this.InStore.ISGoods.map(item => {
+      if (this.StoreData.goodlist.length > 0) {
+        this.StoreData.goodlist.map(item => {
           // 钢卷吨位 Ton
           let GoodsTon = item.Ton;
           // 获取规格
@@ -605,7 +531,7 @@ export default {
       this.rowForm.formItem.map(item => {
         obj[item.prop] = item.value;
       });
-      this.InStore.ISGoods[this.editIndex] = obj;
+      this.StoreData.goodlist[this.editIndex] = obj;
       // 强制刷新
       // this.$forceUpdate();
       this.tableShow = false;
@@ -617,7 +543,7 @@ export default {
     },
     // 合同表单 删除事件
     handleDelete(index, row) {
-      this.InStore.ISGoods.splice(index, 1);
+      this.StoreData.goodlist.splice(index, 1);
     },
     // 表单合计自定义统计计算方法
     getSummaries(param) {
@@ -654,34 +580,36 @@ export default {
     },
     // 提交按钮
     async submitForm(formName) {
-      console.log(this.InStore.ISGoods);
-      console.log(this.stripingList);
-      return false;
-      // this.InStore.ISGoods 
-      // stripingList
       // 非空检测
       let isValid = false;
       this.$refs[formName].validate(valid => {
         if (valid) {
           isValid = valid;
         } else {
-          console.log("error submit!!");
           return false;
         }
       });
       // 验证通过 调用接口
       if (isValid) {
-        let Contract = {};
-        Contract.Id = this.InStore.contractId;
-        Contract.InStores = [this.InStore];
+        
+        // 加工分条单id同步
+        let ProsID = this.StoreData.store.ProsID;
+        this.StoreData.goodlist.map(item=>{
+          item.ProsID = ProsID;
+          // 分条方案添加到每个钢卷数据对象中 
+          item.SeparateSolution = JSON.stringify(this.stripingList)
+        })
+        console.log(this.StoreData)
+        return false;
         // 调用录入API
-        let result = await addWarehouseReceipt(Contract);
+        let result = await addWarehouseReceipt(this.StoreData);
         const loading = this.$loading({
           lock: true,
           text: "入仓单录入",
           spinner: "el-icon-loading",
           background: "rgba(0, 0, 0, 0.7)"
         });
+        console.log(result)
         if (result.StatusCode == 200) {
           setTimeout(() => {
             loading.close(); // 关闭加载动画

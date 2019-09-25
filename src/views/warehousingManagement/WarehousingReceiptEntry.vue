@@ -7,7 +7,7 @@
  -->
 <template>
   <div class="page-wrap">
-    <h1>入仓单信息录入</h1>
+    <h1>{{pageTitle}}</h1>
     <el-form :model="Store.store" :rules="rules" ref="ruleForm">
       <div class="page-topPart">
         <!--顶部input输入区域-->
@@ -330,12 +330,27 @@ export default {
         GInfo: "" // 备注
       },
       formLabelWidth: "120px", // 表单 label宽度
-      files: [] // 附件文件组
+      operation:"录入",
     };
   },
-  // computed: {
-  //   ...mapGetters(["outWarehouseList", "warehouseReceiptList"])
-  // },
+  computed: {
+    ...mapGetters(["editSteelCoil"]),
+    pageTitle(){ // 页面标题
+      return `入仓单信息${this.operation}`;
+    }
+  },
+  created(){
+    console.log(this.editSteelCoil);
+    console.log(this.$route.query)
+    if(this.$route.query.operation){
+      if(this.$route.query.operation == "入仓单编辑"){
+        this.operation = this.$route.query.operation;
+      }
+    }
+    console.log(this.operation)
+    console.log(this.pageTitle);
+    
+  },
   methods: {
     // 表格新增一行
     addOneRow() {

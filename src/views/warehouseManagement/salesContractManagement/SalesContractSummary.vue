@@ -326,6 +326,10 @@ export default {
         loading.close(); // 关闭加载动画
         if(result.Result){
           this.goodsList = result.Result;
+          // 销售合同筛选
+          this.goodsList = this.goodsList.filter(item=>{
+            return item.Type == "销售";
+          })
         }
         this.curList = this.curList.concat(this.goodsList);
         this.GoodsPaging(this.curList);
