@@ -63,6 +63,7 @@
       <!--表格顶部区域-->
       <!--列表-->
       <el-table
+        v-loading="tableLoading"
         :data="tableData"
         border
         show-summary
@@ -106,6 +107,7 @@ export default {
   name: "ProcurementContractSummary",
   data() {
     return {
+      tableLoading:false, // table loading
       tableData: [
         {
           CID: "0101", // 合同id
@@ -304,15 +306,8 @@ export default {
     // 获取列表数据
     async getList() {
       let result = await getAllContractList();
-      const loading = this.$loading({
-        lock: true,
-        text: "加载中",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)"
-      });
       console.log(result)
       if (result.StatusCode == 200) {
-        loading.close(); // 关闭加载动画
         if(result.Result){
           this.goodsList = result.Result;
           // 采购合同筛选
@@ -366,17 +361,14 @@ export default {
         }
       }
       if (isHas) {
+        this.$loadingShow("搜索中"); // 开启全局loading
         // 从缓存中计算搜索数据 无需再请求API
-        const loading = this.$loading({
-          lock: true,
-          text: "搜索中",
-          spinner: "el-icon-loading",
-          background: "rgba(0, 0, 0, 0.7)"
-        });
+        // this.tableLoading = true;
         let list = this.getSearchData(this.searchFrom, this.goodsList);
         this.curList = list;
         this.GoodsPaging(this.curList);
-        loading.close(); // 关闭加载动画
+        // this.tableLoading = false; // 关闭加载动画
+        this.$loadingHide(); // 关闭全局loading
         if (this.curList.length > 0) {
           this.$message({
             message: "搜索完成",

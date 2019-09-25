@@ -74,6 +74,7 @@
       <!--表格顶部区域-->
       <!--列表-->
       <el-table
+        v-loading="tableLoading"
         :data="tableData"
         border
         show-summary
@@ -119,6 +120,7 @@ export default {
   name: "WarehousingSummary",
   data() {
     return {
+      tableLoading:false,
       tableData: [
         {
           CID: "1234567", // 合同ID
@@ -310,6 +312,7 @@ export default {
     // 获取列表数据
     async getList() {
       let result = await getAllWarehousingReceipt();
+      console.log(result)
       if (result.StatusCode == 200) {
         if (result.Result) {
           this.goodsList = result.Result;
@@ -367,16 +370,13 @@ export default {
       }
       if (isHas) {
         // 从缓存中计算搜索数据 无需再请求API
-        // const loading = this.$loading({
-        //   lock: true,
-        //   text: "搜索中",
-        //   spinner: "el-icon-loading",
-        //   background: "rgba(0, 0, 0, 0.7)"
-        // });
+        this.$loadingShow("搜索中"); // 开启全局loading
+        // this.tableLoading = true;
         let list = this.getSearchData(this.searchFrom, this.goodsList);
         this.curList = list;
         this.GoodsPaging(this.curList);
-        // loading.close(); // 关闭加载动画
+        this.$loadingHide(); // 关闭全局loading
+        // this.tableLoading = false;
         if (this.curList.length > 0) {
           this.$message({
             message: "搜索完成",
@@ -416,15 +416,17 @@ export default {
         });
         return false;
       }
-      // 判断收货仓库是否一致 不一致的不能加工操作
+      // 判断收货仓库、Standards规格是否一致 不一致的不能加工操作  一致才能同时加工分条
       if (this.multipleSelection.length >= 2) {
         let RecDepo = this.multipleSelection[0].RecDepo;
+        let Standards = this.multipleSelection[0].Standards
         let isAgreement = this.multipleSelection.every(item => {
-          return item.RecDepo == RecDepo;
+          return item.RecDepo == RecDepo && item.Standards == Standards;
         });
+
         if (!isAgreement) {
           this.$message({
-            message: "钢卷的收货仓库不一致！",
+            message: "同时加工的钢卷收货仓库或规格不一致！",
             type: "error",
             showClose: true,
             center: true

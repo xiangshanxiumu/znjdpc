@@ -368,6 +368,12 @@ export default {
         RecInfoBack: "", // 异议反馈
         GInfo: "" // 备注
       };
+      // 判断有否前一行数据存在,存在则复制前一行数据
+      let len = this.Store.goodlist.length;
+      if(len>=1){
+        // 把前一行数据赋值给row
+        row = JSON.parse(JSON.stringify(this.Store.goodlist[len-1])); // 克隆
+      }
       this.Store.goodlist.push(row);
     },
     // 表单合计自定义统计计算方法
@@ -440,14 +446,14 @@ export default {
         console.log(this.Store);
         // 调用录入API
         let result = await addWarehouseReceipt(this.Store);
-        const loading = this.$loading({
-          lock: true,
-          text: "入仓单录入",
-          spinner: "el-icon-loading",
-          background: "rgba(0, 0, 0, 0.7)"
-        });
+        // const loading = this.$loading({
+        //   lock: true,
+        //   text: "入仓单录入",
+        //   spinner: "el-icon-loading",
+        //   background: "rgba(0, 0, 0, 0.7)"
+        // });
         console.log(result);
-        loading.close(); // 关闭加载动画
+        // loading.close(); // 关闭加载动画
         if (result.StatusCode == 200) {
             this.$alert(result.Message, "入仓单录入", {
               confirmButtonText: "确定",

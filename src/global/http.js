@@ -13,11 +13,15 @@ axios.interceptors.request.use((config) => {
     // 设置数据格式
     config.headers['Content-Type'] = 'application/json';
     // post格式数据转换
-    // if(config.method == "post"){
-    //   config.data = qs.stringify(config.data);
-    // }
+    let loadingText;
+    if(config.method == "post"){
+      // config.data = qs.stringify(config.data); 数据转 k=v&k=v
+      loadingText = "处理中..."
+    } else if(config.method == "get"){
+      loadingText = config.params.loadingText
+    }
     // 开启loading
-    startLoading(config.params.loadingText);
+      startLoading(loadingText);
     return config;
 },
 (err)=>{

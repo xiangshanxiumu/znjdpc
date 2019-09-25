@@ -68,8 +68,6 @@
         <div class="table-top-area">
           <div class="table-top-btns">
             <el-button size="mini" type="primary" @click="addOneRow">新增一行</el-button>
-            <!-- <el-button size="mini" type="warning" @click="addOneColumn">分条+</el-button>
-            <el-button size="mini" type="warning" @click="deleteOneColumn">分条-</el-button>-->
             <el-button size="mini" type="warning" @click="stripingEdit">分条方案编辑</el-button>
           </div>
           <div class="table-top-status"></div>
@@ -94,7 +92,7 @@
               :width="item.width"
               :fixed="item.fixed"
               resizable
-              algin="center"
+              align="center"
             >
               <div v-if="item.children" class="children">
                 <el-table-column
@@ -111,12 +109,12 @@
             <el-table-column fixed prop="SurplusMaterial" label="分条余料" width="150"></el-table-column>
             <el-table-column label="操作" min-width="180" fixed="right">
               <template slot-scope="scope">
-                <el-button
+                <!-- <el-button
                   size="mini"
                   @click="handleEdit(scope.$index, scope.row)"
                   type="warning"
                   plain
-                >编辑</el-button>
+                >编辑</el-button> -->
                 <el-button
                   size="mini"
                   type="danger"
@@ -161,8 +159,8 @@
     </el-dialog>
     <!--dialog对话框-->
     <!--分条对话框-->
-    <el-dialog title="分条方案" :visible.sync="dialogFormVisible2" width="700px">
-      <DynaactionForm :formData="formData" @submit="Submit"></DynaactionForm>
+    <el-dialog title="分条方案"  :visible.sync="StripPlanShow" width="40%">
+      <StripPlan :formData="formData" @submit="Submit"></StripPlan>
     </el-dialog>
     <!--分条对话框-->
   </div>
@@ -170,17 +168,20 @@
 <script>
 // 导入 附件文件添加组件
 import FileUpload from "@/components/common/FileUpload";
-// 导入 动态表单组件
-import DynaactionForm from "@/components/DynaactionForm";
+// StripPlan
+import StripPlan from './component/StripPlan';
 // 导入 合同API函数
 import { getContractList, searchContractList } from "@/api/Contract";
+// 导入添加仓单API函数
+import { addWarehouseReceipt } from "@/api/WarehouseReceipt";
 import { mapGetters } from "vuex";
+import { parse } from 'path';
 export default {
   // 委外加工单录入
   name: "OutsourcingProcessingEntry",
   components: {
     FileUpload,
-    DynaactionForm
+    StripPlan
   },
   data() {
     return {
@@ -190,7 +191,7 @@ export default {
           RecDate: "", // 加工日期
           RecDepo: "", // 加工单位
           RecPersonID: "",
-          Buyby: "", // 委托单位
+          Buyby: "福建中鞍科技有限公司", // 委托单位
           SupplierOutID: "",
           StoreName: "", // 加工仓库
           RecPlace: "", // 加工地点
@@ -277,23 +278,7 @@ export default {
           label: "分条方案",
           fixed: "",
           width: "",
-          children: [
-            // {
-            //   prop: "Striping1",
-            //   label: "30mm",
-            //   width: "150"
-            // }
-            // {
-            //   prop: "Striping2",
-            //   label: "45mm",
-            //   width: "150"
-            // },
-            // {
-            //   prop: "Striping3",
-            //   label: "50mm",
-            //   width: "150"
-            // }
-          ]
+          children: []
         }
       ],
       dialogFormVisible: false, // dialog 对话框显示或隐藏
@@ -353,16 +338,21 @@ export default {
       dialogFormVisible2: false,
       // 动态分条数据
       formData: {
-        //
         domains: [
           {
-            label: "分条",
-            value: ""
+            prop: "Striping1",
+            label: "分条1",
+            Standards: "",
+            Num: ""
           }
-        ]
+        ],
+        stripWidth:1200, // 分条宽度
+        SurplusMaterial: 0, //分条余料
       },
       stripingList: [], // 分条数据列表
-      tableShow: true // 控制table显示或隐藏 刷新数据
+      tableShow: true, // 控制table显示或隐藏 刷新数据
+      StripPlanShow:false, // 分条方案对话框显示或隐藏
+      SeparateSolution:"",//分条方案
     };
   },
   computed: {
@@ -404,126 +394,67 @@ export default {
       };
       this.StoreData.goodlist.push(row);
     },
-    // 新增列 新增分条
-    addOneColumn() {
-      let len = this.tableTitle[0].children.length;
-      let column = {
-        prop: `Striping`,
-        label: `分条${len + 1}`,
-        width: "150"
-      };
-      this.tableTitle[0].children.push(column);
-    },
-    // 删除列 减少分条
-    deleteOneColumn() {
-      let len = this.tableTitle[0].children.length;
-      if (len > 0) {
-        this.tableTitle[0].children.splice(len - 1, 1);
-      }
-    },
     // 分条方案 编辑 from title
     stripingEdit() {
-      this.formData.domains = [];
-      let ITEM = this.tableTitle.find(item => {
-        return item.children;
+      this.TableTitleToStrip();
+      this.StripPlanShow = true;
+    },
+    // 分条方案数据到 表格
+    StripToTableTitle(StripData){
+      let SurplusMaterial = StripData.SurplusMaterial; // 分条余料
+      let StripTitle = []; // 表格分条
+      if(StripData.domains.length ==0){
+        return false;
+      } else{
+        StripData.domains.map(item=>{
+          let label = item.Standards+"*"+item.Num;
+          let prop = item.prop;
+          StripTitle.push({
+            prop:prop,
+            label:label,
+            width:"150"
+          });
+          // 分条方案字符串数据 
+          this.SeparateSolution +=label+"/";
+        })
+      }
+      // 分条方案数据同步到表格头部
+      this.tableTitle.map(item => {
+        if (item.children) {
+          item.children = StripTitle;
+        }
       });
-      ITEM.children.map(item => {
-        let obj = {
-          prop: item.prop,
-          label: "分条",
-          value: item.label
-        };
-        this.formData.domains.push(obj);
-      });
-      // 分条方案列表数据更新
-      this.stripingList = [].concat(this.formData.domains);
-      // 显示对话框
-      this.dialogFormVisible2 = true;
+      // 分条方案同步到表格体
+      this.StoreData.goodlist.map(item=>{
+        let useTon = 0;// 分条使用吨位
+        // 各小分条的吨位计算
+        StripData.domains.map(item2=>{
+          item[item2.prop] = ((parseInt(item2.Standards)*parseInt(item2.Num))/StripData.stripWidth)*item.Ton;
+          
+          item[item2.prop] = Number(item[item2.prop].toFixed(3));
+          useTon = useTon + item[item2.prop];
+        });
+        // 余料
+        item.SurplusMaterial = Number((Number(item.Ton) - Number(useTon)).toFixed(3));
+      })
+    },
+    // 表格 到分条方案
+    TableTitleToStrip(){
+      let stripWidth = 1200;
+      if(this.StoreData.goodlist.length>0){
+        if(this.StoreData.goodlist[0].Standards){
+          stripWidth = this.StoreData.goodlist[0].Standards;
+          stripWidth = stripWidth.split("*")[1];
+        }
+      }
+      this.formData.stripWidth = parseInt(stripWidth);
     },
     // 分条方案 表单确定提交 事件
     Submit(value) {
-      this.formData.domains.map((item, index) => {
-        item.label = item.value;
-        if (!item.prop) {
-          item.prop = `Striping${index + 1}`;
-        }
-        return item;
-      });
-      this.tableTitle.map(item => {
-        if (item.children) {
-          item.children = this.formData.domains;
-          item.children.map(item => {
-            (item.value = ""), (item.width = "150");
-          });
-        }
-      });
-      // 分条方案列表数据更新
-      this.stripingList = [].concat(this.formData.domains);
-      // 各小卷大概吨位计算&分条余料计算
-      if (this.StoreData.goodlist.length > 0) {
-        this.StoreData.goodlist.map(item => {
-          // 钢卷吨位 Ton
-          let GoodsTon = item.Ton;
-          // 获取规格
-          if (item.Standards) {
-            let Standards = item.Standards;
-            let index = Standards.indexOf("*");
-            let standardsWidth = Number(Standards.substr(index + 1));
-            let SurplusMaterial = 0; // 余料
-            // 计算各小分条大概吨位
-            this.stripingList.map((item2, index) => {
-              if (item2.label) {
-                // 分条方案 里面规格
-                let width = parseInt(item2.label); // parseInt()从字符串中获取数字，需要数字在前
-                item2[`stripingTon${index + 1}`] =
-                  (width / standardsWidth) * GoodsTon;
-                // 各小分条吨位
-                item[item2.prop] = item2[`stripingTon${index + 1}`].toFixed(3);
-                // 余料累加
-                SurplusMaterial += item2[`stripingTon${index + 1}`];
-              }
-            });
-            // 余料
-            item.SurplusMaterial = (GoodsTon - SurplusMaterial).toFixed(3);
-            // 强制刷新
-            // this.$forceUpdate();
-            this.tableShow = false;
-            this.$nextTick(() => {
-              this.tableShow = true;
-            });
-          }
-        });
-      }
-      // 对话框隐藏
-      this.dialogFormVisible2 = false;
-    },
-    // 表单行 编辑事件
-    handleEdit(index, row) {
-      // tableTitle更新 对话框表单项数据
-      let StripingArr = this.tableTitle.filter(item => {
-        return !item.children;
-      });
-      let ITEM = this.tableTitle.find(item => {
-        return item.children;
-      });
-      ITEM.children.map(item => {
-        StripingArr.push(item);
-      });
-      // 添加 分条余料 项
-      StripingArr.push({
-        prop: "SurplusMaterial",
-        label: "分条余料",
-        value: ""
-      });
-      // 赋原始值
-      // StripingArr.map(item=>{
-      //   if(row[item.prop]){
-      //     item.value = row[item.prop];
-      //   }
-      // })
-      this.rowForm.formItem = [].concat(StripingArr);
-      this.editIndex = index;
-      this.dialogFormVisible = true;
+      this.StripPlanShow = false;
+      // 克隆分条数据
+      let StripData = JSON.parse(JSON.stringify(value));
+      this.StripToTableTitle(StripData);
     },
     // 表单行 编辑 dialog 对话框确定事件 数据没有及时刷新
     dialogFormOkHandle() {
@@ -591,36 +522,26 @@ export default {
       });
       // 验证通过 调用接口
       if (isValid) {
-        
         // 加工分条单id同步
-        let ProsID = this.StoreData.store.ProsID;
+        let ProsID = this.StoreData.store.SID;
+        // 分条方案添加到每个钢卷数据对象中 
+        this.StoreData.store.SeparateSolution = this.SeparateSolution;
         this.StoreData.goodlist.map(item=>{
           item.ProsID = ProsID;
-          // 分条方案添加到每个钢卷数据对象中 
-          item.SeparateSolution = JSON.stringify(this.stripingList)
         })
-        console.log(this.StoreData)
-        return false;
         // 调用录入API
         let result = await addWarehouseReceipt(this.StoreData);
-        const loading = this.$loading({
-          lock: true,
-          text: "入仓单录入",
-          spinner: "el-icon-loading",
-          background: "rgba(0, 0, 0, 0.7)"
-        });
         console.log(result)
         if (result.StatusCode == 200) {
           setTimeout(() => {
-            loading.close(); // 关闭加载动画
-            this.$alert(result.Message, "入仓单录入", {
+            this.$alert(result.Message, "加工单录入", {
               confirmButtonText: "确定",
               type: "success",
               // center: true,
               callback: action => {
                 this.$message({
                   type: "success",
-                  message: `入仓单录入成功`
+                  message: `加工单录入成功`
                 });
                 // 返回上一页面 或返回入仓单汇总表
                 this.$router.push({
