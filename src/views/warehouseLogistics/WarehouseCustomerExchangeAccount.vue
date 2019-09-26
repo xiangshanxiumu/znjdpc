@@ -1,6 +1,6 @@
 <template>
   <div class="page-wrap">
-    <h1>客户往来账</h1>
+    <h1>仓储客户往来明细账</h1>
     <div class="page-content">
       <!--表格-->
       <el-table
@@ -41,8 +41,8 @@
 </template>
 <script>
 export default {
-  // 客户往来账
-  name: "CustomerAccount",
+  // 仓储客户往来明细账
+  name: "WarehouseCustomerExchangeAccount",
   data() {
     return {
       tableData: [

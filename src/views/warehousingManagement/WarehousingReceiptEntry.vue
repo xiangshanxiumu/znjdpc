@@ -89,6 +89,7 @@
           show-summary
           :summary-method="getSummaries"
           style="width: 100%"
+          max-height="600"
         >
           <el-table-column
             v-for="(item,index) in tableTitle"

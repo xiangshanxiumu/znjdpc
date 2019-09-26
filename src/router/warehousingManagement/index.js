@@ -32,6 +32,22 @@ export default [
             auth:true,
         }
     },
+    {  // 采购客户往来明细账
+        path:'PurchaseCustomerExchangeAccount',
+        name:'PurchaseCustomerExchangeAccount',
+        component:()=>import('@/views/warehousingManagement/PurchaseCustomerExchangeAccount'),
+        meta:{
+            auth:true,
+        }
+    },
+    {  // 采购客户往来汇总表
+        path:'PurchaseCustomerExchangeSummary',
+        name:'PurchaseCustomerExchangeSummary',
+        component:()=>import('@/views/warehousingManagement/PurchaseCustomerExchangeSummary'),
+        meta:{
+            auth:true,
+        }
+    },
     // 采购合同管理
     {
         path:'ProcurementContractEntry',

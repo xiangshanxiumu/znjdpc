@@ -78,24 +78,6 @@ export default {
       menuData: [
         {
           entity: {
-            id: "khgl",
-            path: "客户管理",
-            icon: "el-icon-menu",
-            name: "客户管理"
-          },
-          childs: [
-            {
-              entity: {
-                id: "CustomerAccount",
-                path: "/Home/CustomerAccount",
-                icon: "el-icon-document",
-                name: "客户往来账"
-              }
-            },
-          ]
-        },
-        {
-          entity: {
             id: "cggl",
             path: "资金管理",
             icon: "el-icon-menu",
@@ -147,27 +129,11 @@ export default {
         {
           entity: {
             id: "rcgl",
-            path: "入仓管理",
+            path: "采购管理",
             icon: "el-icon-menu",
-            name: "入仓管理"
+            name: "采购管理"
           },
           childs: [
-            {
-              entity: {
-                id: "rcdlr",
-                path: "/Home/WarehousingReceiptEntry",
-                icon: "el-icon-document",
-                name: "入仓单录入"
-              }
-            },
-            {
-              entity: {
-                id: "rcdhz",
-                path: "/Home/WarehousingSummary",
-                icon: "el-icon-document",
-                name: "入仓明细汇总表"
-              }
-            },
             {
               entity: {
                 id: "cchtgl",
@@ -196,72 +162,47 @@ export default {
             },
             {
               entity: {
-                id: "cchtgl",
-                path: "仓储合同管理",
-                icon: "el-icon-menu",
-                name: "仓储合同管理"
-              },
-              childs: [
-                {
-                  entity: {
-                    id: "cchtlr",
-                    path: "/Home/WarehousingContractEntry",
-                    icon: "el-icon-document",
-                    name: "仓储合同录入"
-                  }
-                },
-                {
-                  entity: {
-                    id: "cchthz",
-                    path: "/Home/WarehousingContractSummary",
-                    icon: "el-icon-document",
-                    name: "仓储合同汇总"
-                  }
-                },
-                {
-                  entity: {
-                    id: "wlhetlr",
-                    path: "/Home/LogisticsContractEntry",
-                    icon: "el-icon-document",
-                    name: "物流合同录入"
-                  }
-                },
-                {
-                  entity: {
-                    id: "wlhthz",
-                    path: "/Home/LogisticsContractsSummary",
-                    icon: "el-icon-document",
-                    name: "物流合同汇总"
-                  }
-                }
-              ]
+                id: "rcdlr",
+                path: "/Home/WarehousingReceiptEntry",
+                icon: "el-icon-document",
+                name: "入仓单录入"
+              }
+            },
+            {
+              entity: {
+                id: "rcdhz",
+                path: "/Home/WarehousingSummary",
+                icon: "el-icon-document",
+                name: "入仓明细汇总表"
+              }
+            },
+
+            {
+              entity: {
+                id: "rcdhz",
+                path: "/Home/PurchaseCustomerExchangeAccount",
+                icon: "el-icon-document",
+                name: "采购客户往来明细账"
+              }
+            },
+            {
+              entity: {
+                id: "rcdhz",
+                path: "/Home/PurchaseCustomerExchangeSummary",
+                icon: "el-icon-document",
+                name: "采购客户往来汇总表"
+              }
             }
           ]
         },
         {
           entity: {
             id: "ccgl",
-            path: "出仓管理",
+            path: "销售管理",
             icon: "el-icon-menu",
-            name: "出仓管理"
+            name: "销售管理"
           },
           childs: [
-            {
-              entity: {
-                id: "ccdlr",
-                path: "/Home/WarehouseEntry",
-                icon: "el-icon-document",
-                name: "出仓单录入"
-              }
-            },
-            {
-              entity: {
-                id: "ccdhz",
-                path: "/Home/WarehouseSummary",
-                icon: "el-icon-document",
-                name: "出仓单汇总"
-              }
-            },
             {
               entity: {
                 id: "xxhtgl",
@@ -287,6 +228,38 @@ export default {
                   }
                 }
               ]
+            },
+            {
+              entity: {
+                id: "ccdlr",
+                path: "/Home/WarehouseEntry",
+                icon: "el-icon-document",
+                name: "出仓单录入"
+              }
+            },
+            {
+              entity: {
+                id: "ccdhz",
+                path: "/Home/WarehouseSummary",
+                icon: "el-icon-document",
+                name: "出仓单汇总"
+              }
+            },
+            {
+              entity: {
+                id: "ccdhz",
+                path: "/Home/SalesCustomerExchangeAccount",
+                icon: "el-icon-document",
+                name: "销售客户往来明细账"
+              }
+            },
+            {
+              entity: {
+                id: "ccdhz",
+                path: "/Home/SalesCustomerExchangeSummary",
+                icon: "el-icon-document",
+                name: "销售客户往来汇总表"
+              }
             }
           ]
         },
@@ -298,6 +271,32 @@ export default {
             name: "加工管理"
           },
           childs: [
+            {
+              entity: {
+                id: "wwjghtgl",
+                path: "委外加工合同管理",
+                icon: "el-icon-menu",
+                name: "委外加工合同管理"
+              },
+              childs: [
+                {
+                  entity: {
+                    id: "wwjghtlr",
+                    path: "/Home/OutsourcingProcessingContractEntry",
+                    icon: "el-icon-document",
+                    name: "委外加工合同录入"
+                  }
+                },
+                {
+                  entity: {
+                    id: "wwjghthz",
+                    path: "/Home/OutsourcingProcessingContractSummary",
+                    icon: "el-icon-document",
+                    name: "委外加工合同汇总"
+                  }
+                }
+              ]
+            },
             {
               entity: {
                 id: "wwjgdlr",
@@ -324,37 +323,101 @@ export default {
             },
             {
               entity: {
-                id: "wwjghtgl",
-                path: "委外加工合同管理",
-                icon: "el-icon-menu",
-                name: "委外加工合同管理"
-              },
-              childs: [
-                {
-                  entity: {
-                    id: "wwjghtlr",
-                    path: "/Home/OutsourcingProcessingContractEntry",
-                    icon: "el-icon-document",
-                    name: "委外加工合同录入"
-                  }
-                },
-                {
-                  entity: {
-                    id: "wwjghthz",
-                    path: "/Home/OutsourcingProcessingContractSummary",
-                    icon: "el-icon-document",
-                    name: "委外加工合同汇总"
-                  }
-                }
-              ]
+                id: "ccdhz",
+                path: "/Home/ProcessingCustomerExchangeAccount",
+                icon: "el-icon-document",
+                name: "加工客户往来明细账"
+              }
+            },
+            {
+              entity: {
+                id: "ccdhz",
+                path: "/Home/ProcessingCustomerExchangeSummary",
+                icon: "el-icon-document",
+                name: "加工客户往来汇总表"
+              }
             }
+          ]
+        },
+        {
+          entity: {
+            id: "cchtgl",
+            path: "仓储物流",
+            icon: "el-icon-menu",
+            name: "仓储物流"
+          },
+          childs: [
+            {
+              entity: {
+                id: "cchtlr",
+                path: "/Home/WarehousingContractEntry",
+                icon: "el-icon-document",
+                name: "仓储合同录入"
+              }
+            },
+            {
+              entity: {
+                id: "cchthz",
+                path: "/Home/WarehousingContractSummary",
+                icon: "el-icon-document",
+                name: "仓储合同汇总"
+              }
+            },
+            {
+              entity: {
+                id: "cchthz",
+                path: "/Home/WarehouseCustomerExchangeAccount",
+                icon: "el-icon-document",
+                name: "仓储客户往来明细账"
+              }
+            },
+            {
+              entity: {
+                id: "cchthz",
+                path: "/Home/WarehouseCustomerExchangeSummary",
+                icon: "el-icon-document",
+                name: "仓储客户往来汇总表"
+              }
+            },
+            {
+              entity: {
+                id: "wlhetlr",
+                path: "/Home/LogisticsContractEntry",
+                icon: "el-icon-document",
+                name: "物流合同录入"
+              }
+            },
+            {
+              entity: {
+                id: "wlhthz",
+                path: "/Home/LogisticsContractsSummary",
+                icon: "el-icon-document",
+                name: "物流合同汇总"
+              }
+            },
+            {
+              entity: {
+                id: "cchthz",
+                path: "/Home/LogisticsCustomerExchangeAccount",
+                icon: "el-icon-document",
+                name: "物流客户往来明细账"
+              }
+            },
+            {
+              entity: {
+                id: "cchthz",
+                path: "/Home/LogisticsCustomerExchangeSummary",
+                icon: "el-icon-document",
+                name: "物流客户往来汇总表"
+              }
+            },
           ]
         }
       ],
       // 导航条 面包屑组数据
       breadList: [],
       menuMap: [], // 菜单路由映射表,
-      dynamicTags: [{name:"首页",path:"/Home"}], // 动态tags
+      dynamicTags: [{ name: "刷新", path: "/Home" }], // 动态tags
       activeTagIndex: 0
     };
   },
@@ -511,10 +574,10 @@ export default {
   box-sizing: border-box;
   overflow-y: auto;
 }
-.home-page-content{
+.home-page-content {
   text-align: center;
-  width:100%;
-  height:auto;
+  width: 100%;
+  height: auto;
 }
 .home-navBar {
   width: 100%;

@@ -12,12 +12,7 @@
       </div>
       <!--表格顶部区域-->
       <!--表格-->
-      <el-table
-        :data="ISGoods"
-        border
-        @cell-click="cellClick"
-        id="Table"
-      >
+      <el-table :data="ISGoods" border @cell-click="cellClick" id="Table">
         <el-table-column prop="Brand" label="牌号" width="120" align="center" fixed="left"></el-table-column>
         <el-table-column
           prop="Standards"
@@ -26,7 +21,7 @@
           width="180"
           fixed="left"
         ></el-table-column>
-        <el-table-column prop="Id" label="钢卷号" width="120" align="center" fixed="left"></el-table-column>
+        <el-table-column prop="SteelRollID" label="钢卷号" width="120" align="center" fixed="left"></el-table-column>
         <el-table-column prop="Ton" label="吨数" width="120" align="center" fixed="left"></el-table-column>
         <el-table-column
           v-for="(item,index) in tableTitle"
@@ -64,89 +59,25 @@
   </div>
 </template>
 <script>
+// 导入获取 所有加工单 API函数
+import { getAllProStoreList } from "@/api/WarehouseReceipt";
 export default {
   // 钢条小卷 重新打包
   name: "SteelCoilPacking",
   data() {
     return {
       tableTitle: [
-        { 
-          CoilID: "101", // 钢卷id
-          prop: "TwentyMM1",
-          label: "20mm",
-          width: "",
-          fixed: "",
-          isCheck: true, // 是否渲染显示 checkBox
-          checked:false, // 是否勾选
-          disabled:false, // 是否禁用操作
-          input: false
-        },
-        {
-          CoilID: "102", // 钢卷id
-          prop: "TwentyMM2",
-          label: "20mm",
-          width: "",
-          fixed: "",
-          isCheck: true, // 是否渲染显示 checkBox
-          checked:false, // 是否勾选
-          disabled:false, // 是否禁用操作
-          input: false
-        },
-        {
-          CoilID: "103", // 钢卷id
-          prop: "FiftyMM1",
-          label: "50mm",
-          width: "",
-          fixed: "",
-          isCheck: true, // 是否渲染显示 checkBox
-          checked:false, // 是否勾选
-          disabled:false, // 是否禁用操作
-          input: false
-        },
-        {
-          CoilID: "104", // 钢卷id
-          prop: "FiftyMM2",
-          label: "50mm",
-          width: "",
-          fixed: "",
-          isCheck: true, // 是否渲染显示 checkBox
-          checked:false, // 是否勾选
-          disabled:false, // 是否禁用操作
-          input: false
-        },
-        {
-          CoilID: "105", // 钢卷id
-          prop: "FiftyMM3",
-          label: "50mm",
-          width: "",
-          fixed: "",
-          isCheck: true, // 是否渲染显示 checkBox
-          checked:false, // 是否勾选
-          disabled:false, // 是否禁用操作
-          input: false
-        },
-        {
-          CoilID: "105", // 钢卷id
-          prop: "FiftyMM4",
-          label: "50mm",
-          width: "",
-          fixed: "",
-          isCheck: true, // 是否渲染显示 checkBox
-          checked:false, // 是否勾选
-          disabled:false, // 是否禁用操作
-          input: false
-        },
-        {
-          CoilID: "107", // 钢卷id
-          prop: "FiftyMM5",
-          label: "50mm",
-          width: "",
-          fixed: "",
-          isCheck: true, // 是否渲染显示 checkBox
-          checked:false, // 是否勾选
-          disabled:false, // 是否禁用操作
-          input: false
-        }
+        // {
+        //   CoilID: "101", // 钢卷id
+        //   prop: "TwentyMM1",
+        //   label: "20mm",
+        //   width: "",
+        //   fixed: "",
+        //   isCheck: true, // 是否渲染显示 checkBox
+        //   checked: false, // 是否勾选
+        //   disabled: false, // 是否禁用操作
+        //   input: false
+        // }
       ],
       ISGoods: [
         // SteelCoil:
@@ -155,29 +86,29 @@ export default {
           Brand: "牌号", // 牌号
           Standards: "规格", // 规格
           Ton: 10, //吨位
-          Striping:[
-              {
-                StripingId: "1001", // 分小条钢卷 Id
-                Standards: "如0.5*30mm", // 分小条钢卷规格
-                RollPackNo: "" // 所属卷包号
-              },
+          Striping: [
+            {
+              StripingId: "1001", // 分小条钢卷 Id
+              Standards: "如0.5*30mm", // 分小条钢卷规格
+              RollPackNo: "" // 所属卷包号
+            }
           ]
         },
         {
           ParentID: "112", //父钢卷号
           Brand: "", // 牌号
           Standards: "", // 规格
-          Ton: 15, //吨位
+          Ton: 15 //吨位
         },
         {
           ParentID: "113", //父钢卷号
           Brand: "", // 牌号
           Standards: "", // 规格
-          Ton: 13, //吨位
+          Ton: 13 //吨位
         }
       ],
-      checkedList:[], // 钢卷小条勾选列表
-      packingList:[], // 综合打包数据列表
+      checkedList: [], // 钢卷小条勾选列表
+      packingList: [] // 综合打包数据列表
     };
   },
   created() {
@@ -190,36 +121,104 @@ export default {
         }
       });
     });
+    this.getProStoreList();
   },
   methods: {
+    // 获取加工单列表数据
+    async getProStoreList() {
+      let result = await getAllProStoreList();
+      let ProStoreList;
+      if (result) {
+        ProStoreList = result.Result;
+        ProStoreList = ProStoreList.filter(item => {
+          return item.SeparateSolution;
+        });
+        // 
+        console.log(ProStoreList);
+        this.ISGoods = ProStoreList;
+        if (ProStoreList.length > 0) {
+          let SteelRollID = ProStoreList[0].SteelRollID;
+          let result = this.StripToJSONArr(ProStoreList);
+          // 结构赋值
+          let { StripArr, titleArr } = result;
+          console.log(StripArr, titleArr);
+          this.tableTitle = titleArr;
+        }
+      }
+    },
+    // 字符串分条转 JSON函数
+    StripToJSONArr(ProStoreList) {
+      if (ProStoreList == undefined || ProStoreList == null) return false;
+      let SteelRollID = ProStoreList[0].SteelRollID;
+      let SeparateSolution = ProStoreList[0].SeparateSolution;
+      let arr1 = SeparateSolution.split("/");
+      let arr2 = [];
+      let StripArr = [];
+      let titleArr = [];
+      if (arr1.length > 0) {
+        arr1.map((item1, index) => {
+          if (item1) {
+            arr2 = item1.split("*");
+            StripArr.push({
+              prop: arr2[0],
+              label: arr2[0],
+              Num: arr2[1]
+            });
+          }
+        });
+      }
+      StripArr.map(obj => {
+        let Num = Number(obj.Num);
+        let label = obj.label;
+        let CoilID = obj.CoilID;
+        for (let i = 0; i < Num; i++) {
+          titleArr.push({
+            prop: label,
+            label: `${label}-${i+1}`,
+            CoilID: `${label}C${i + 1}`,
+            width: "",
+            fixed: "",
+            isCheck: true, // 是否渲染显示 checkBox
+            checked: false, // 是否勾选
+            disabled: false, // 是否禁用操作
+            input: false
+          });
+        }
+      });
+      return { StripArr, titleArr };
+    },
     // 钢卷打包
     coilpacking() {
-      console.log(this.checkedList);
+      console.log("11",this.checkedList);
       // 打包后的钢条小卷 禁用
-     let tabel = $('#Table');
-     let checkBoxs = $('#Table').find('input:checked');
-     checkBoxs.each(function(){
-       $(this).attr("disabled",true);
-       $(this).parent().addClass("is-disabled is-checked");
-     })
-      let arr = [].concat(this.checkedList)
-      let item = {packing:arr}
+      let tabel = $("#Table");
+      let checkBoxs = $("#Table").find("input:checked");
+      checkBoxs.each(function() {
+        $(this).attr("disabled", true);
+        $(this)
+          .parent()
+          .addClass("is-disabled is-checked");
+      });
+      let arr = [].concat(this.checkedList);
+      let item = { packing: arr };
       this.packingList.push(item);
-      this.checkedList = [] // 重置清空
+      this.checkedList = []; // 重置清空
       console.log(this.packingList); // 打包后的数据
     },
     // 重置 checkBox
-    resetCheckBox(){
+    resetCheckBox() {
       this.packingList = [];
       // checkBox 去disabled
-      let checkBoxs = $('#Table').find('input:checked');
-      checkBoxs.each(function(){
-       $(this).attr("disabled",false);
-       $(this).parent().removeClass("is-disabled is-checked");
-     })
+      let checkBoxs = $("#Table").find("input:checked");
+      checkBoxs.each(function() {
+        $(this).attr("disabled", false);
+        $(this)
+          .parent()
+          .removeClass("is-disabled is-checked");
+      });
     },
     // checkBox 勾选事件
-    checkBoxChange(scope,item) {
+    checkBoxChange(scope, item) {
       console.log(scope,item)
       let rowIndex = scope.$index;
       let isChecked = scope.checked;
@@ -227,30 +226,29 @@ export default {
       if (isChecked) {
         let CoilID = scope.column.columnKey; // 小卷id
         let prop = scope.column.property; // 规格参数
-        let ParentID = scope.row.ParentID; // 父卷id
+        let SteelRollID = scope.row.SteelRollID; // 父卷id
         let Standards = item.label;
         let obj = {
-            CoilID:CoilID,
-            ParentID:ParentID,
-            prop:prop,
-            Standards:Standards
+          CoilID: CoilID,
+          SteelRollID: SteelRollID,
+          prop: prop,
+          Standards: Standards
         };
         this.checkedList.push(obj);
-      } else{
-          // 去掉勾选情况下 从数据列表中清除
+      } else {
+        // 去掉勾选情况下 从数据列表中清除
         let CoilID = scope.column.columnKey;
-        this.checkedList = this.checkedList.filter(item=>{
-            return item.CoilID != CoilID;
-        })
+        this.checkedList = this.checkedList.filter(item => {
+          return item.CoilID != CoilID;
+        });
       }
     },
     // 某小格cell点击事件
     cellClick(row, column, cell, event) {
-      console.log(cell);
-      console.log($(cell).find('input'));
+      // console.log(cell);
+      // console.log($(cell).find('input'));
       // $(cell).find('input').attr("disabled",true);
-
-    },
+    }
   }
 };
 </script>

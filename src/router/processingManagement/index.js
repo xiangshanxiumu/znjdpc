@@ -52,4 +52,20 @@ export default [
             auth:true,
         }
     },
+    {   // 加工客户往来明细账
+        path:'ProcessingCustomerExchangeAccount',
+        name:'ProcessingCustomerExchangeAccount',
+        component:()=>import('@/views/processingManagement/ProcessingCustomerExchangeAccount'),
+        meta:{
+            auth:true
+        }
+    },
+    {   // 加工客户往来汇总表
+        path:'ProcessingCustomerExchangeSummary',
+        name:'ProcessingCustomerExchangeSummary',
+        component:()=>import('@/views/processingManagement/ProcessingCustomerExchangeSummary'),
+        meta:{
+            auth:true
+        }
+    }
 ]

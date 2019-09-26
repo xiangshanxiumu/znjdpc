@@ -12,12 +12,15 @@ import warehousingManagement from './modules/warehousingManagement';
 import warehouseManagement from './modules/warehouseManagement';
 // 加工
 import processingManagement from './modules/processingManagement';
+// 所有仓单
+import warehouseReceipt from './modules/warehouseReceipt';
 export default new Vuex.Store({
     modules:{
         home,
         common,
         warehousingManagement,
         warehouseManagement,
-        processingManagement
+        processingManagement,
+        warehouseReceipt
     }
 })

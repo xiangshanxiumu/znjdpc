@@ -106,15 +106,9 @@
               </div>
             </el-table-column>
             <!--动态分条区-->
-            <el-table-column fixed prop="SurplusMaterial" label="分条余料" width="150"></el-table-column>
+            <el-table-column fixed prop="SurplusMaterial" label="分条余料" align="center" width="150"></el-table-column>
             <el-table-column label="操作" min-width="180" fixed="right">
               <template slot-scope="scope">
-                <!-- <el-button
-                  size="mini"
-                  @click="handleEdit(scope.$index, scope.row)"
-                  type="warning"
-                  plain
-                >编辑</el-button> -->
                 <el-button
                   size="mini"
                   type="danger"
@@ -252,32 +246,32 @@ export default {
         {
           prop: "Brand",
           label: "牌号",
-          width: "100",
+          width: "150",
           fixed: "left"
         },
         {
           prop: "Standards",
           label: "规格(厚*宽/单位mm)",
-          width: "100",
+          width: "150",
           fixed: "left"
         },
         {
           prop: "SteelRollID",
           label: "钢卷号",
-          width: "100",
+          width: "150",
           fixed: "left"
         },
         {
           prop: "Ton",
           label: "吨数",
-          width: "100",
+          width: "150",
           fixed: "left"
         },
         {
           prop: "SeparateSolution",
           label: "分条方案",
           fixed: "",
-          width: "",
+          width: "500",
           children: []
         }
       ],
@@ -484,7 +478,7 @@ export default {
         if (index === 0) {
           sums[index] = "合计";
           return;
-        } else if (index == 3) {
+        } else if (index >= 3) {
           const values = data.map(item => Number(item[column.property]));
           if (!values.every(value => isNaN(value))) {
             sums[index] = values.reduce((prev, curr) => {
@@ -495,6 +489,7 @@ export default {
                 return prev;
               }
             }, 0);
+            sums[index] = sums[index].toFixed(3);
             sums[index] += " 吨";
           }
         } else {
@@ -526,9 +521,9 @@ export default {
         let ProsID = this.StoreData.store.SID;
         // 分条方案添加到每个钢卷数据对象中 
         this.StoreData.store.SeparateSolution = this.SeparateSolution;
-        this.StoreData.goodlist.map(item=>{
-          item.ProsID = ProsID;
-        })
+        // this.StoreData.goodlist.map(item=>{
+        //   item.ProsID = ProsID;
+        // })
         // 调用录入API
         let result = await addWarehouseReceipt(this.StoreData);
         console.log(result)
@@ -588,7 +583,7 @@ export default {
   min-width: 5rem;
 }
 .tableWrap {
-  width: 90%;
+  width: 80%;
   display: block;
   box-sizing: border-box;
   overflow: auto;

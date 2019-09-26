@@ -15,7 +15,7 @@
           <el-form :model="searchFrom">
             <div class="input-box">
               <el-form-item label="采购合同编号" prop="CID" class="form-item">
-                <el-input v-model="searchFrom.CID" placeholder="请输入采购合同编号"></el-input>
+                <el-autocomplete v-model="searchFrom.CID" placeholder="请输入采购合同编号" :fetch-suggestions="querySearch" :trigger-on-focus="false"></el-autocomplete>
               </el-form-item>
             </div>
             <div class="input-box">
@@ -60,7 +60,7 @@
       <!--表格顶部区域-->
       <div class="table-top-area">
         <div class="table-top-btns">
-          <el-button size="mini" type="warning" @click="machiningHandle()">加工</el-button>
+          <el-button size="mini" type="warning" @click="machiningHandle()">加工分条</el-button>
           <el-button size="mini" type="danger" @click="outWarehouseHandle()">出仓</el-button>
           <el-button size="mini" type="success" @click="editHandle()">查看编辑</el-button>
         </div>
@@ -115,6 +115,7 @@
 import { getAllWarehousingReceipt } from "@/api/WarehouseReceipt";
 // 导入合同接口API函数
 import { getAllContractList, searchContractList } from "@/api/Contract";
+import { mapGetters } from "vuex";
 export default {
   // 入仓汇总表情况
   name: "WarehousingSummary",
@@ -140,7 +141,7 @@ export default {
       // 页面顶部搜索区 数据模型
       searchFrom: {
         CID: "", // 合同编号id
-        InsID: "", // 仓单编号id
+        SID: "", // 仓单编号id
         SteelRollID: "", // 钢卷号id
         Buyby: "", // 采购单位
         RecDepo: "", //收货仓库 接收仓库
@@ -205,10 +206,14 @@ export default {
       total: 10, // 总数据条数
       goodsList: [], // 总钢卷列表数据
       curList: [], // 搜索操作后的列表数据
-      multipleSelection: [] // 表格勾选内容数组
+      multipleSelection: [], // 表格勾选内容数组
+      // 搜索内容缓存 input 输入自动补全
+      SIDArr:[],
+      restaurants: [],
     };
   },
   computed: {
+    ...mapGetters(["CIDArr","BuybyArr"]),
     totalTon() {
       // 总吨位
       let count = 0;
@@ -226,6 +231,19 @@ export default {
     this.getList();
   },
   methods: {
+    // 输入搜索
+    querySearch(queryString, cb) {
+        let restaurants = this.CIDArr;
+        let results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants;
+        // 调用 callback 返回建议列表的数据
+        cb(results);
+    },
+    createFilter(queryString) {
+        return (restaurant) => {
+          return (restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+        };
+    },
+
     // 表单合计自定义统计计算方法
     getSummaries(param) {
       const { columns, data } = param;
@@ -315,6 +333,8 @@ export default {
       if (result.StatusCode == 200) {
         if (result.Result) {
           this.goodsList = result.Result;
+          // 提交store;
+          this.$store.commit('updateAllWarehousingReceipt',{"AllWarehousingReceipt":this.goodsList})
         }
         this.curList = [].concat(this.goodsList);
         // 计算总金额

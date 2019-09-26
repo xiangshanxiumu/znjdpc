@@ -23,6 +23,23 @@ export default [
             auth:true,
         }
     },
+    {   // 销售客户往来明细账
+        path:'SalesCustomerExchangeAccount',
+        name:'SalesCustomerExchangeAccount',
+        component:()=>import('@/views/warehouseManagement/SalesCustomerExchangeAccount'),
+        meta:{
+            auth:true,
+        }
+    },
+    {   // 销售客户往来明细账
+        path:'SalesCustomerExchangeSummary',
+        name:'SalesCustomerExchangeSummary',
+        component:()=>import('@/views/warehouseManagement/SalesCustomerExchangeSummary'),
+        meta:{
+            auth:true,
+        }
+    },
+    // 销售合同
     {
         path:'SalesContractEntry',
         name:'SalesContractEntry',

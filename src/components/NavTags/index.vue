@@ -12,7 +12,7 @@
       :class="{'NavTags-active':ActiveIndex==index}"
       v-for="(item,index) in DynamicTags"
       :key="index"
-      :closable="item.name!='首页'"
+      :closable="item.name!='刷新'"
       :disable-transitions="false"
       @close="handleClose(index,item)"
       @click="tabClickHandle(index)"
@@ -97,6 +97,10 @@ export default {
       // if(path.match('/')==null){
       //   path = '/'+path;
       // }
+      if(path=='/Home'){ // 首页刷新页面
+        location.href = '/';
+        return false;
+      }
       this.$router.push({
         path: path
       });
@@ -105,12 +109,6 @@ export default {
         return item != undefined;
       });
     },
-    //首页点击事件
-    homeClickHandle(){
-      this.$router.replace({
-        path:'/Home'
-      })
-    }
   }
 };
 </script>

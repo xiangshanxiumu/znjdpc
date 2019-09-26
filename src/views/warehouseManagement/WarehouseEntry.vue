@@ -94,6 +94,7 @@
           show-summary
           :summary-method="getSummaries"
           style="width: 100%"
+          max-height="600"
         >
           <el-table-column
             v-for="(item,index) in tableTitle"
@@ -335,7 +336,7 @@ export default {
     ]),
     pageTitle() {
       // 页面标题
-      return `入仓单信息${this.operation}`;
+      return `出仓单信息${this.operation}`;
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -349,6 +350,7 @@ export default {
         if (vm.Store.goodlist.length > 0) {
           if (vm.Store.goodlist[0].RecDepo) {
             vm.Store.store.StoreName = vm.Store.goodlist[0].RecDepo;
+            vm.Store.store.Buyby = vm.Store.goodlist[0].Buyby;
           }
         }
       }
