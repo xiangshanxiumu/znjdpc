@@ -7,7 +7,7 @@
  -->
 <template>
   <div class="page-wrap">
-    <h1>采购合同录入</h1>
+    <h1>{{pageTitle}}</h1>
     <el-form :model="ContractData.contract" :rules="rules" ref="ruleForm">
       <div class="page-topPart">
         <div class="left-box">
@@ -169,6 +169,7 @@
 import FileUpload from "@/components/common/FileUpload";
 // 添加合同接口函数
 import { addContract } from "@/api/Contract";
+import { mapGetters } from "vuex";
 export default {
   // 采购合同录入
   name: "ProcurementContractEntry",
@@ -263,12 +264,39 @@ export default {
         CETon: 0, // 吨位
         CEUnitPrice: 0, // 单价
         CETotalPrice: 0, // 合计金额
-        CEInfo: "" // 备注
+        CEInfo: "", // 备注
+        CID: "" // 合同id
       },
-      formLabelWidth: "100px"
+      formLabelWidth: "100px",
+      operation: "录入" // 操作
     };
   },
+  computed: {
+    ...mapGetters(["viewEditorContract"]),
+    pageTitle() {
+      // 页面标题
+      return `采购合同${this.operation}`;
+    }
+  },
+  created() {
+    // 从入仓单汇总表单 入仓单查看 编辑
+    if (this.$route.query.operation) {
+      if (this.$route.query.operation == "查看编辑") {
+        this.operation = this.$route.query.operation;
+        this.explicitViewEditor(this.viewEditorContract);
+      }
+    }
+  },
   methods: {
+    // 采购合同汇总表 查看详情 回显 编辑
+    explicitViewEditor(contractExt) {
+      this.ContractData.contractExt = [].concat(contractExt);
+      let obj = this.ContractData.contractExt[0];
+      // 数据同步到store
+      Object.assign(this.ContractData.contract, obj);
+      // 需方 Demand "福建中鞍科技有限公司"
+      this.ContractData.contract.Demand = "福建中鞍科技有限公司";
+    },
     // 表格新增一行
     addOneRow() {
       let row = {
@@ -279,8 +307,15 @@ export default {
         CETon: 0, // 吨位
         CEUnitPrice: 0, // 单价
         CETotalPrice: 0, // 合计金额
-        CEInfo: "" // 备注
+        CEInfo: "", // 备注
+        CID: "" // 合同id
       };
+      // 判断有否前一行数据存在,存在则复制前一行数据
+      let len = this.ContractData.contractExt.length;
+      if(len>=1){
+        // 把前一行数据赋值给row
+        row = JSON.parse(JSON.stringify(this.ContractData.contractExt[len-1])); // 克隆
+      }
       this.ContractData.contractExt.push(row);
     },
     // 合同表单 删除事件
@@ -353,40 +388,35 @@ export default {
           item.CID = CID;
         });
         console.log(this.ContractData);
+        this.$loadingShow("合同录入中...");
         let result = await addContract(this.ContractData);
-        const loading = this.$loading({
-          lock: true,
-          text: "采购合同录入",
-          spinner: "el-icon-loading",
-          background: "rgba(0, 0, 0, 0.7)"
-        });
         console.log(result);
-        // Message;
-        if (result.StatusCode == 200) {
-          loading.close(); // 关闭加载动画
-          this.$alert(result.Message, "采购合同录入", {
-            confirmButtonText: "确定",
-            type: "success",
-            callback: action => {
-              this.$message({
-                type: "success",
-                message: `采购合同录入成功`
-              });
-              // 返回上一页面 或汇总表
-              this.$router.push({
-                path: "ProcurementContractSummary"
-              });
-              // this.$forceUpdate();
-            }
-          });
-        } else {
-          loading.close(); // 关闭加载动画
-          this.$alert(result.Message, "采购合同录入失败", {
-            confirmButtonText: "确定",
-            type: "warning",
-            // center: true,
-            callback: action => {}
-          });
+        if (result) {
+          this.$loadingHide();
+          if (result.StatusCode == 200) {
+            this.$alert(result.Message, "采购合同录入", {
+              confirmButtonText: "确定",
+              type: "success",
+              callback: action => {
+                this.$message({
+                  type: "success",
+                  message: `采购合同录入成功`
+                });
+                // 返回上一页面 或汇总表
+                this.$router.push({
+                  path: "ProcurementContractSummary"
+                });
+                // this.$forceUpdate();
+              }
+            });
+          } else {
+            this.$alert(result.Message, "采购合同录入失败", {
+              confirmButtonText: "确定",
+              type: "warning",
+              // center: true,
+              callback: action => {}
+            });
+          }
         }
       }
     }

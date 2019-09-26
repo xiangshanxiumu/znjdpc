@@ -44,10 +44,18 @@
       <!--搜索区-->
       <!--表格顶部区域-->
       <div class="table-top-area">
+        <div class="table-top-btns">
+          <el-button size="mini" type="success" @click="viewEditorHandle">查看编辑</el-button>
+          <el-button size="mini" type="primary" @click="examineHandle">审核</el-button>
+        </div>
         <div class="table-top-status">
           <div class="status-item">
             <span class="status-item-label">总吨位:</span>
             <span>{{totalTon}}吨</span>
+          </div>
+          <div class="status-item">
+            <span class="status-item-label">总金额:</span>
+            <span>{{totalMoney}}元</span>
           </div>
         </div>
       </div>
@@ -62,37 +70,15 @@
         style="width: 100%"
         @selection-change="handleSelectionChange"
       >
-        >
-        <!-- <el-table-column type="selection" width="55"></el-table-column> -->
+        <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column
           v-for="(item,index) in tableTitle"
           :key="index"
           sortable
           :prop="item.prop"
           :label="item.label"
+          align="center"
         ></el-table-column>
-        <el-table-column fixed="right" label="操作" width="250">
-          <template slot-scope="scope">
-            <el-button
-              size="mini"
-              type="primary"
-              plain
-              @click="examineHandle(scope.$index, scope.row)"
-            >审核</el-button>
-            <el-button
-              size="mini"
-              type="warning"
-              plain
-              @click="handleEdit(scope.$index, scope.row)"
-            >编辑</el-button>
-            <el-button
-              size="mini"
-              type="danger"
-              plain
-              @click="handleDelete(scope.$index, scope.row)"
-            >删除</el-button>
-          </template>
-        </el-table-column>
       </el-table>
       <!--列表-->
       <!--分页器-->
@@ -120,14 +106,23 @@ export default {
     return {
       tableData: [
         {
-          CID: "0101", // 合同id
-          Supply: "新余中冶", // 供方
-          Demand: null, // 需方
-          Address: null, // 合同签订地址
-          SignTime: "2019-01-04 00:00:00", // 合同签订时间
-          CEPath: null, // 附件地址
-          Type: "采购", // 合同类型
-          Id: "0101",
+          Address: null,
+          CEBrand: "50ZW350",
+          CEFactroyName: "中冶",
+          CEInfo: "出厂价+23元短运费",
+          CEName: "冷轧无取向硅钢卷",
+          CEPath: null,
+          CEStandards: "0.5*1200*C",
+          CETon: 33, // 吨位
+          CEUnitPrice: 5773, // 单价
+          CETotalPrice:"",//合计金额
+          CID: "0904",
+          Demand: null,
+          ExPrice: 0, //
+          SignEndTime: null,
+          SignTime: "2018-10-21 00:00:00",
+          Supply: "新余中冶",
+          Type: "销售"
         }
       ],
       // 页面顶部搜索区 数据模型
@@ -143,34 +138,34 @@ export default {
           width: ""
         },
         {
-          prop: "CustomerName", // 客户名称
+          prop: "Demand", // 客户名称
           label: "客户名称",
           width: ""
         },
         {
-          prop: "ProductionUnit", // ProductionUnit
+          prop: "CEFactroyName",
           label: "生产单位",
           width: ""
         },
         {
-          prop: "GName", // 产品名称
+          prop: "CEName", // 产品名称
           label: "产品名称",
           width: ""
         },
         {
-          prop: "Brand",
+          prop: "CEBrand",
           label: "牌号"
         },
         {
-          prop: "Standards",
+          prop: "CEStandards",
           label: "规格"
         },
         {
-          prop: "Ton",
+          prop: "CETon",
           label: "数量(吨)"
         },
         {
-          prop: "UnitPrice",
+          prop: "CEUnitPrice",
           label: "单价(元)"
         },
         {
@@ -211,11 +206,26 @@ export default {
       let count = 0;
       if (this.curList.length > 0) {
         this.curList.map(item => {
-          count += parseFloat(item.Ton);
+          if (item.CETon) {
+            count += parseFloat(item.CETon);
+          }
         });
         count = count.toFixed(3);
       }
       return count;
+    },
+    // 总金额
+    totalMoney() {
+      let money = 0;
+      if (this.curList.length > 0) {
+        this.curList.map(item => {
+          if (item.CETotalPrice) {
+            money += parseFloat(item.CETotalPrice);
+          }
+        });
+        money = money.toFixed(3);
+      }
+      return money;
     }
   },
   created() {
@@ -255,6 +265,51 @@ export default {
       });
 
       return sums;
+    },
+    // 查看编辑 路由跳转到采购合同录入页面
+    viewEditorHandle() {
+      let len = this.multipleSelection.length;
+      if (len == 0) {
+        this.$message({
+          message: "请选择要查看编辑的合同",
+          type: "warning",
+          showClose: true,
+          center: true
+        });
+        return false;
+      }
+      if (len >= 2) {
+        // 当选择两个及以上时 判断合同编号是否一致
+        let CID = this.multipleSelection[0].CID; // 合同编号
+        let isAgreement = this.multipleSelection.every(item => {
+          return item.CID == CID;
+        });
+        if (!isAgreement) {
+          this.$message({
+            message: "选择编辑的合同编号不一致",
+            type: "error",
+            showClose: true,
+            center: true
+          });
+          return false;
+        }
+      }
+      let CID = this.multipleSelection[0].CID; // 合同编号
+      // 把同一个 CID仓单下的数据过滤出来
+      let viewEditorContract = this.goodsList.filter(item => {
+        return item.CID == CID;
+      });
+      // 提交store
+      this.$store.commit("updateViewEditorContract", {
+        viewEditorContract: viewEditorContract
+      });
+      // 路由跳转 到销售合同录入页面
+      this.$router.push({
+        name: "SalesContractEntry",
+        query: {
+          operation: "查看编辑"
+        }
+      });
     },
     // 计算获取钢卷号的列表数据
     getGoods(data) {
@@ -316,20 +371,14 @@ export default {
     async getList() {
       let result = await getAllContractList();
       console.log(result);
-      const loading = this.$loading({
-        lock: true,
-        text: "加载中",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)"
-      });
       if (result.StatusCode == 200) {
-        loading.close(); // 关闭加载动画
         if(result.Result){
           this.goodsList = result.Result;
           // 销售合同筛选
           this.goodsList = this.goodsList.filter(item=>{
             return item.Type == "销售";
           })
+          console.log(this.goodsList)
         }
         this.curList = this.curList.concat(this.goodsList);
         this.GoodsPaging(this.curList);
@@ -474,23 +523,19 @@ export default {
       this.pageEnd = this.pageSize * val - 1;
       this.tableData = this.curList.slice(this.pageStart, this.pageEnd);
     },
-    // 返回按钮
-    backHandle() {
-      this.$router.go(-1);
-    },
-    // 提交按钮
-    submitHandle() {
-      console.log("提交");
-    },
-    handleEdit(index, row) {
-      console.log(index, row);
-    },
-    handleDelete(index, row) {
-      console.log(index, row);
-    },
     // 审核
-    examineHandle(index, row) {
-      console.log(index, row);
+    examineHandle() {
+      console.log(this.multipleSelection);
+      let len = this.multipleSelection.length;
+      if (len == 0) {
+        this.$message({
+          message: "请选择要审核的合同",
+          type: "warning",
+          showClose: true,
+          center: true
+        });
+        return false;
+      }
     }
   }
 };
@@ -514,5 +559,8 @@ export default {
 }
 .button-right {
   margin-right: 3rem;
+}
+.table-top-status {
+  display: inline-flex;
 }
 </style>

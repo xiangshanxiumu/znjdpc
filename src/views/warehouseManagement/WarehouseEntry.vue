@@ -7,7 +7,7 @@
  -->
 <template>
   <div class="page-wrap">
-    <h1>出仓单录入</h1>
+    <h1>{{pageTitle}}</h1>
     <el-form :model="Store.store" :rules="rules" ref="ruleForm">
       <div class="page-topPart">
         <!--顶部input输入区域-->
@@ -196,11 +196,11 @@ export default {
         store: {
           SID: "",
           RecDate: "",
-          RecDepo: "",
+          RecDepo: "", //接收的地方
           RecPersonID: "",
           Buyby: "",
           SupplierOutID: "",
-          StoreName: "",
+          StoreName: "", //出的地方
           RecPlace: "",
           CarBoatID: "",
           RecUnitPerson: "",
@@ -324,13 +324,20 @@ export default {
         GInfo: "" // 备注
       },
       formLabelWidth: "120px", // 表单 label宽度
-      files: [] // 附件文件组
+      operation: "录入" // 操作
     };
   },
   computed: {
-    ...mapGetters(["outWarehouseList", "warehouseReceiptList"])
+    ...mapGetters([
+      "outWarehouseList",
+      "warehouseReceiptList",
+      "editSteelCoil"
+    ]),
+    pageTitle() {
+      // 页面标题
+      return `入仓单信息${this.operation}`;
+    }
   },
-  mounted() {},
   beforeRouteEnter(to, from, next) {
     next(vm => {
       // 通过 `vm` 访问组件实例
@@ -341,13 +348,29 @@ export default {
         // 初始填充 仓库名称
         if (vm.Store.goodlist.length > 0) {
           if (vm.Store.goodlist[0].RecDepo) {
-            vm.Store.ins.StoreName = vm.Store.goodlist[0].RecDepo;
+            vm.Store.store.StoreName = vm.Store.goodlist[0].RecDepo;
           }
         }
       }
     });
   },
+  created() {
+    // 从入仓单汇总表单 入仓单查看 编辑
+    if (this.$route.query.operation) {
+      if (this.$route.query.operation == "查看编辑") {
+        this.operation = this.$route.query.operation;
+        this.explicitEdit(this.editSteelCoil);
+      }
+    }
+  },
   methods: {
+    // 入仓单汇总表 查看详情 回显 编辑
+    explicitEdit(goodlist) {
+      this.Store.goodlist = [].concat(goodlist);
+      let obj = this.Store.goodlist[0];
+      // 数据同步到store
+      Object.assign(this.Store.store, obj);
+    },
     // 表格新增一行
     addOneRow() {
       let row = {
@@ -364,6 +387,12 @@ export default {
         RecInfoBack: "", // 异议反馈
         GInfo: "" // 备注
       };
+      // 判断有否前一行数据存在,存在则复制前一行数据
+      let len = this.Store.goodlist.length;
+      if (len >= 1) {
+        // 把前一行数据赋值给row
+        row = JSON.parse(JSON.stringify(this.Store.goodlist[len - 1])); // 克隆
+      }
       this.Store.goodlist.push(row);
     },
     // 表单合计自定义统计计算方法
@@ -433,17 +462,12 @@ export default {
           item.OutsID = OutsID;
         });
         console.log(this.Store);
+        this.$loadingShow("出仓单录入处理中...");
         // 调用录入API
         let result = await addWarehouseReceipt(this.Store);
-        const loading = this.$loading({
-          lock: true,
-          text: "出仓单录入",
-          spinner: "el-icon-loading",
-          background: "rgba(0, 0, 0, 0.7)"
-        });
-        loading.close();
-        if (result.StatusCode == 200) {
-          setTimeout(() => {
+        if (result) {
+          this.$loadingHide();
+          if (result.StatusCode == 200) {
             this.$alert(result.Message, "出仓单录入", {
               confirmButtonText: "确定",
               type: "success",
@@ -460,23 +484,21 @@ export default {
                 });
               }
             });
-          }, 1000);
-        } else if(result.StatusCode == 424){
-          this.$alert("当前采购合同编号不存在", "出仓单录入失败", {
+          } else if (result.StatusCode == 424) {
+            this.$alert("当前采购合同编号不存在", "出仓单录入失败", {
               confirmButtonText: "确定",
-              type: 'warning',
+              type: "warning",
               // center: true,
-              callback: action => {
-              }
+              callback: action => {}
             });
-        } else {
-          this.$alert(result.Message, "出仓单录入失败", {
+          } else {
+            this.$alert(result.Message, "出仓单录入失败", {
               confirmButtonText: "确定",
-              type: 'warning',
+              type: "warning",
               // center: true,
-              callback: action => {
-              }
-          });
+              callback: action => {}
+            });
+          }
         }
       }
     }

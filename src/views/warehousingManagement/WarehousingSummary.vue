@@ -62,7 +62,7 @@
         <div class="table-top-btns">
           <el-button size="mini" type="warning" @click="machiningHandle()">加工</el-button>
           <el-button size="mini" type="danger" @click="outWarehouseHandle()">出仓</el-button>
-          <el-button size="mini" type="success" @click="editHandle()">编辑</el-button>
+          <el-button size="mini" type="success" @click="editHandle()">查看编辑</el-button>
         </div>
         <div class="table-top-status">
           <div class="status-item">
@@ -83,8 +83,8 @@
         style="width: 100%"
         @selection-change="handleSelectionChange"
       >
-        >
-        <el-table-column type="selection" width="55" align="center"></el-table-column>
+        
+        <el-table-column type="selection" width="50" align="center"></el-table-column>
         <el-table-column
           v-for="(item,index) in tableTitle"
           :key="index"
@@ -312,7 +312,6 @@ export default {
     // 获取列表数据
     async getList() {
       let result = await getAllWarehousingReceipt();
-      console.log(result)
       if (result.StatusCode == 200) {
         if (result.Result) {
           this.goodsList = result.Result;
@@ -491,28 +490,39 @@ export default {
           center: true
         });
         return false;
-      } else if (this.multipleSelection.length >= 2) {
-        this.$message({
-          message: "只能选择一条钢卷编辑",
+      } else if (this.multipleSelection.length >= 2) { // 可以选择2各及以上 判断是否同一仓单
+        // SID 入仓单号
+        let SID = this.multipleSelection[0].SID;
+        let isAgreement = this.multipleSelection.every(item => {
+          return item.SID == SID;
+        });
+        if(!isAgreement){
+          this.$message({
+          message: "选择编辑钢卷的入仓单号不一致",
           type: "error",
           showClose: true,
           center: true
-        });
-        return false;
-      } else {
-        let editSteelCoil = this.multipleSelection[0];
-        // 编辑的钢卷数据 提交store暂存
+          });
+          return false;
+        }
+      }
+        // SID 入仓单号
+        let SID = this.multipleSelection[0].SID;
+        // 把同一个 SID仓单下的数据过滤出来
+        let editSteelCoil = this.goodsList.filter(item=>{
+          return item.SID == SID;
+        })
+        // 编辑的钢卷数据 提交store暂存 以仓单为标准编辑
         this.$store.commit("updateEditSteelCoil", {
-          editSteelCoil: editSteelCoil
+          editSteelCoil:editSteelCoil,
         });
         // 跳转到 入仓单录入页面 回显 编辑
         this.$router.push({
           name: "WarehousingReceiptEntry",
           query: {
-            operation: "编辑",
+            operation: "查看编辑",
           }
         });
-      }
     },
     // 表格勾选事件
     handleSelectionChange(val) {

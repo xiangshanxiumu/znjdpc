@@ -253,14 +253,6 @@ export default {
           { required: true, message: "请输入货物接收入库单位", trigger: "blur" }
         ],
         TransPrice: [{ required: true, message: "请输入运费", trigger: "blur" }]
-        // RecDate: [
-        //   {
-        //     type: "date",
-        //     required: true,
-        //     message: "请选择收货日期",
-        //     trigger: "change"
-        //   }
-        // ]
       },
       // 表头
       tableTitle: [
@@ -330,28 +322,33 @@ export default {
         GInfo: "" // 备注
       },
       formLabelWidth: "120px", // 表单 label宽度
-      operation:"录入",
+      operation: "录入" // 操作
     };
   },
   computed: {
     ...mapGetters(["editSteelCoil"]),
-    pageTitle(){ // 页面标题
+    pageTitle() {
+      // 页面标题
       return `入仓单信息${this.operation}`;
     }
   },
-  created(){
-    console.log(this.editSteelCoil);
-    console.log(this.$route.query)
-    if(this.$route.query.operation){
-      if(this.$route.query.operation == "入仓单编辑"){
+  created() {
+    // 从入仓单汇总表单 入仓单查看 编辑
+    if (this.$route.query.operation) {
+      if (this.$route.query.operation == "查看编辑") {
         this.operation = this.$route.query.operation;
+        this.explicitEdit(this.editSteelCoil);
       }
     }
-    console.log(this.operation)
-    console.log(this.pageTitle);
-    
   },
   methods: {
+    // 入仓单汇总表 查看详情 回显 编辑
+    explicitEdit(goodlist) {
+      this.Store.goodlist = [].concat(goodlist);
+      let obj = this.Store.goodlist[0];
+      // 数据同步到store
+      Object.assign(this.Store.store, obj);
+    },
     // 表格新增一行
     addOneRow() {
       let row = {
@@ -370,9 +367,9 @@ export default {
       };
       // 判断有否前一行数据存在,存在则复制前一行数据
       let len = this.Store.goodlist.length;
-      if(len>=1){
+      if (len >= 1) {
         // 把前一行数据赋值给row
-        row = JSON.parse(JSON.stringify(this.Store.goodlist[len-1])); // 克隆
+        row = JSON.parse(JSON.stringify(this.Store.goodlist[len - 1])); // 克隆
       }
       this.Store.goodlist.push(row);
     },
@@ -437,7 +434,6 @@ export default {
       });
       // 验证通过 调用接口
       if (isValid) {
-        console.log(this.Store);
         // InsID 数据替换
         let InsID = this.Store.store.SID;
         this.Store.goodlist.map(item => {
@@ -445,16 +441,12 @@ export default {
         });
         console.log(this.Store);
         // 调用录入API
+        this.$loadingShow("入仓单录入...");
         let result = await addWarehouseReceipt(this.Store);
-        // const loading = this.$loading({
-        //   lock: true,
-        //   text: "入仓单录入",
-        //   spinner: "el-icon-loading",
-        //   background: "rgba(0, 0, 0, 0.7)"
-        // });
         console.log(result);
-        // loading.close(); // 关闭加载动画
-        if (result.StatusCode == 200) {
+        if (result) {
+          this.$loadingHide();
+          if (result.StatusCode == 200) {
             this.$alert(result.Message, "入仓单录入", {
               confirmButtonText: "确定",
               type: "success",
@@ -470,22 +462,21 @@ export default {
                 });
               }
             });
-        } else if(result.StatusCode == 424){ 
-          this.$alert("当前采购合同编号不存在", "入仓单录入失败", {
+          } else if (result.StatusCode == 424) {
+            this.$alert("当前采购合同编号不存在", "入仓单录入失败", {
               confirmButtonText: "确定",
-              type: 'warning',
+              type: "warning",
               // center: true,
-              callback: action => {
-              }
+              callback: action => {}
             });
-        } else {
-          this.$alert(result.Message, "入仓单录入失败", {
+          } else {
+            this.$alert(result.Message, "入仓单录入失败", {
               confirmButtonText: "确定",
-              type: 'warning',
+              type: "warning",
               // center: true,
-              callback: action => {
-              }
+              callback: action => {}
             });
+          }
         }
       }
     }

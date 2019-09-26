@@ -7,7 +7,7 @@
  -->
 <template>
   <div class="page-wrap">
-    <h1>销售合同录入</h1>
+    <h1>{{pageTitle}}</h1>
     <el-form :model="ContractData.contract" :rules="rules" ref="ruleForm">
       <div class="page-topPart">
         <div class="left-box">
@@ -159,6 +159,7 @@
 import FileUpload from "@/components/common/FileUpload";
 // 导入合同API接口函数
 import { addContract } from "@/api/Contract";
+import { mapGetters } from "vuex";
 export default {
   // 销售合同录入
   name: "SalesContractEntry",
@@ -255,10 +256,37 @@ export default {
         CETotalPrice: 0, // 合计金额
         CEInfo: "" // 备注
       },
-      formLabelWidth: "100px"
+      formLabelWidth: "100px",
+      operation: "录入" // 操作
     };
   },
+  computed: {
+    ...mapGetters(["viewEditorContract"]),
+    pageTitle() {
+      // 页面标题
+      return `销售合同${this.operation}`;
+    }
+  },
+  created() {
+    // 从入仓单汇总表单 入仓单查看 编辑
+    if (this.$route.query.operation) {
+      if (this.$route.query.operation == "查看编辑") {
+        this.operation = this.$route.query.operation;
+        this.explicitViewEditor(this.viewEditorContract);
+      }
+    }
+  },
   methods: {
+    // 采购合同汇总表 查看详情 回显 编辑
+    explicitViewEditor(contractExt) {
+      console.log(contractExt)
+      this.ContractData.contractExt = [].concat(contractExt);
+      let obj = this.ContractData.contractExt[0];
+      // 数据同步到store
+      Object.assign(this.ContractData.contract, obj);
+      // 需方 Demand "福建中鞍科技有限公司"
+      // this.ContractData.contract.Demand = "福建中鞍科技有限公司";
+    },
     // 表格新增一行
     addOneRow() {
       let row = {
@@ -271,6 +299,12 @@ export default {
         CETotalPrice: 0, // 合计金额
         CEInfo: "" // 备注
       };
+      // 判断有否前一行数据存在,存在则复制前一行数据
+      let len = this.ContractData.contractExt.length;
+      if(len>=1){
+        // 把前一行数据赋值给row
+        row = JSON.parse(JSON.stringify(this.ContractData.contractExt[len-1])); // 克隆
+      }
       this.ContractData.contractExt.push(row);
     },
     // 合同表单 删除事件
@@ -338,17 +372,13 @@ export default {
       // 验证通过 调用接口
       if (isValid) {
         console.log(this.ContractData);
+        this.$loadingShow("销售合同录入处理中...");
         let result = await addContract(this.ContractData);
-        const loading = this.$loading({
-          lock: true,
-          text: "销售合同录入",
-          spinner: "el-icon-loading",
-          background: "rgba(0, 0, 0, 0.7)"
-        });
         console.log(result);
         // Message;
-        if (result.StatusCode == 200) {
-          loading.close(); // 关闭加载动画
+        if(result){
+          this.$loadingHide();
+          if (result.StatusCode == 200) {
           this.$alert(result.Message, "销售合同录入", {
             confirmButtonText: "确定",
             type: "success",
@@ -357,19 +387,18 @@ export default {
                   type: "success",
                   message: `销售合同录入成功`
               });
-              // 返回上一页面
+              // 返回 销售合同汇总
               this.$router.push({
                 path:"SalesContractSummary",
               })
-              // this.$forceUpdate();
             }
           });
         } else{
-          loading.close(); // 关闭加载动画
           this.$message({
             type: "info",
             message: result.Message
           });
+        }
         }
       }
     }

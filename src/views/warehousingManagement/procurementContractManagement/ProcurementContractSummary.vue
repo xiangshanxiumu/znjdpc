@@ -49,6 +49,9 @@
       <!--搜索区-->
       <!--表格顶部区域-->
       <div class="table-top-area">
+        <div class="table-top-btns">
+          <el-button size="mini" type="success" @click="viewEditorHandle">查看编辑</el-button>
+        </div>
         <div class="table-top-status">
           <div class="status-item">
             <span class="status-item-label">总吨位:</span>
@@ -72,7 +75,7 @@
         style="width: 100%"
         @selection-change="handleSelectionChange"
       >
-        >
+        <el-table-column type="selection" width="50" align="center"></el-table-column>
         <el-table-column
           v-for="(item,index) in tableTitle"
           :key="index"
@@ -107,17 +110,25 @@ export default {
   name: "ProcurementContractSummary",
   data() {
     return {
-      tableLoading:false, // table loading
+      tableLoading: false, // table loading
       tableData: [
         {
-          CID: "0101", // 合同id
-          Supply: "新余中冶", // 供方
-          Demand: null, // 需方
-          Address: null, // 合同签订地址
-          SignTime: "2019-01-04 00:00:00", // 合同签订时间
-          CEPath: null, // 附件地址
-          Type: "采购", // 合同类型
-          Id: "0101"
+          Address: null,
+          CEBrand: "50ZW350",
+          CEFactroyName: "中冶",
+          CEInfo: "出厂价+23元短运费",
+          CEName: "冷轧无取向硅钢卷",
+          CEPath: null,
+          CEStandards: "0.5*1200*C",
+          CETon: 33, // 吨位
+          CEUnitPrice: 5773, // 单价
+          CID: "0904",
+          Demand: null,
+          ExPrice: 0, //
+          SignEndTime: null,
+          SignTime: "2018-10-21 00:00:00",
+          Supply: "新余中冶",
+          Type: "采购"
         }
       ],
       // 页面顶部搜索区 数据模型
@@ -139,13 +150,18 @@ export default {
           width: "200"
         },
         {
-          prop: "Brand",
+          prop: "CEBrand",
           label: "牌号",
           width: "120"
         },
         {
-          prop: "Ton",
+          prop: "CETon",
           label: "数量(吨)",
+          width: "120"
+        },
+        {
+          prop: "CEUnitPrice",
+          label: "单价",
           width: "120"
         },
         {
@@ -164,7 +180,7 @@ export default {
           width: "150"
         },
         {
-          prop: "ContractEnclosure", // 合同附件
+          prop: "CEPath", // 合同附件
           label: "合同附件",
           width: "180"
         },
@@ -183,7 +199,7 @@ export default {
       pageIndex: 1, // 页码
       pageSize: 20, // 单次页面展示页面数据条数据
       pageStart: 0, // 起始数据条数
-      pageEnd: 19, // 结束数据条数
+      pageEnd: 20, // 结束数据条数
       total: 10, // 总数据条数
       goodsList: [], // 总钢卷列表数据
       curList: [], // 搜索操作后的列表数据
@@ -196,8 +212,8 @@ export default {
       let count = 0;
       if (this.curList.length > 0) {
         this.curList.map(item => {
-          if(item.Ton){
-            count += parseFloat(item.Ton);
+          if (item.CETon) {
+            count += parseFloat(item.CETon);
           }
         });
         count = count.toFixed(3);
@@ -206,7 +222,16 @@ export default {
     },
     // 总金额
     totalMoney() {
-      return 0;
+      let money = 0;
+      if (this.curList.length > 0) {
+        this.curList.map(item => {
+          if (item.CETotalPrice) {
+            money += parseFloat(item.CETotalPrice);
+          }
+        });
+        money = money.toFixed(3);
+      }
+      return money;
     }
   },
   mounted() {
@@ -246,6 +271,56 @@ export default {
       });
 
       return sums;
+    },
+    // 表格勾选事件
+    handleSelectionChange(val) {
+      // 勾选内容
+      this.multipleSelection = val;
+    },
+    // 查看编辑 路由跳转到采购合同录入页面
+    viewEditorHandle() {
+      let len = this.multipleSelection.length;
+      if (len == 0) {
+        this.$message({
+          message: "请选择要查看编辑的合同",
+          type: "warning",
+          showClose: true,
+          center: true
+        });
+        return false;
+      }
+      if (len >= 2) {
+        // 当选择两个及以上时 判断合同编号是否一致
+        let CID = this.multipleSelection[0].CID; // 合同编号
+        let isAgreement = this.multipleSelection.every(item => {
+          return item.CID == CID;
+        });
+        if (!isAgreement) {
+          this.$message({
+            message: "选择编辑的合同编号不一致",
+            type: "error",
+            showClose: true,
+            center: true
+          });
+          return false;
+        }
+      }
+      let CID = this.multipleSelection[0].CID; // 合同编号
+      // 把同一个 CID仓单下的数据过滤出来
+      let viewEditorContract = this.goodsList.filter(item => {
+        return item.CID == CID;
+      });
+      // 提交store
+      this.$store.commit("updateViewEditorContract", {
+        viewEditorContract: viewEditorContract
+      });
+      // 路由跳转 到采购合同录入页面
+      this.$router.push({
+        name: "ProcurementContractEntry",
+        query: {
+          operation: "查看编辑"
+        }
+      });
     },
     // 计算获取钢卷号的列表数据
     getGoods(data) {
@@ -306,14 +381,17 @@ export default {
     // 获取列表数据
     async getList() {
       let result = await getAllContractList();
-      console.log(result)
       if (result.StatusCode == 200) {
-        if(result.Result){
+        if (result.Result) {
           this.goodsList = result.Result;
           // 采购合同筛选
-          this.goodsList = this.goodsList.filter(item=>{
+          this.goodsList = this.goodsList.filter(item => {
             return item.Type == "采购";
-          })
+          });
+          // 计算总金额
+          this.goodsList.map(item => {
+            item.CETotalPrice = Number(item.CEUnitPrice) * Number(item.CETon);
+          });
         }
         this.curList = [].concat(this.goodsList);
         this.GoodsPaging(this.curList);
@@ -348,7 +426,7 @@ export default {
     // 搜索
     searchHandle() {
       // 搜索条件数据 清空格
-      for(let k in this.searchFrom) {
+      for (let k in this.searchFrom) {
         this.searchFrom[k] = this.searchFrom[k].trim();
       }
       // 空值判断
@@ -445,11 +523,6 @@ export default {
       this.$router.push({
         path: "WarehouseEntry"
       });
-    },
-    // 表格勾选事件
-    handleSelectionChange(val) {
-      // 勾选内容
-      this.multipleSelection = val;
     },
     // 分页器
     handleSizeChange(val) {

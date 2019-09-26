@@ -24,8 +24,8 @@
               </el-form-item>
             </div>
             <div class="input-box">
-              <el-form-item label="出仓单编号" prop="InsID" class="form-item">
-                <el-input v-model="searchFrom.InsID" placeholder="请输入仓单编号"></el-input>
+              <el-form-item label="出仓单编号" prop="SID" class="form-item">
+                <el-input v-model="searchFrom.SID" placeholder="请输入仓单编号"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
@@ -60,8 +60,9 @@
       <!--表格顶部区域-->
       <div class="table-top-area">
         <div class="table-top-btns">
-          <el-button size="mini" type="warning" @click="machiningHandle()">加工</el-button>
-          <el-button size="mini" type="danger" @click="outOfStockHandle()">出仓</el-button>
+          <!-- <el-button size="mini" type="warning" @click="machiningHandle()">加工</el-button>
+          <el-button size="mini" type="danger" @click="outOfStockHandle()">出仓</el-button> -->
+          <el-button size="mini" type="success" @click="viewEditorHandle">查看编辑</el-button>
         </div>
         <div class="table-top-status">
           <div class="status-item">
@@ -122,7 +123,7 @@ export default {
       tableData: [
         {
           CID: "1234567", // 合同ID
-          InsID: "123", // 入仓单ID
+          SID: "123", // 入仓单ID
           Buyby: "123", // 采购单位
           RecDate: "0001-01-01 00:00:00", // 接收日期
           RecDepo: "", // 接收仓库
@@ -138,7 +139,7 @@ export default {
       // 页面顶部搜索区 数据模型
       searchFrom: {
         CID: "", // 合同编号id
-        InsID: "", // 仓单编号id
+        SID: "", // 仓单编号id
         SteelRollID: "", // 钢卷号id
         Buyby: "", // 采购单位
         RecDepo: "", //收货仓库 接收仓库
@@ -146,7 +147,7 @@ export default {
       },
       tableTitle: [
         {
-          prop: "InsID", // 仓单编号id
+          prop: "SID", // 仓单编号id
           label: "出仓单编号"
         },
         {
@@ -224,6 +225,51 @@ export default {
     this.getList();
   },
   methods: {
+    // 编辑 入仓单 跳转到 入仓单录入页面
+    viewEditorHandle() {
+      // 判断是否有勾选要出仓加工的钢卷
+      if (this.multipleSelection.length == 0) {
+        this.$message({
+          message: "请选择要编辑的钢卷",
+          type: "warning",
+          showClose: true,
+          center: true
+        });
+        return false;
+      } else if (this.multipleSelection.length >= 2) { // 可以选择2各及以上 判断是否同一仓单
+        // SID 入仓单号
+        let SID = this.multipleSelection[0].SID;
+        let isAgreement = this.multipleSelection.every(item => {
+          return item.SID == SID;
+        });
+        if(!isAgreement){
+          this.$message({
+          message: "选择编辑钢卷的入仓单号不一致",
+          type: "error",
+          showClose: true,
+          center: true
+          });
+          return false;
+        }
+      }
+        // SID 入仓单号
+        let SID = this.multipleSelection[0].SID;
+        // 把同一个 SID仓单下的数据过滤出来
+        let editSteelCoil = this.goodsList.filter(item=>{
+          return item.SID == SID;
+        })
+        // 编辑的钢卷数据 提交store暂存 以仓单为标准编辑
+        this.$store.commit("updateEditSteelCoil", {
+          editSteelCoil:editSteelCoil,
+        });
+        // 跳转到 出仓单录入页面 回显 编辑
+        this.$router.push({
+          name: "WarehouseEntry",
+          query: {
+            operation: "查看编辑",
+          }
+        });
+    },
     // 表单合计自定义统计计算方法
     getSummaries(param) {
       const { columns, data } = param;
