@@ -14,22 +14,22 @@
           <div class="left-box">
             <div class="input-box">
               <el-form-item label="申请部门" prop="ApplyDep" class="form-item">
-                <el-input v-model="Store.store.ApplyDep" placeholder="请输入采购单位"></el-input>
+                <el-input v-model="Store.store.ApplyDep" placeholder="请输入内容"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="摘要" prop="Abstract" class="form-item">
-                <el-input v-model="Store.store.Abstract" type="textarea" placeholder="请输入采购单位"></el-input>
+                <el-input v-model="Store.store.Abstract" type="textarea" placeholder="请输入内容"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="合同金额" prop="ContractPrice" class="form-item">
-                <el-input v-model="Store.store.ContractPrice" placeholder="请输入采购单位"></el-input>
+                <el-input v-model="Store.store.ContractPrice" placeholder="请输入内容"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="付款金额" prop="PayPrice" class="form-item">
-                <el-input v-model="Store.store.PayPrice" placeholder="请输入采购单位"></el-input>
+                <el-input v-model="Store.store.PayPrice" placeholder="请输入内容"></el-input>
               </el-form-item>
             </div>
           </div>
@@ -56,7 +56,7 @@
             </div>
             <div class="input-box text-left">
               <el-form-item label="已付金额" prop="PaidPrice" class="form-item">
-                <el-input v-model="Store.store.PaidPrice" placeholder="请输入接收入库单位"></el-input>
+                <el-input v-model="Store.store.PaidPrice" placeholder="请输入内容"></el-input>
               </el-form-item>
             </div>
             <div class="input-box text-left">
@@ -81,7 +81,7 @@
               <el-form-item label="付款单位名称" prop="PayUnitName" class="form-item">
                 <el-input
                   v-model="Store.store.PayUnitName"
-                  placeholder="请输入采购单位"
+                  placeholder="请输入内容"
                   style="width:24rem"
                   :disabled="true"
                 ></el-input>
@@ -91,7 +91,7 @@
               <el-form-item label="收款单位名称" prop="RecUnitName" class="form-item">
                 <el-input
                   v-model="Store.store.RecUnitName"
-                  placeholder="请输入采购单位"
+                  placeholder="请输入内容"
                   style="width:24rem"
                   :disabled="true"
                 ></el-input>
@@ -103,7 +103,7 @@
               <el-form-item label="收款单位开户银行" prop="RecUnitBankName" class="form-item">
                 <el-input
                   v-model="Store.store.RecUnitBankName"
-                  placeholder="请输入接收入库单位"
+                  placeholder="请输入内容"
                   style="width:24rem"
                   :disabled="true"
                 ></el-input>
@@ -113,7 +113,7 @@
               <el-form-item label="收款单位账号" prop="RecUnitAccount" class="form-item">
                 <el-input
                   v-model="Store.store.RecUnitAccount"
-                  placeholder="请输入收款单位账号"
+                  placeholder="请输入内容"
                   style="width:24rem"
                   :disabled="true"
                 ></el-input>
