@@ -60,9 +60,9 @@
       <!--表格顶部区域-->
       <div class="table-top-area">
         <div class="table-top-btns">
-          <el-button size="mini" type="warning" @click="machiningHandle()">加工分条</el-button>
-          <el-button size="mini" type="danger" @click="outWarehouseHandle()">出仓</el-button>
-          <el-button size="mini" type="success" @click="editHandle()">查看编辑</el-button>
+          <el-button  type="warning" @click="machiningHandle()">加工分条</el-button>
+          <el-button  type="danger" @click="outWarehouseHandle()">出仓</el-button>
+          <el-button  type="success" @click="editHandle()">查看编辑</el-button>
         </div>
         <div class="table-top-status">
           <div class="status-item">
@@ -166,7 +166,7 @@ export default {
         },
         {
           prop: "RecDepo",
-          label: "收货仓库"
+          label: "仓库名称"
         },
         {
           prop: "Brand",

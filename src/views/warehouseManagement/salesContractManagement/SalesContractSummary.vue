@@ -45,8 +45,8 @@
       <!--表格顶部区域-->
       <div class="table-top-area">
         <div class="table-top-btns">
-          <el-button size="mini" type="success" @click="viewEditorHandle">查看编辑</el-button>
-          <el-button size="mini" type="primary" @click="examineHandle">审核</el-button>
+          <el-button  type="success" @click="viewEditorHandle">查看编辑</el-button>
+          <el-button  type="primary" @click="examineHandle">审核</el-button>
         </div>
         <div class="table-top-status">
           <div class="status-item">

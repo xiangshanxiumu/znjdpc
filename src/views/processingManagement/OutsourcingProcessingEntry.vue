@@ -67,8 +67,8 @@
         <!--表格顶部区域-->
         <div class="table-top-area">
           <div class="table-top-btns">
-            <el-button size="mini" type="primary" @click="addOneRow">新增一行</el-button>
-            <el-button size="mini" type="warning" @click="stripingEdit">分条方案编辑</el-button>
+            <el-button  type="primary" @click="addOneRow">新增一行</el-button>
+            <el-button  type="warning" @click="stripingEdit">分条方案编辑</el-button>
           </div>
           <div class="table-top-status"></div>
         </div>
@@ -94,7 +94,7 @@
               resizable
               align="center"
             >
-              <div v-if="item.children" class="children">
+              <template v-if="item.children" class="children">
                 <el-table-column
                   v-for="(item2,index) in item.children"
                   :key="index"
@@ -103,7 +103,7 @@
                   :width="item2.width"
                   algin="center"
                 ></el-table-column>
-              </div>
+              </template>
             </el-table-column>
             <!--动态分条区-->
             <el-table-column fixed prop="SurplusMaterial" label="分条余料" align="center" width="150"></el-table-column>
@@ -400,6 +400,7 @@ export default {
       if(StripData.domains.length ==0){
         return false;
       } else{
+        this.SeparateSolution = "",// 先清空
         StripData.domains.map(item=>{
           let label = item.Standards+"*"+item.Num;
           let prop = item.prop;
@@ -521,12 +522,8 @@ export default {
         let ProsID = this.StoreData.store.SID;
         // 分条方案添加到每个钢卷数据对象中 
         this.StoreData.store.SeparateSolution = this.SeparateSolution;
-        // this.StoreData.goodlist.map(item=>{
-        //   item.ProsID = ProsID;
-        // })
         // 调用录入API
         let result = await addWarehouseReceipt(this.StoreData);
-        console.log(result)
         if (result.StatusCode == 200) {
           setTimeout(() => {
             this.$alert(result.Message, "加工单录入", {
@@ -583,7 +580,7 @@ export default {
   min-width: 5rem;
 }
 .tableWrap {
-  width: 80%;
+  width: 95%;
   display: block;
   box-sizing: border-box;
   overflow: auto;

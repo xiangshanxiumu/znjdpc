@@ -12,7 +12,10 @@
         <img src="@/assets/logo.png" />
         <span>福建中鞍科技(御管家)管理系统</span>
       </div>
-      <div class="home-personal">个人信息区域</div>
+      <div class="home-personal">
+        <div class="home-personal-msg">个人信息区域</div>
+        <el-button @click="logOut">退出</el-button>
+      </div>
     </div>
     <div class="home-body">
       <div class="home-left">
@@ -27,7 +30,7 @@
           :default-active="activeMenuIndex"
           router
         >
-          <NavMenu :navMenus="menuData"></NavMenu>
+          <NavMenu :navMenus="roleMenu"></NavMenu>
         </el-menu>
       </div>
       <div class="home-right">
@@ -62,6 +65,8 @@ import NavMenu from "@/components/NavMenu";
 import BreadCrumb from "@/components/BreadCrumb";
 import NavTags from "@/components/NavTags";
 import { mapGetters } from "vuex";
+import { getAllCID, getAllContractList,} from "@/api/Contract";
+import {getAllWarehousingReceipt} from "@/api/WarehouseReceipt";
 export default {
   // 首页 布局
   name: "Home",
@@ -72,358 +77,25 @@ export default {
   },
   data() {
     return {
+      roleMenu: [], // 当前角色权限菜单
       isCollapse: false, // 菜单是否收起
-      activeMenuIndex: "cggl", // 初始展开菜单
-      // 菜单数据
-      menuData: [
-        {
-          entity: {
-            id: "cggl",
-            path: "资金管理",
-            icon: "el-icon-menu",
-            name: "资金管理"
-          },
-          childs: [
-            {
-              entity: {
-                id: "ContractEntry",
-                path: "/Home/ContractEntry",
-                icon: "el-icon-document",
-                name: "合同录入"
-              }
-            },
-            {
-              entity: {
-                id: "ContractSummary",
-                path: "/Home/ContractSummary",
-                icon: "el-icon-document",
-                name: "合同汇总"
-              }
-            },
-            {
-              entity: {
-                id: "PaymentApplicationFormEntry",
-                path: "/Home/PaymentApplicationFormEntry",
-                icon: "el-icon-document",
-                name: "付款申请单录入"
-              }
-            },
-            {
-              entity: {
-                id: "ReceivingApplicationFormEntry",
-                path: "/Home/ReceivingApplicationFormEntry",
-                icon: "el-icon-document",
-                name: "收款通知单录入"
-              }
-            },
-            {
-              entity: {
-                id: "SummaryOfReceiptsAndPayments",
-                path: "/Home/SummaryOfReceiptsAndPayments",
-                icon: "el-icon-document",
-                name: "收付款汇总表"
-              }
-            }
-          ]
-        },
-        {
-          entity: {
-            id: "rcgl",
-            path: "采购管理",
-            icon: "el-icon-menu",
-            name: "采购管理"
-          },
-          childs: [
-            {
-              entity: {
-                id: "cchtgl",
-                path: "采购合同管理",
-                icon: "el-icon-menu",
-                name: "采购合同管理"
-              },
-              childs: [
-                {
-                  entity: {
-                    id: "cchtlr",
-                    path: "/Home/ProcurementContractEntry",
-                    icon: "el-icon-document",
-                    name: "采购合同录入"
-                  }
-                },
-                {
-                  entity: {
-                    id: "cchthz",
-                    path: "/Home/ProcurementContractSummary",
-                    icon: "el-icon-document",
-                    name: "采购合同汇总"
-                  }
-                }
-              ]
-            },
-            {
-              entity: {
-                id: "rcdlr",
-                path: "/Home/WarehousingReceiptEntry",
-                icon: "el-icon-document",
-                name: "入仓单录入"
-              }
-            },
-            {
-              entity: {
-                id: "rcdhz",
-                path: "/Home/WarehousingSummary",
-                icon: "el-icon-document",
-                name: "入仓明细汇总表"
-              }
-            },
-
-            {
-              entity: {
-                id: "rcdhz",
-                path: "/Home/PurchaseCustomerExchangeAccount",
-                icon: "el-icon-document",
-                name: "采购客户往来明细账"
-              }
-            },
-            {
-              entity: {
-                id: "rcdhz",
-                path: "/Home/PurchaseCustomerExchangeSummary",
-                icon: "el-icon-document",
-                name: "采购客户往来汇总表"
-              }
-            }
-          ]
-        },
-        {
-          entity: {
-            id: "ccgl",
-            path: "销售管理",
-            icon: "el-icon-menu",
-            name: "销售管理"
-          },
-          childs: [
-            {
-              entity: {
-                id: "xxhtgl",
-                path: "销售合同",
-                icon: "el-icon-menu",
-                name: "销售合同管理"
-              },
-              childs: [
-                {
-                  entity: {
-                    id: "zxhtlr",
-                    path: "/Home/SalesContractEntry",
-                    icon: "el-icon-document",
-                    name: "销售合同录入"
-                  }
-                },
-                {
-                  entity: {
-                    id: "xxhthz",
-                    path: "/Home/SalesContractSummary",
-                    icon: "el-icon-document",
-                    name: "销售合同汇总"
-                  }
-                }
-              ]
-            },
-            {
-              entity: {
-                id: "ccdlr",
-                path: "/Home/WarehouseEntry",
-                icon: "el-icon-document",
-                name: "出仓单录入"
-              }
-            },
-            {
-              entity: {
-                id: "ccdhz",
-                path: "/Home/WarehouseSummary",
-                icon: "el-icon-document",
-                name: "出仓单汇总"
-              }
-            },
-            {
-              entity: {
-                id: "ccdhz",
-                path: "/Home/SalesCustomerExchangeAccount",
-                icon: "el-icon-document",
-                name: "销售客户往来明细账"
-              }
-            },
-            {
-              entity: {
-                id: "ccdhz",
-                path: "/Home/SalesCustomerExchangeSummary",
-                icon: "el-icon-document",
-                name: "销售客户往来汇总表"
-              }
-            }
-          ]
-        },
-        {
-          entity: {
-            id: "cggl",
-            path: "加工管理",
-            icon: "el-icon-menu",
-            name: "加工管理"
-          },
-          childs: [
-            {
-              entity: {
-                id: "wwjghtgl",
-                path: "委外加工合同管理",
-                icon: "el-icon-menu",
-                name: "委外加工合同管理"
-              },
-              childs: [
-                {
-                  entity: {
-                    id: "wwjghtlr",
-                    path: "/Home/OutsourcingProcessingContractEntry",
-                    icon: "el-icon-document",
-                    name: "委外加工合同录入"
-                  }
-                },
-                {
-                  entity: {
-                    id: "wwjghthz",
-                    path: "/Home/OutsourcingProcessingContractSummary",
-                    icon: "el-icon-document",
-                    name: "委外加工合同汇总"
-                  }
-                }
-              ]
-            },
-            {
-              entity: {
-                id: "wwjgdlr",
-                path: "/Home/OutsourcingProcessingEntry",
-                icon: "el-icon-document",
-                name: "委外加工单录入"
-              }
-            },
-            {
-              entity: {
-                id: "wwjgdhz",
-                path: "/Home/OutsourcingProcessingSummary",
-                icon: "el-icon-document",
-                name: "委外加工单汇总"
-              }
-            },
-            {
-              entity: {
-                id: "wwjggjdb",
-                path: "/Home/SteelCoilPacking",
-                icon: "el-icon-document",
-                name: "委外加工钢卷打包"
-              }
-            },
-            {
-              entity: {
-                id: "ccdhz",
-                path: "/Home/ProcessingCustomerExchangeAccount",
-                icon: "el-icon-document",
-                name: "加工客户往来明细账"
-              }
-            },
-            {
-              entity: {
-                id: "ccdhz",
-                path: "/Home/ProcessingCustomerExchangeSummary",
-                icon: "el-icon-document",
-                name: "加工客户往来汇总表"
-              }
-            }
-          ]
-        },
-        {
-          entity: {
-            id: "cchtgl",
-            path: "仓储物流",
-            icon: "el-icon-menu",
-            name: "仓储物流"
-          },
-          childs: [
-            {
-              entity: {
-                id: "cchtlr",
-                path: "/Home/WarehousingContractEntry",
-                icon: "el-icon-document",
-                name: "仓储合同录入"
-              }
-            },
-            {
-              entity: {
-                id: "cchthz",
-                path: "/Home/WarehousingContractSummary",
-                icon: "el-icon-document",
-                name: "仓储合同汇总"
-              }
-            },
-            {
-              entity: {
-                id: "cchthz",
-                path: "/Home/WarehouseCustomerExchangeAccount",
-                icon: "el-icon-document",
-                name: "仓储客户往来明细账"
-              }
-            },
-            {
-              entity: {
-                id: "cchthz",
-                path: "/Home/WarehouseCustomerExchangeSummary",
-                icon: "el-icon-document",
-                name: "仓储客户往来汇总表"
-              }
-            },
-            {
-              entity: {
-                id: "wlhetlr",
-                path: "/Home/LogisticsContractEntry",
-                icon: "el-icon-document",
-                name: "物流合同录入"
-              }
-            },
-            {
-              entity: {
-                id: "wlhthz",
-                path: "/Home/LogisticsContractsSummary",
-                icon: "el-icon-document",
-                name: "物流合同汇总"
-              }
-            },
-            {
-              entity: {
-                id: "cchthz",
-                path: "/Home/LogisticsCustomerExchangeAccount",
-                icon: "el-icon-document",
-                name: "物流客户往来明细账"
-              }
-            },
-            {
-              entity: {
-                id: "cchthz",
-                path: "/Home/LogisticsCustomerExchangeSummary",
-                icon: "el-icon-document",
-                name: "物流客户往来汇总表"
-              }
-            },
-          ]
-        }
-      ],
+      activeMenuIndex: "资金管理", // 初始展开菜单
       // 导航条 面包屑组数据
       breadList: [],
-      menuMap: [], // 菜单路由映射表,
       dynamicTags: [{ name: "刷新", path: "/Home" }], // 动态tags
       activeTagIndex: 0
     };
   },
-  // computed:{
-  //   ...mapGetters(['menuMap','breadList','dynamicTags'])
-  // },
+  computed: {
+    ...mapGetters([
+      "menuMap",
+      "fundManMenu",
+      "PurManMenu",
+      "SaleManMenu",
+      "ProManMenu",
+      "StoLManMenu"
+    ])
+  },
   watch: {
     // 监控路由变化
     $route: {
@@ -436,19 +108,52 @@ export default {
     }
   },
   created() {
+    // 获取全局初始数据
+    this.getGlobalData();
+    // 初始菜单渲染
+    if (sessionStorage.authMenu) {
+      this.roleMenu = this[`${sessionStorage.authMenu}`];
+    }
     // 生成菜单路由名称映射表
-    this.getMenuMap(this.menuData);
-    this.$store.commit("updateMenuMap", { menuMap: this.menuMap });
-  },
-  mounted() {
-    // 生成菜单路由名称映射表
-    // this.getMenuMap(this.menuData);
+    this.getMenuMap(this.roleMenu);
   },
   methods: {
+    // 获取全局初始数据
+    async getGlobalData() {
+      // 获取合同ID
+      let result = await getAllCID();
+      if(result){
+        if(result.Result){
+          let CIDList = result.Result.map(item=>{
+            return {
+              value:item
+            }
+          })
+          // 提交store
+          this.$store.commit('updteCIDList',{"CIDList":CIDList});
+        }
+      }
+      // getAllContractList
+      let result2 = await getAllContractList();
+      if(result2){
+        if(result2.Result){
+          // 提交store
+          this.$store.commit('updteAllContract',{"AllContract":result2.Result})
+        }
+      }
+      // getAllWarehousingReceipt
+      let result3 = await getAllWarehousingReceipt();
+      if(result3){
+        if(result3.Result){
+          this.$store.commit('updateAllWarehouseReceipt',{"AllWarehouseReceipt":result3.Result})
+        }
+      }
+    },
+    // 生成菜单路由名称映射表
     getMenuMap(menuData) {
       menuData.map((item, index) => {
         if (item.entity) {
-          this.menuMap.push({
+          this.roleMenu.push({
             path: item.entity.path,
             name: item.entity.name
           });
@@ -469,7 +174,7 @@ export default {
       }
       // 不存在情况下 添加tags
       if (!isHas) {
-        let tagItem = this.menuMap.find(item => {
+        let tagItem = this.roleMenu.find(item => {
           return item.path == path;
         });
         this.dynamicTags.push(tagItem);
@@ -500,11 +205,16 @@ export default {
       // 获取面包屑数据组
       let arr = keyPath;
       arr.map((path, index) => {
-        let list = this.menuMap.filter((menuItem, index) => {
+        let list = this.roleMenu.filter((menuItem, index) => {
           return menuItem.path == path;
         });
         this.breadList = this.breadList.concat(list);
       });
+    },
+    // 登录退出
+    logOut() {
+      sessionStorage.clear(); // 清楚所有的sessionStorsage信息
+      this.$router.replace("/Login");
     }
   }
 };
@@ -547,7 +257,9 @@ export default {
   align-items: center;
   /* background-color: #d3dce6; */
 }
-
+.home-personal-msg {
+  padding: 0rem 1rem;
+}
 .home-body {
   flex: 1;
   display: flex;

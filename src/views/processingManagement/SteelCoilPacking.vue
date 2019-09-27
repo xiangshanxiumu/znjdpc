@@ -5,8 +5,8 @@
       <!--表格顶部区域-->
       <div class="table-top-area">
         <div class="table-top-btns">
-          <el-button size="mini" type="primary" @click="coilpacking">打包</el-button>
-          <el-button size="mini" type="danger" @click="resetCheckBox">重置</el-button>
+          <el-button type="primary" @click="coilpacking">打包</el-button>
+          <el-button type="danger" @click="resetCheckBox">重置</el-button>
         </div>
         <div class="table-top-status"></div>
       </div>
@@ -55,17 +55,111 @@
         </el-table-column>
       </el-table>
       <!--表格-->
+      <!-- <DragTable :data="tableData" :header="tableHeader" :option="tableOption">
+        <el-table-column slot="fixed" fixed prop="date" label="日期" width="150"></el-table-column>
+      </DragTable> -->
     </div>
   </div>
 </template>
 <script>
+// 导入Sortable 表格拖拽
+import Sortable from "sortablejs";
+// 可拖拽表格
+import DragTable from "./component/DragTable";
 // 导入获取 所有加工单 API函数
 import { getAllProStoreList } from "@/api/WarehouseReceipt";
 export default {
   // 钢条小卷 重新打包
   name: "SteelCoilPacking",
+  components: {
+    Sortable,
+    DragTable
+  },
   data() {
     return {
+      tableOption: {
+        border: true,
+        maxHeight: 500
+      },
+      tableHeader: [
+        {
+          prop: "name",
+          label: "姓名",
+          sortable: true,
+          sortMethod: this.handleNameSort
+        },
+        {
+          prop: "province",
+          label: "省份",
+          minWidth: "120"
+        },
+        {
+          prop: "city",
+          label: "市区",
+          minWidth: "120"
+        },
+        {
+          prop: "address",
+          label: "地区",
+          minWidth: "150"
+        },
+        {
+          prop: "zip",
+          label: "邮编",
+          minWidth: "120"
+        }
+      ],
+
+      tableData: [
+        {
+          date: "2016-05-03",
+          name: "王小虎",
+          province: "上海",
+          city: "普陀区",
+          address: "上海市普陀区金沙江路 1518 弄",
+          zip: 200333
+        },
+        {
+          date: "2016-05-02",
+          name: "王小虎",
+          province: "上海",
+          city: "普陀区",
+          address: "上海市普陀区金沙江路 1518 弄",
+          zip: 200333
+        },
+        {
+          date: "2016-05-04",
+          name: "王小虎",
+          province: "上海",
+          city: "普陀区",
+          address: "上海市普陀区金沙江路 1518 弄",
+          zip: 200333
+        },
+        {
+          date: "2016-05-01",
+          name: "王小虎",
+          province: "上海",
+          city: "普陀区",
+          address: "上海市普陀区金沙江路 1518 弄",
+          zip: 200333
+        },
+        {
+          date: "2016-05-08",
+          name: "王小虎",
+          province: "上海",
+          city: "普陀区",
+          address: "上海市普陀区金沙江路 1518 弄",
+          zip: 200333
+        },
+        {
+          date: "2016-05-06",
+          name: "王小虎",
+          province: "上海",
+          city: "普陀区",
+          address: "上海市普陀区金沙江路 1518 弄",
+          zip: 200333
+        }
+      ],
       tableTitle: [
         // {
         //   CoilID: "101", // 钢卷id
@@ -133,7 +227,7 @@ export default {
         ProStoreList = ProStoreList.filter(item => {
           return item.SeparateSolution;
         });
-        // 
+        //
         console.log(ProStoreList);
         this.ISGoods = ProStoreList;
         if (ProStoreList.length > 0) {
@@ -174,7 +268,7 @@ export default {
         for (let i = 0; i < Num; i++) {
           titleArr.push({
             prop: label,
-            label: `${label}-${i+1}`,
+            label: `${label}-${i + 1}`,
             CoilID: `${label}C${i + 1}`,
             width: "",
             fixed: "",
@@ -189,7 +283,7 @@ export default {
     },
     // 钢卷打包
     coilpacking() {
-      console.log("11",this.checkedList);
+      console.log("11", this.checkedList);
       // 打包后的钢条小卷 禁用
       let tabel = $("#Table");
       let checkBoxs = $("#Table").find("input:checked");
@@ -219,7 +313,7 @@ export default {
     },
     // checkBox 勾选事件
     checkBoxChange(scope, item) {
-      console.log(scope,item)
+      console.log(scope, item);
       let rowIndex = scope.$index;
       let isChecked = scope.checked;
       // 勾选情况下 添加到数据列表
@@ -248,6 +342,19 @@ export default {
       // console.log(cell);
       // console.log($(cell).find('input'));
       // $(cell).find('input').attr("disabled",true);
+    },
+    // 列拖拽
+    columnDrop() {
+      const wrapperTr = document.querySelector(".el-table__header-wrapper tr");
+      this.sortable = Sortable.create(wrapperTr, {
+        animation: 180,
+        delay: 0,
+        onEnd: evt => {
+          const oldItem = this.dropCol[evt.oldIndex];
+          this.dropCol.splice(evt.oldIndex, 1);
+          this.dropCol.splice(evt.newIndex, 0, oldItem);
+        }
+      });
     }
   }
 };

@@ -15,7 +15,9 @@ export const startLoading = (loadingText) => {
 }
 // 关闭loading动画效果
 export const endLoading = () => {
-  loading.close()
+  if(loading){
+    loading.close()
+  }
 }
 // vue全局挂载
 Vue.prototype.$loadingShow = (loadingText) =>{
@@ -30,5 +32,7 @@ Vue.prototype.$loadingShow = (loadingText) =>{
   })
 }
 Vue.prototype.$loadingHide = ()=>{
-  loading.close();
+  if(loading){
+    loading.close();
+  }
 }

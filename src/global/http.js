@@ -17,11 +17,13 @@ axios.interceptors.request.use((config) => {
     if(config.method == "post"){
       // config.data = qs.stringify(config.data); 数据转 k=v&k=v
       loadingText = "处理中..."
-    } else if(config.method == "get"){
-      loadingText = config.params.loadingText
-    }
-    // 开启loading
       startLoading(loadingText);
+    } else if(config.method == "get"){
+      if(config.params && config.params.loadingText){
+        loadingText = config.params.loadingText;
+        startLoading(loadingText);
+      }
+    }
     return config;
 },
 (err)=>{

@@ -12,6 +12,10 @@ import warehouseManagement from './warehouseManagement';
 import processingManagement from './processingManagement';
 // 仓储物流模块
 import warehouseLogistics from './warehouseLogistics';
+// 营销管理
+import marketManagement from './marketManagement';
+// 综合管理
+import comprehensiveManagement from './comprehensiveManagement';
 export default [
       {
         path: '/Home',
@@ -24,6 +28,8 @@ export default [
           ...warehouseManagement,
           ...processingManagement,
           ...warehouseLogistics,
+          ...marketManagement,
+          ...comprehensiveManagement,
         ],
         meta:{
             // KeepAlive:true,

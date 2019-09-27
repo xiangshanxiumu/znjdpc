@@ -8,113 +8,151 @@
 <template>
   <div class="page-wrap">
     <h1>付款申请单录入</h1>
-    <el-form :model="InStore" :rules="rules" ref="ruleForm">
+    <el-form :model="Store.store" :rules="rules" ref="ruleForm">
       <div class="page-topPart">
-        <!--顶部input输入区域-->
         <div class="page-topPart-inputArea">
           <div class="left-box">
             <div class="input-box">
-              <el-form-item label="采购合同编号" prop="contractId" class="form-item">
-                <el-input v-model="InStore.contractId" placeholder="请输入内容"></el-input>
+              <el-form-item label="申请部门" prop="ApplyDep" class="form-item">
+                <el-input v-model="Store.store.ApplyDep" placeholder="请输入采购单位"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
-              <el-form-item label="仓库名称" prop="StoreName" class="form-item">
-                <el-input v-model="InStore.StoreName" placeholder="请输入内容"></el-input>
+              <el-form-item label="摘要" prop="Abstract" class="form-item">
+                <el-input v-model="Store.store.Abstract" type="textarea" placeholder="请输入采购单位"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
-              <el-form-item label="销售单位" prop="Buyby" class="form-item">
-                <el-input v-model="InStore.Buyby" placeholder="请输入内容"></el-input>
-              </el-form-item>
-            </div>
-          </div>
-          <div class="middle-box">
-            <div class="input-box">
-              <el-form-item label="入仓单编号" prop="Id" class="form-item">
-                <el-input v-model="InStore.Id" placeholder="请输入内容"></el-input>
+              <el-form-item label="合同金额" prop="ContractPrice" class="form-item">
+                <el-input v-model="Store.store.ContractPrice" placeholder="请输入采购单位"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
-              <el-form-item label="收货地点" prop="RecPlace" class="form-item">
-                <el-input v-model="InStore.RecPlace" placeholder="请输入内容"></el-input>
-              </el-form-item>
-            </div>
-            <div class="input-box">
-              <el-form-item label="车船号" prop="CarBoatID" class="form-item">
-                <el-input v-model="InStore.CarBoatID" placeholder="请输入内容"></el-input>
+              <el-form-item label="付款金额" prop="PayPrice" class="form-item">
+                <el-input v-model="Store.store.PayPrice" placeholder="请输入采购单位"></el-input>
               </el-form-item>
             </div>
           </div>
           <div class="right-box">
-            <div class="input-box">
-              <el-form-item label="货物接收入库单位" prop="RecUnitPerson" class="form-item">
-                <el-input v-model="InStore.RecUnitPerson" placeholder="请输入内容"></el-input>
-              </el-form-item>
-            </div>
-            <div class="input-box">
-              <el-form-item label="收货日期" prop="RecDate" class="form-item">
+            <div class="input-box text-left">
+              <el-form-item label="申请日期" prop="ApplyDate" class="form-item">
                 <el-date-picker
-                  v-model="InStore.RecDate"
+                  v-model="Store.store.ApplyDate"
                   value-format="yyyy-MM-dd"
                   type="date"
                   placeholder="选择日期"
                 ></el-date-picker>
               </el-form-item>
             </div>
+            <div class="input-box text-left">
+              <el-form-item label="合同编号" prop="CID" class="form-item">
+                <el-autocomplete
+                  v-model="Store.store.CID"
+                  placeholder="请输入采购合同编号"
+                  :fetch-suggestions="querySearchCID"
+                  @select="selectCID"
+                ></el-autocomplete>
+              </el-form-item>
+            </div>
+            <div class="input-box text-left">
+              <el-form-item label="已付金额" prop="PaidPrice" class="form-item">
+                <el-input v-model="Store.store.PaidPrice" placeholder="请输入接收入库单位"></el-input>
+              </el-form-item>
+            </div>
+            <div class="input-box text-left">
+              <el-form-item label="付款方式" prop="PayMethod" class="form-item">
+                <el-radio-group v-model="Store.store.PayMethod">
+                  <el-radio label="转账">转账</el-radio>
+                  <el-radio label="现金">现金</el-radio>
+                  <el-radio label="现金支票">现金支票</el-radio>
+                  <el-radio label="银承">银承</el-radio>
+                </el-radio-group>
+              </el-form-item>
+            </div>
           </div>
         </div>
-        <!--顶部input输入区域-->
+        <!-- <h2>收款单位</h2> -->
+        <!-- <div style="padding:0 15%">
+          <el-alert title="收款单位" type="info" center :closable="false" show-icon></el-alert>
+        </div> -->
+        <div class="page-topPart-inputArea">
+          <div class="left-box">
+            <div class="input-box">
+              <el-form-item label="付款单位名称" prop="PayUnitName" class="form-item">
+                <el-input
+                  v-model="Store.store.PayUnitName"
+                  placeholder="请输入采购单位"
+                  style="width:24rem"
+                  :disabled="true"
+                ></el-input>
+              </el-form-item>
+            </div>
+            <div class="input-box">
+              <el-form-item label="收款单位名称" prop="RecUnitName" class="form-item">
+                <el-input
+                  v-model="Store.store.RecUnitName"
+                  placeholder="请输入采购单位"
+                  style="width:24rem"
+                  :disabled="true"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </div>
+          <div class="right-box">
+            <div class="input-box text-left">
+              <el-form-item label="收款单位开户银行" prop="RecUnitBankName" class="form-item">
+                <el-input
+                  v-model="Store.store.RecUnitBankName"
+                  placeholder="请输入接收入库单位"
+                  style="width:24rem"
+                  :disabled="true"
+                ></el-input>
+              </el-form-item>
+            </div>
+            <div class="input-box text-left">
+              <el-form-item label="收款单位账号" prop="RecUnitAccount" class="form-item">
+                <el-input
+                  v-model="Store.store.RecUnitAccount"
+                  placeholder="请输入收款单位账号"
+                  style="width:24rem"
+                  :disabled="true"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </div>
+        </div>
+        <div class="page-search">
+          <div class="page-search-item">
+            <div class="input-row">
+              <el-form-item label="审批" prop="Approval" class="form-item">
+                <el-input v-model="Store.store.Approval" placeholder="请输入内容"></el-input>
+              </el-form-item>
+            </div>
+            <div class="input-row">
+              <el-form-item label="财务部" prop="Finance" class="form-item">
+                <el-input v-model="Store.store.Finance" placeholder="请输入内容"></el-input>
+              </el-form-item>
+            </div>
+            <div class="input-row">
+              <el-form-item label="会计" prop="Accounting" class="form-item">
+                <el-input v-model="Store.store.Accounting" placeholder="请输入内容"></el-input>
+              </el-form-item>
+            </div>
+            <div class="input-row">
+              <el-form-item label="部门" prop="Aepartment" class="form-item">
+                <el-input v-model="Store.store.Aepartment" placeholder="请输入内容"></el-input>
+              </el-form-item>
+            </div>
+            <div class="input-row">
+              <el-form-item label="经办人" prop="Operator" class="form-item">
+                <el-input v-model="Store.store.Operator" placeholder="请输入内容"></el-input>
+              </el-form-item>
+            </div>
+          </div>
+        </div>
       </div>
-      <!--顶部区域-->
       <!--页面内容区域-->
       <div class="page-content">
-        <!--表格顶部区域-->
-        <div class="table-top-area">
-          <div class="table-top-btns">
-            <el-button size="mini" type="primary" @click="addOneRow">新增一行</el-button>
-          </div>
-          <div class="table-top-status"></div>
-        </div>
-        <!--表格顶部区域-->
-        <!--表格-->
-        <el-table
-          :data="InStore.ISGoods"
-          border
-          show-summary
-          :summary-method="getSummaries"
-          style="width: 100%"
-        >
-          <el-table-column
-            v-for="(item,index) in tableTitle"
-            :key="index"
-            :prop="item.prop"
-            :label="item.label"
-          ></el-table-column>
-          <el-table-column label="操作" width="180" fixed="right">
-            <template slot-scope="scope">
-              <el-button
-                size="mini"
-                @click="handleEdit(scope.$index, scope.row)"
-                type="warning"
-                plain
-              >编辑</el-button>
-              <el-button
-                size="mini"
-                type="danger"
-                @click="handleDelete(scope.$index, scope.row)"
-                plain
-              >删除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-        <!--表格-->
-        <!--合同附件-->
-        <h3>附件</h3>
-        <div class="enclosure-box">
-          <FileUpload v-model="InStore.Enclosure"></FileUpload>
-        </div>
-        <!--合同附件-->
         <!--按钮区-->
         <div class="footer-btns">
           <el-button @click="backHandle">返回</el-button>
@@ -123,312 +161,85 @@
         <!--按钮区-->
       </div>
     </el-form>
-    <!--dialog对话框-->
-    <el-dialog title="编辑" :visible.sync="dialogFormVisible" class="page-dialog" width="30%">
-      <el-form :model="form">
-        <el-form-item label="品名" :label-width="formLabelWidth">
-          <el-input v-model="form.GName" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="牌号" :label-width="formLabelWidth">
-          <el-input v-model="form.Brand" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="钢卷号" :label-width="formLabelWidth">
-          <el-input v-model="form.Id" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="规格(厚*宽)" :label-width="formLabelWidth">
-          <el-input v-model="form.Standards" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="吨位" :label-width="formLabelWidth">
-          <el-input v-model="form.Ton" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="接收盈亏" :label-width="formLabelWidth">
-          <el-input v-model="form.ProfitAndLossTon" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="包装状态" :label-width="formLabelWidth">
-          <el-input v-model="form.PackStatus" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="接收异议/拍照" :label-width="formLabelWidth">
-          <el-input v-model="form.RecInfo" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="异议反馈" :label-width="formLabelWidth">
-          <el-input v-model="form.RecInfoBack" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="备注" :label-width="formLabelWidth">
-          <el-input v-model="form.GInfo" auto-complete="off"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormOkHandle">确 定</el-button>
-      </div>
-    </el-dialog>
-    <!--dialog对话框-->
   </div>
 </template>
 <script>
-import FileUpload from "@/components/common/FileUpload";
+// 导入添加仓单API函数
+import { addWarehouseReceipt } from "@/api/WarehouseReceipt";
 import { mapGetters } from "vuex";
 export default {
   // 付款申请单录入
   name: "PaymentApplicationFormEntry",
-  components: {
-    FileUpload
-  },
   data() {
     return {
-      // 合同=》仓库=》钢卷 数据模型
-      Contract: {
-        Supply: "string", // 供应方
-        Demand: "string", // 需求方
-        Address: "string", // 签订地址
-        SignTime: "2019-09-18T02:27:28.808Z", // 签订时间
-        CEPath: "string", // 附件地址
-        Type: "string", // 合同类型 采购/销售
-        Extentions: [
-          {
-            CEName: "string", // 品名
-            CEFactroyName: "string", // 厂家
-            CEBrand: "string", // 牌号
-            CEStandards: "string", // 规格
-            CETon: 0, // 吨位
-            CEUnitPrice: 0, // 单价
-            CETotalPrice: 0, // 合计金额
-            CEInfo: "string", // 备注
-            Id: "string" // id
-          }
-        ],
-        InStores: [
-          {
-            RecDate: "2019-09-18T02:27:28.808Z", //接收日期
-            RecDepo: "string", // 接收仓库
-            RecPersonID: "string", // 接收人身份证号码
-            Buyby: "string", // 采购单位
-            SupplierOutID: "string", // 采购单位出仓编号
-            StoreName: "string", // 仓库名称
-            RecPlace: "string", // 接收地址
-            CarBoatID: "string", // 车船号
-            RecUnitPerson: "string", // 接收单位签收人
-            BuyPerson: "string", // 采购人
-            ISGoods: [
-              {
-                GName: "string", // 品名
-                Brand: "string", // 牌号
-                Standards: "string", // 规格
-                Ton: 0, //吨位
-                ProfitAndLossTon: 0, //货物盈亏
-                PackStatus: "string", //包裹状态
-                RecInfo: "string", //接收异议/拍照
-                RecInfoBack: "string", // 异议反馈
-                GInfo: "string", //备注
-                GStatus: "string", // 货物状态 退货/库存/加工/再入库
-                ProRollNo: "string", // 加工分条号
-                RollPackNo: "string", // 卷包号
-                UnitPrice: 0, // 单价
-                OutDate: "2019-09-18T02:27:28.808Z", // 出库日期
-                Id: "string" // 钢卷号
-              }
-            ],
-            Ext: "string", // 扩展字段
-            Id: "string" // 出入仓编号id
-          }
-        ],
-        Id: "string" // 合同编号id
-      },
-      // 当前page入仓单数据模型
-      InStore: {
-        contractId: "", // 合同编号id
-        RecDate: "", //接收日期
-        RecDepo: "", // 接收仓库
-        RecPersonID: "", // 接收人身份证号码
-        Buyby: "", // 采购单位
-        SupplierOutID: "", // 采购单位出仓编号
-        StoreName: "", // 仓库名称
-        RecPlace: "", // 接收地址
-        CarBoatID: "", // 车船号
-        RecUnitPerson: "", // 接收单位签收人
-        BuyPerson: "", // 采购人
-        ISGoods: [
-          {
-            GName: "", // 品名
-            Brand: "", // 牌号
-            Standards: "", // 规格
-            Ton: 0, //吨位
-            ProfitAndLossTon: 0, //货物盈亏
-            PackStatus: "", //包裹状态
-            RecInfo: "", //接收异议/拍照
-            RecInfoBack: "", // 异议反馈
-            GInfo: "", //备注
-            GStatus: "", // 货物状态 退货/库存/加工/再入库
-            ProRollNo: "", // 加工分条号
-            RollPackNo: "", // 卷包号
-            UnitPrice: 0, // 单价
-            OutDate: "", // 出库日期
-            Id: "" // 钢卷号
-          }
-        ],
-        Ext: "", // 扩展字段
-        Enclosure: [], // 新增附件
-        Id: "" // 出入仓编号id
+      Store: {
+        store: {
+          ApplyDep: "",
+          Abstract: "",
+          ContractPrice: "",
+          PayPrice: "",
+          ApplyDate: "",
+          PaidPrice: "",
+          CID: "",
+          PayUnitName: "福建中鞍机电科技有限公司",
+          RecUnitName: "中冶南方新余冷轧新材料技术有限公司",
+          RecUnitBankName: "中国建设银行新余分行营业室",
+          RecUnitAccount: "1234 5678 0000 9012 3456",
+          Approval: "",
+          Finance: "",
+          Accounting: "",
+          Aepartment: "",
+          Operator: ""
+        }
       },
       // 校验规则
-      rules: {
-        contractId: [
-          { required: true, message: "请输入合同编号", trigger: "blur" }
-        ],
-        Id: [{ required: true, message: "请输入仓单编号", trigger: "blur" }],
-        StoreName: [
-          { required: true, message: "请输入仓库名称", trigger: "blur" }
-        ],
-        Buyby: [{ required: true, message: "请输入销售单位", trigger: "blur" }],
-        RecPlace: [
-          { required: true, message: "请输入收货地点", trigger: "blur" }
-        ],
-        CarBoatID: [
-          { required: true, message: "请输入车船号", trigger: "blur" }
-        ],
-        RecUnitPerson: [
-          { required: true, message: "请输入货物接收入库单位", trigger: "blur" }
-        ]
-        // RecDate: [
-        //   {
-        //     type: "date",
-        //     required: true,
-        //     message: "请选择收货日期",
-        //     trigger: "change"
-        //   }
-        // ]
-      },
-      // 表头
-      tableTitle: [
-        {
-          prop: "GName",
-          label: "品名"
-        },
-        {
-          prop: "Brand",
-          label: "牌号"
-        },
-        {
-          prop: "Id",
-          label: "钢卷号"
-        },
-        {
-          prop: "Standards",
-          label: "规格(厚*宽)"
-        },
-        {
-          prop: "Ton",
-          label: "吨位"
-        },
-        {
-          prop: "ProfitAndLossTon",
-          label: "接收盈亏"
-        },
-        {
-          prop: "PackStatus",
-          label: "包装状态"
-        },
-        {
-          prop: "RecInfo",
-          label: "接收异议/拍照"
-        },
-        {
-          prop: "RecInfoBack",
-          label: "异议反馈"
-        },
-        {
-          prop: "GInfo",
-          label: "备注"
-        }
-      ], 
-      dialogFormVisible: false, // dialog 对话框显示或隐藏
-      editIndex: 0, // 当前编辑表格数据index
-      form: {
-        Id: "", // 钢卷号
-        GName: "", // 品名
-        Brand: "", // 牌号
-        Standards: "", // 规格(厚*宽)
-        Ton: "", // 吨位
-        ProfitAndLossTon: 0, // 接收盈亏
-        PackStatus: "", // 包装状态
-        RecInfo: "", //  接收异议/拍照
-        RecInfoBack: "", // 异议反馈
-        GInfo: "" // 备注
-      },
-      formLabelWidth: "120px", // 表单 label宽度
-      files: [] // 附件文件组
+      rules: {},
+      formLabelWidth: "120px" // 表单 label宽度
     };
   },
-  // computed: {
-  //   ...mapGetters(["outWarehouseList", "warehouseReceiptList"])
-  // },
-  mounted() {},
+  computed: {
+    ...mapGetters(["CIDList"])
+  },
   methods: {
-    // 表格新增一行
-    addOneRow() {
-      let row = {
-        Id: "",
-        GName: "",
-        Brand: "",
-        Standards: "",
-        Ton: "",
-        ProfitAndLossTon: "",
-        PackStatus: "",
-        RecInfo: "",
-        RecInfoBack: "",
-        GInfo: ""
+    // 合同输入检索
+    querySearchCID(queryString, cb) {
+      let restaurants = this.CIDList;
+      let results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
+    createFilter(queryString) {
+      return restaurant => {
+        return (
+          restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) ===
+          0
+        );
       };
-      this.InStore.ISGoods.push(row);
     },
-    // 表单合计自定义统计计算方法
-    getSummaries(param) {
-      const { columns, data } = param;
-      const sums = [];
-      columns.forEach((column, index) => {
-        if (index === 0) {
-          sums[index] = "合计";
-          return;
-        } else if (index == 4) {
-          const values = data.map(item => Number(item[column.property]));
-          if (!values.every(value => isNaN(value))) {
-            sums[index] = values.reduce((prev, curr) => {
-              const value = Number(curr);
-              if (!isNaN(value)) {
-                return prev + curr;
-              } else {
-                return prev;
-              }
-            }, 0);
-            sums[index] += " 吨";
-          }
-        } else {
-          sums[index] = "";
-        }
-      });
+    // 输入框下拉选择事件
+    selectCID(item) {
+      let word = item.value;
+    },
+    // 仓库名称输入检索
+    querySearchStoreName(queryString, cb) {
+      let restaurants = this.StoreNameList;
+      let results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
 
-      return sums;
-    },
-    // 合同表单 编辑事件
-    handleEdit(index, row) {
-      this.editIndex = index;
-      this.form = row;
-      this.dialogFormVisible = true;
-    },
-    // 合同表单 删除事件
-    handleDelete(index, row) {
-      this.InStore.ISGoods.splice(index, 1);
-    },
-    // dialog 对话框确定事件
-    dialogFormOkHandle() {
-      this.InStore.ISGoods[this.editIndex] = this.form;
-      this.dialogFormVisible = false;
-    },
     // 返回按钮
     backHandle() {
       this.$router.go(-1);
     },
     // 提交按钮
     async submitForm(formName) {
+      console.log(this.Store.store)
+      return false;
       // 非空检测
       let isValid = false;
       this.$refs[formName].validate(valid => {
@@ -441,21 +252,19 @@ export default {
       });
       // 验证通过 调用接口
       if (isValid) {
-        let Contract = {};
-        Contract.Id = this.InStore.contractId;
-        Contract.InStores = [this.InStore];
-        // 调用录入API
-        return false;
-        // let result = await addWarehouseReceipt(Contract);
-        const loading = this.$loading({
-          lock: true,
-          text: "入仓单录入",
-          spinner: "el-icon-loading",
-          background: "rgba(0, 0, 0, 0.7)"
+        // InsID 数据替换
+        let InsID = this.Store.store.SID;
+        this.Store.goodlist.map(item => {
+          item.InsID = InsID;
         });
-        if (result.StatusCode == 200) {
-          setTimeout(() => {
-            loading.close(); // 关闭加载动画
+        console.log(this.Store);
+        // 调用录入API
+        this.$loadingShow("入仓单录入...");
+        let result = await addWarehouseReceipt(this.Store);
+        console.log(result);
+        if (result) {
+          this.$loadingHide();
+          if (result.StatusCode == 200) {
             this.$alert(result.Message, "入仓单录入", {
               confirmButtonText: "确定",
               type: "success",
@@ -467,16 +276,25 @@ export default {
                 });
                 // 返回上一页面 或返回入仓单汇总表
                 this.$router.push({
-                  path:"WarehousingSummary"
+                  path: "WarehousingSummary"
                 });
               }
             });
-          }, 1000);
-        } else {
-          this.$message({
-            type: "info",
-            message: result.Message
-          });
+          } else if (result.StatusCode == 424) {
+            this.$alert("当前采购合同编号不存在", "入仓单录入失败", {
+              confirmButtonText: "确定",
+              type: "warning",
+              // center: true,
+              callback: action => {}
+            });
+          } else {
+            this.$alert(result.Message, "入仓单录入失败", {
+              confirmButtonText: "确定",
+              type: "warning",
+              // center: true,
+              callback: action => {}
+            });
+          }
         }
       }
     }
@@ -487,6 +305,9 @@ export default {
 .page-topPart-inputArea {
   width: 100%;
   display: flex;
+}
+.page-topPart {
+  display: block;
 }
 .left-box {
   flex: 1;
@@ -501,12 +322,23 @@ export default {
   display: block;
   text-align: right;
   position: relative;
-  right: 30%;
+  right: 25%;
+}
+.text-left {
+  text-align: left;
+  position: relative;
+  padding-left:50%;
 }
 .form-item {
   display: inline-flex;
 }
 .el-form-item__label {
   min-width: 5rem;
+}
+.page-search {
+  text-align: center;
+}
+.input-row {
+  margin: 0rem 2rem;
 }
 </style>

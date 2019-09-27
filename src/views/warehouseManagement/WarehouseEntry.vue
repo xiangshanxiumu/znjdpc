@@ -15,7 +15,13 @@
           <div class="left-box">
             <div class="input-box">
               <el-form-item label="销售合同编号" prop="CID" class="form-item">
-                <el-input v-model="Store.store.CID" placeholder="请输入内容"></el-input>
+                <el-autocomplete
+                  v-model="Store.store.CID"
+                  placeholder="请输入内容"
+                  :fetch-suggestions="querySearchCID"
+                  @select="selectCID"
+                  :trigger-on-focus="false"
+                ></el-autocomplete>
               </el-form-item>
             </div>
             <div class="input-box">
@@ -82,7 +88,7 @@
         <!--表格顶部区域-->
         <div class="table-top-area">
           <div class="table-top-btns">
-            <el-button size="mini" type="primary" @click="addOneRow">新增一行</el-button>
+            <el-button type="primary" @click="addOneRow">新增一行</el-button>
           </div>
           <div class="table-top-status"></div>
         </div>
@@ -182,7 +188,12 @@ import FileUpload from "@/components/common/FileUpload";
 // 导入添加仓单API函数
 import { addWarehouseReceipt } from "@/api/WarehouseReceipt";
 // 合同API函数
-import { getContractList, searchContractList } from "@/api/Contract";
+import {
+  getContractList,
+  searchContractList,
+  searchOneContract,
+  getAllContract
+} from "@/api/Contract";
 import { mapGetters } from "vuex";
 export default {
   // 出仓单录入
@@ -332,7 +343,9 @@ export default {
     ...mapGetters([
       "outWarehouseList",
       "warehouseReceiptList",
-      "editSteelCoil"
+      "editSteelCoil",
+      "CIDList",
+      "StoreNameList"
     ]),
     pageTitle() {
       // 页面标题
@@ -366,6 +379,44 @@ export default {
     }
   },
   methods: {
+    // 合同输入检索
+    querySearchCID(queryString, cb) {
+      let restaurants = this.CIDList;
+      let results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
+    createFilter(queryString) {
+      return restaurant => {
+        return (
+          restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) ===
+          0
+        );
+      };
+    },
+    // 输入框下拉选择事件
+    selectCID(item) {
+      let word = item.value;
+      this.inputMatch(word);
+    },
+    // 输入搜索匹配
+    async inputMatch(word) {
+      let result = await searchOneContract(word);
+      if (result) {
+        if (result.StatusCode == 200) {
+          if (result.Result) {
+            let CID = result.Result.CID;
+            let Supply = result.Result.Supply;
+            let date = new Date().toLocaleDateString();
+            this.Store.store.SID = `${CID}-`; // 入仓单前缀
+            // 采购单位
+            // this.Store.store.Buyby = Supply;
+          }
+        }
+      }
+    },
     // 入仓单汇总表 查看详情 回显 编辑
     explicitEdit(goodlist) {
       this.Store.goodlist = [].concat(goodlist);
