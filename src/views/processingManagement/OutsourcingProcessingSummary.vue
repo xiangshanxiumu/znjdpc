@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:30:21
- * @LastEditTime: 2019-09-15 16:05:08
+ * @LastEditTime: 2019-09-28 11:35:14
  * @LastEditors: Please set LastEditors
  -->
 <template>
@@ -60,8 +60,7 @@
       <!--表格顶部区域-->
       <div class="table-top-area">
         <div class="table-top-btns">
-          <el-button size="mini" type="warning" @click="machiningHandle()">加工</el-button>
-          <el-button size="mini" type="danger" @click="outOfStockHandle()">出仓</el-button>
+          <el-button  type="warning" @click="toPack">去打包</el-button>
         </div>
         <div class="table-top-status">
           <div class="status-item">
@@ -433,18 +432,22 @@ export default {
       }
     },
     // 加工
-    machiningHandle() {
+    toPack() {
       console.log(this.multipleSelection);
       // 判断是否有勾选要出仓加工的钢卷
       if (this.multipleSelection.length == 0) {
         this.$message({
-          message: "请选择要加工的钢卷",
+          message: "请选择已经分条的要打包的钢卷",
           type: "warning",
           showClose: true,
           center: true
         });
         return false;
       }
+      this.$router.push({
+        name:'SteelCoilPacking'
+        }
+      )
     },
     // 出库出仓操作 路由跳转到 "出仓单录入"
     outOfStockHandle() {

@@ -20,7 +20,6 @@
                   placeholder="请输入内容"
                   :fetch-suggestions="querySearchCID"
                   @select="selectCID"
-                  :trigger-on-focus="false"
                 ></el-autocomplete>
               </el-form-item>
             </div>

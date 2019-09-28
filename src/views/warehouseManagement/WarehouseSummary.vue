@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:30:21
- * @LastEditTime: 2019-09-15 16:05:08
+ * @LastEditTime: 2019-09-28 10:28:53
  * @LastEditors: Please set LastEditors
  -->
 <template>
@@ -355,7 +355,6 @@ export default {
     async getList() {
       let result = await getAllWarehouseReceipt();
       if (result.StatusCode == 200) {
-        console.log(result)
         if(result.Result){
           this.goodsList = result.Result;
         }

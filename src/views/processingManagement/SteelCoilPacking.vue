@@ -1,3 +1,10 @@
+<!--
+ * @Description: In User Settings Edit
+ * @Author: your name
+ * @Date: 2019-09-28 08:56:41
+ * @LastEditTime: 2019-09-28 11:44:18
+ * @LastEditors: Please set LastEditors
+ -->
 <template>
   <div class="page-wrap">
     <h1>钢条小卷打包</h1>
@@ -12,7 +19,7 @@
       </div>
       <!--表格顶部区域-->
       <!--表格-->
-      <el-table :data="ISGoods" border @cell-click="cellClick" id="Table">
+      <el-table :data="ISGoods" border @cell-click="cellClick" id="Table" max-width="99%">
         <el-table-column prop="Brand" label="牌号" width="120" align="center" fixed="left"></el-table-column>
         <el-table-column
           prop="Standards"
@@ -34,7 +41,7 @@
           align="center"
         >
           <template slot-scope="scope">
-            <el-checkbox
+            <el-checkbox-button
               v-if="item.isCheck"
               size="medium"
               :key="index"
@@ -42,7 +49,7 @@
               :checked="item.checked"
               :disabled="item.disabled"
               @change="checkBoxChange(scope,item)"
-            ></el-checkbox>
+            >顺序{{index+1}}</el-checkbox-button>
             <!-- <el-input
               v-if="item.input"
               size="small"
@@ -54,112 +61,60 @@
           </template>
         </el-table-column>
       </el-table>
+      <h2>打包情况</h2>
+      <!--打包情况表-->
+      <div>
+        <el-table :data="packData" border max-width="99%">
+          <el-table-column
+            v-for="(item,index) in packTableTitle"
+            :key="index"
+            :prop="item.prop"
+            :label="item.label"
+            :width="item.width"
+            :fixed="item.fixed"
+            :column-key="item.CoilID"
+            align="center"
+          >
+            <template v-if="item.children">
+              <el-table-column
+                v-for="(item,index) in item.children"
+                :key="index"
+                :prop="item.prop"
+                :label="item.label"
+                :width="item.width"
+                :fixed="item.fixed"
+                :column-key="item.CoilID"
+                align="center"
+              ></el-table-column>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+
+      <!--打包情况表-->
       <!--表格-->
       <!-- <DragTable :data="tableData" :header="tableHeader" :option="tableOption">
         <el-table-column slot="fixed" fixed prop="date" label="日期" width="150"></el-table-column>
-      </DragTable> -->
+      </DragTable>-->
+      <!--按钮区-->
+        <div class="footer-btns">
+          <el-button @click="backHandle">返回</el-button>
+          <el-button type="primary" @click="submitForm">提交</el-button>
+        </div>
+        <!--按钮区-->
     </div>
   </div>
 </template>
 <script>
 // 导入Sortable 表格拖拽
-import Sortable from "sortablejs";
-// 可拖拽表格
-import DragTable from "./component/DragTable";
+// import Sortable from "sortablejs";
 // 导入获取 所有加工单 API函数
 import { getAllProStoreList } from "@/api/WarehouseReceipt";
 export default {
   // 钢条小卷 重新打包
   name: "SteelCoilPacking",
-  components: {
-    Sortable,
-    DragTable
-  },
   data() {
     return {
-      tableOption: {
-        border: true,
-        maxHeight: 500
-      },
-      tableHeader: [
-        {
-          prop: "name",
-          label: "姓名",
-          sortable: true,
-          sortMethod: this.handleNameSort
-        },
-        {
-          prop: "province",
-          label: "省份",
-          minWidth: "120"
-        },
-        {
-          prop: "city",
-          label: "市区",
-          minWidth: "120"
-        },
-        {
-          prop: "address",
-          label: "地区",
-          minWidth: "150"
-        },
-        {
-          prop: "zip",
-          label: "邮编",
-          minWidth: "120"
-        }
-      ],
-
-      tableData: [
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          province: "上海",
-          city: "普陀区",
-          address: "上海市普陀区金沙江路 1518 弄",
-          zip: 200333
-        },
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          province: "上海",
-          city: "普陀区",
-          address: "上海市普陀区金沙江路 1518 弄",
-          zip: 200333
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          province: "上海",
-          city: "普陀区",
-          address: "上海市普陀区金沙江路 1518 弄",
-          zip: 200333
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          province: "上海",
-          city: "普陀区",
-          address: "上海市普陀区金沙江路 1518 弄",
-          zip: 200333
-        },
-        {
-          date: "2016-05-08",
-          name: "王小虎",
-          province: "上海",
-          city: "普陀区",
-          address: "上海市普陀区金沙江路 1518 弄",
-          zip: 200333
-        },
-        {
-          date: "2016-05-06",
-          name: "王小虎",
-          province: "上海",
-          city: "普陀区",
-          address: "上海市普陀区金沙江路 1518 弄",
-          zip: 200333
-        }
-      ],
       tableTitle: [
         // {
         //   CoilID: "101", // 钢卷id
@@ -202,7 +157,67 @@ export default {
         }
       ],
       checkedList: [], // 钢卷小条勾选列表
-      packingList: [] // 综合打包数据列表
+      packingList: [], // 综合打包数据列表
+      packData: [], // 打包小卷表格数据
+      // 打包小卷表格title
+      packTableTitle: [
+        {
+          prop: "",
+          label: "小卷编号",
+          width: "120",
+          fixed: ""
+        },
+        {
+          prop: "",
+          label: "规格(厚*宽/单位mm)",
+          width: "180",
+          fixed: ""
+        },
+        {
+          prop: "",
+          label: "加工顺序",
+          width: "120",
+          fixed: ""
+        },
+        {
+          prop: "",
+          label: "吨数",
+          width: "120",
+          fixed: ""
+        },
+        {
+          prop: "",
+          label: "所属钢卷",
+          width: "",
+          fixed: "",
+          children: [
+            {
+              prop: "",
+              label: "牌号",
+              width: "",
+              fixed: ""
+            },
+            {
+              prop: "",
+              label: "规格(厚*宽/单位mm)",
+              width: "",
+              fixed: ""
+            },
+            {
+              prop: "",
+              label: "钢卷号",
+              width: "",
+              fixed: ""
+            },
+            {
+              prop: "",
+              label: "吨数",
+              width: "",
+              fixed: ""
+            }
+          ]
+        }
+      ]
     };
   },
   created() {
@@ -235,7 +250,6 @@ export default {
           let result = this.StripToJSONArr(ProStoreList);
           // 结构赋值
           let { StripArr, titleArr } = result;
-          console.log(StripArr, titleArr);
           this.tableTitle = titleArr;
         }
       }
@@ -268,9 +282,9 @@ export default {
         for (let i = 0; i < Num; i++) {
           titleArr.push({
             prop: label,
-            label: `${label}-${i + 1}`,
+            label: label,
             CoilID: `${label}C${i + 1}`,
-            width: "",
+            width: "100",
             fixed: "",
             isCheck: true, // 是否渲染显示 checkBox
             checked: false, // 是否勾选
@@ -283,7 +297,7 @@ export default {
     },
     // 钢卷打包
     coilpacking() {
-      console.log("11", this.checkedList);
+      console.log(this.packData)
       // 打包后的钢条小卷 禁用
       let tabel = $("#Table");
       let checkBoxs = $("#Table").find("input:checked");
@@ -292,16 +306,23 @@ export default {
         $(this)
           .parent()
           .addClass("is-disabled is-checked");
+        $(this)
+          .siblings()
+          .css({
+            "background-color": "#ccc",
+            "border-color": "#EBEEF5",
+            color: "#000"
+          });
       });
       let arr = [].concat(this.checkedList);
       let item = { packing: arr };
       this.packingList.push(item);
       this.checkedList = []; // 重置清空
-      console.log(this.packingList); // 打包后的数据
     },
     // 重置 checkBox
     resetCheckBox() {
       this.packingList = [];
+      this.packData = [];
       // checkBox 去disabled
       let checkBoxs = $("#Table").find("input:checked");
       checkBoxs.each(function() {
@@ -309,13 +330,21 @@ export default {
         $(this)
           .parent()
           .removeClass("is-disabled is-checked");
+        $(this)
+          .siblings()
+          .css({
+            "background-color": "#fff",
+            "border-color": "#DCDFE6",
+            color: "#000"
+          });
       });
     },
-    // checkBox 勾选事件
+    // checkBoxButton 勾选点击事件
     checkBoxChange(scope, item) {
-      console.log(scope, item);
+      console.log(scope, item)
       let rowIndex = scope.$index;
       let isChecked = scope.checked;
+      console.log(rowIndex,isChecked)
       // 勾选情况下 添加到数据列表
       if (isChecked) {
         let CoilID = scope.column.columnKey; // 小卷id
@@ -328,11 +357,15 @@ export default {
           prop: prop,
           Standards: Standards
         };
+        this.packData.push(obj);
         this.checkedList.push(obj);
       } else {
-        // 去掉勾选情况下 从数据列表中清除
+        // 去掉勾选点击情况下 从数据列表中清除
         let CoilID = scope.column.columnKey;
         this.checkedList = this.checkedList.filter(item => {
+          return item.CoilID != CoilID;
+        });
+        this.packData = this.packData.filter(item => {
           return item.CoilID != CoilID;
         });
       }
@@ -343,18 +376,12 @@ export default {
       // console.log($(cell).find('input'));
       // $(cell).find('input').attr("disabled",true);
     },
-    // 列拖拽
-    columnDrop() {
-      const wrapperTr = document.querySelector(".el-table__header-wrapper tr");
-      this.sortable = Sortable.create(wrapperTr, {
-        animation: 180,
-        delay: 0,
-        onEnd: evt => {
-          const oldItem = this.dropCol[evt.oldIndex];
-          this.dropCol.splice(evt.oldIndex, 1);
-          this.dropCol.splice(evt.newIndex, 0, oldItem);
-        }
-      });
+    // 返回按钮
+    backHandle() {
+      this.$router.go(-1);
+    },
+    submitForm(){
+      console.log(this.packData)
     }
   }
 };

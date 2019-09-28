@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-14 09:30:21
- * @LastEditTime: 2019-09-22 12:48:28
+ * @LastEditTime: 2019-09-28 10:34:00
  * @LastEditors: Please set LastEditors
  -->
 <template>
@@ -15,7 +15,12 @@
           <div class="left-box">
             <div class="input-box">
               <el-form-item label="加工合同编号" prop="CID" class="form-item">
-                <el-input v-model="StoreData.store.CID" placeholder="请输入内容"></el-input>
+                <el-autocomplete
+                  v-model="StoreData.store.CID"
+                  placeholder="请输入采购合同编号"
+                  :fetch-suggestions="querySearchCID"
+                  @select="selectCID"
+                ></el-autocomplete>
               </el-form-item>
             </div>
             <div class="input-box">
@@ -351,7 +356,7 @@ export default {
   },
   computed: {
     // 加工操作的钢卷列表数据
-    ...mapGetters(["steelCoilMachiningList"])
+    ...mapGetters(["steelCoilMachiningList","CIDList",])
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
@@ -372,6 +377,27 @@ export default {
     });
   },
   methods: {
+    // 合同输入检索
+    querySearchCID(queryString, cb) {
+      let restaurants = this.CIDList;
+      let results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
+    createFilter(queryString) {
+      return restaurant => {
+        return (
+          restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) ===
+          0
+        );
+      };
+    },
+    // 输入框下拉选择事件
+    selectCID(item) {
+      let word = item.value;
+    },
     // 表格新增一行
     addOneRow() {
       let row = {
