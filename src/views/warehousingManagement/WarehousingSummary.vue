@@ -13,12 +13,17 @@
       <div class="page-search">
         <div class="page-search-item">
           <el-form :model="searchFrom">
-            <div class="input-box">
+            <div class="input-box" v-if="cgShow">
               <el-form-item label="采购合同编号" prop="CID" class="form-item">
-                <el-autocomplete v-model="searchFrom.CID" placeholder="请输入采购合同编号" :fetch-suggestions="querySearch" :trigger-on-focus="false"></el-autocomplete>
+                <el-autocomplete
+                  v-model="searchFrom.CID"
+                  placeholder="请输入采购合同编号"
+                  :fetch-suggestions="querySearch"
+                  :trigger-on-focus="false"
+                ></el-autocomplete>
               </el-form-item>
             </div>
-            <div class="input-box">
+            <div class="input-box" v-if="cgShow">
               <el-form-item label="采购单位" prop="Buyby" class="form-item">
                 <el-input v-model="searchFrom.Buyby" placeholder="请输入采购单位"></el-input>
               </el-form-item>
@@ -38,7 +43,7 @@
                 <el-input v-model="searchFrom.RecDepo" placeholder="请输入收货仓库"></el-input>
               </el-form-item>
             </div>
-            <div class="input-box">
+            <div class="input-box" v-if="cgShow">
               <el-form-item label="仓单日期" prop="RecDate" class="form-item">
                 <el-date-picker
                   v-model="searchFrom.RecDate"
@@ -60,9 +65,9 @@
       <!--表格顶部区域-->
       <div class="table-top-area">
         <div class="table-top-btns">
-          <el-button  type="warning" @click="machiningHandle()">加工分条</el-button>
-          <el-button  type="danger" @click="outWarehouseHandle()">出仓</el-button>
-          <el-button  type="success" @click="editHandle()">查看编辑</el-button>
+          <el-button type="warning" @click="machiningHandle()" v-if="xsShow">加工分条</el-button>
+          <el-button type="danger" @click="outWarehouseHandle()" v-if="xsShow">出仓</el-button>
+          <el-button type="success" @click="editHandle()" v-if="cgShow">查看编辑</el-button>
         </div>
         <div class="table-top-status">
           <div class="status-item">
@@ -83,7 +88,6 @@
         style="width: 100%"
         @selection-change="handleSelectionChange"
       >
-        
         <el-table-column type="selection" width="50" align="center"></el-table-column>
         <el-table-column
           v-for="(item,index) in tableTitle"
@@ -121,7 +125,7 @@ export default {
   name: "WarehousingSummary",
   data() {
     return {
-      tableLoading:false,
+      tableLoading: false,
       tableData: [
         {
           CID: "1234567", // 合同ID
@@ -208,12 +212,14 @@ export default {
       curList: [], // 搜索操作后的列表数据
       multipleSelection: [], // 表格勾选内容数组
       // 搜索内容缓存 input 输入自动补全
-      SIDArr:[],
+      SIDArr: [],
       restaurants: [],
+      cgShow:false,
+      xsShow:false,
     };
   },
   computed: {
-    ...mapGetters(["CIDArr","BuybyArr"]),
+    ...mapGetters(["CIDArr", "BuybyArr"]),
     totalTon() {
       // 总吨位
       let count = 0;
@@ -224,24 +230,49 @@ export default {
         count = count.toFixed(3);
       }
       return count;
+    },
+    // 当前操作角色
+    curRole() {
+      if (sessionStorage.role) {
+        return sessionStorage.role;
+      }
     }
   },
   created() {
     // 初始获取列表数据
     this.getList();
+    // 如果是"销售管理"权限 隐藏 采购合同编号 采购单位 仓单日期 三列
+    if(sessionStorage.role == "采购管理"){
+      this.xsShow = false;
+      this.cgShow = true;
+    } else if(sessionStorage.role == "销售管理"){
+      this.tableTitle = this.tableTitle.filter(item=>{
+        return item.label !="采购合同编号" && item.label != "采购单位" && item.label != "仓单日期" && item.label != "单价";
+      });
+      this.xsShow = true;
+      this.cgShow = false;
+    } else{
+      this.xsShow = true;
+      this.cgShow = true;
+    }
   },
   methods: {
     // 输入搜索
     querySearch(queryString, cb) {
-        let restaurants = this.CIDArr;
-        let results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants;
-        // 调用 callback 返回建议列表的数据
-        cb(results);
+      let restaurants = this.CIDArr;
+      let results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
     },
     createFilter(queryString) {
-        return (restaurant) => {
-          return (restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
-        };
+      return restaurant => {
+        return (
+          restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) ===
+          0
+        );
+      };
     },
 
     // 表单合计自定义统计计算方法
@@ -334,7 +365,9 @@ export default {
         if (result.Result) {
           this.goodsList = result.Result;
           // 提交store;
-          this.$store.commit('updateAllWarehousingReceipt',{"AllWarehousingReceipt":this.goodsList})
+          this.$store.commit("updateAllWarehousingReceipt", {
+            AllWarehousingReceipt: this.goodsList
+          });
         }
         this.curList = [].concat(this.goodsList);
         // 计算总金额
@@ -438,7 +471,7 @@ export default {
       // 判断收货仓库、Standards规格是否一致 不一致的不能加工操作  一致才能同时加工分条
       if (this.multipleSelection.length >= 2) {
         let RecDepo = this.multipleSelection[0].RecDepo;
-        let Standards = this.multipleSelection[0].Standards
+        let Standards = this.multipleSelection[0].Standards;
         let isAgreement = this.multipleSelection.every(item => {
           return item.RecDepo == RecDepo && item.Standards == Standards;
         });
@@ -510,39 +543,40 @@ export default {
           center: true
         });
         return false;
-      } else if (this.multipleSelection.length >= 2) { // 可以选择2各及以上 判断是否同一仓单
+      } else if (this.multipleSelection.length >= 2) {
+        // 可以选择2各及以上 判断是否同一仓单
         // SID 入仓单号
         let SID = this.multipleSelection[0].SID;
         let isAgreement = this.multipleSelection.every(item => {
           return item.SID == SID;
         });
-        if(!isAgreement){
+        if (!isAgreement) {
           this.$message({
-          message: "选择编辑钢卷的入仓单号不一致",
-          type: "error",
-          showClose: true,
-          center: true
+            message: "选择编辑钢卷的入仓单号不一致",
+            type: "error",
+            showClose: true,
+            center: true
           });
           return false;
         }
       }
-        // SID 入仓单号
-        let SID = this.multipleSelection[0].SID;
-        // 把同一个 SID仓单下的数据过滤出来
-        let editSteelCoil = this.goodsList.filter(item=>{
-          return item.SID == SID;
-        })
-        // 编辑的钢卷数据 提交store暂存 以仓单为标准编辑
-        this.$store.commit("updateEditSteelCoil", {
-          editSteelCoil:editSteelCoil,
-        });
-        // 跳转到 入仓单录入页面 回显 编辑
-        this.$router.push({
-          name: "WarehousingReceiptEntry",
-          query: {
-            operation: "查看编辑",
-          }
-        });
+      // SID 入仓单号
+      let SID = this.multipleSelection[0].SID;
+      // 把同一个 SID仓单下的数据过滤出来
+      let editSteelCoil = this.goodsList.filter(item => {
+        return item.SID == SID;
+      });
+      // 编辑的钢卷数据 提交store暂存 以仓单为标准编辑
+      this.$store.commit("updateEditSteelCoil", {
+        editSteelCoil: editSteelCoil
+      });
+      // 跳转到 入仓单录入页面 回显 编辑
+      this.$router.push({
+        name: "WarehousingReceiptEntry",
+        query: {
+          operation: "查看编辑"
+        }
+      });
     },
     // 表格勾选事件
     handleSelectionChange(val) {

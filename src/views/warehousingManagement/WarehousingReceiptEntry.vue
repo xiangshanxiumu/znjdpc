@@ -20,6 +20,7 @@
                   placeholder="请输入采购合同编号"
                   :fetch-suggestions="querySearchCID"
                   @select="selectCID"
+                  class="input-width"
                 ></el-autocomplete>
               </el-form-item>
             </div>
@@ -29,41 +30,42 @@
                   v-model="Store.store.StoreName"
                   placeholder="请输入仓库名称"
                   :fetch-suggestions="querySearchStoreName"
-                ></el-autocomplete>
+                  class="input-width"
+                ></el-autocomplete >
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="采购单位" prop="Buyby" class="form-item">
-                <el-input v-model="Store.store.Buyby" placeholder="请输入采购单位"></el-input>
+                <el-autocomplete v-model="Store.store.Buyby" placeholder="请输入采购单位" :fetch-suggestions="querySearchUnit" class="input-width"></el-autocomplete>
               </el-form-item>
             </div>
           </div>
           <div class="middle-box">
             <div class="input-box">
               <el-form-item label="入仓单编号" prop="SID" class="form-item">
-                <el-input v-model="Store.store.SID" placeholder="请输入仓单编号"></el-input>
+                <el-input v-model="Store.store.SID" placeholder="请输入仓单编号" class="input-width"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="收货地点" prop="RecPlace" class="form-item">
-                <el-input v-model="Store.store.RecPlace" placeholder="请输入收货地点"></el-input>
+                <el-input v-model="Store.store.RecPlace" placeholder="请输入收货地点" class="input-width"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="车船号" prop="CarBoatID" class="form-item">
-                <el-input v-model="Store.store.CarBoatID" placeholder="请输入车船号"></el-input>
+                <el-input v-model="Store.store.CarBoatID" placeholder="请输入车船号" class="input-width"></el-input>
               </el-form-item>
             </div>
           </div>
           <div class="right-box">
             <div class="input-box">
               <el-form-item label="运费" prop="TransPrice" class="form-item">
-                <el-input v-model="Store.store.TransPrice" placeholder="请输入运费"></el-input>
+                <el-input v-model="Store.store.TransPrice" placeholder="请输入运费" class="input-width"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="货物接收入库单位" prop="RecUnitPerson" class="form-item">
-                <el-input v-model="Store.store.RecUnitPerson" placeholder="请输入接收入库单位"></el-input>
+                <el-autocomplete v-model="Store.store.RecUnitPerson" placeholder="请输入接收入库单位" :fetch-suggestions="querySearchUnit" class="input-width"></el-autocomplete>
               </el-form-item>
             </div>
             <div class="input-box">
@@ -73,6 +75,7 @@
                   value-format="yyyy-MM-dd"
                   type="date"
                   placeholder="选择日期"
+                  class="input-width"
                 ></el-date-picker>
               </el-form-item>
             </div>
@@ -105,8 +108,9 @@
             :key="index"
             :prop="item.prop"
             :label="item.label"
+            align="center"
           ></el-table-column>
-          <el-table-column label="操作" width="180" fixed="right">
+          <el-table-column label="操作" width="180" fixed="right" align="center">
             <template slot-scope="scope">
               <el-button
                 size="mini"
@@ -125,7 +129,7 @@
         </el-table>
         <!--表格-->
         <!--合同附件-->
-        <h3>附件</h3>
+        <h2>附件</h2>
         <div class="enclosure-box">
           <FileUpload v-model="Enclosure"></FileUpload>
         </div>
@@ -222,7 +226,8 @@ export default {
           TransPrice: 0,
           Ext: "",
           CID: "",
-          Id: ""
+          Id: "",
+          Type:"入仓"
         },
         goodlist: [
           {
@@ -341,7 +346,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["editSteelCoil", "CIDList", "StoreNameList"]),
+    ...mapGetters(["editSteelCoil", "CIDList", "StoreList","UnitList"]),
     pageTitle() {
       // 页面标题
       return `入仓单信息${this.operation}`;
@@ -397,7 +402,16 @@ export default {
     },
     // 仓库名称输入检索
     querySearchStoreName(queryString, cb){
-      let restaurants = this.StoreNameList;
+      let restaurants = this.StoreList;
+      let results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
+    // 接收单位名称输入检索
+    querySearchUnit(queryString, cb){
+      let restaurants = this.UnitList;
       let results = queryString
         ? restaurants.filter(this.createFilter(queryString))
         : restaurants;
@@ -570,5 +584,8 @@ export default {
 }
 .el-form-item__label {
   min-width: 5rem;
+}
+.input-width{
+  width:17rem;
 }
 </style>

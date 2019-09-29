@@ -220,7 +220,8 @@ export default {
           TransPrice: 0,
           Ext: "",
           CID: "",
-          Id: ""
+          Id: "",
+          Type:"出仓"
         },
         goodlist: [
           {
@@ -356,7 +357,6 @@ export default {
     next(vm => {
       // 通过 `vm` 访问组件实例
       if (from.name == "WarehousingSummary" && to.name == "WarehouseEntry") {
-        console.log(vm.outWarehouseList);
         // 初始渲染表格 出仓操作的钢卷
         vm.Store.goodlist = vm.outWarehouseList;
         // 初始填充 仓库名称
@@ -514,7 +514,6 @@ export default {
         this.Store.goodlist.map(item => {
           item.OutsID = OutsID;
         });
-        console.log(this.Store);
         this.$loadingShow("出仓单录入处理中...");
         // 调用录入API
         let result = await addWarehouseReceipt(this.Store);

@@ -41,7 +41,7 @@ export default {
         {
           UserName: "zajdcw", // 用户名
           PassWord: "123456", // 密码
-          role: "财务管理", // 角色
+          role: "资金管理", // 角色
           authMenu: "fundManMenu" // 菜单路由访问权限
         },
         {

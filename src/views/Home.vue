@@ -65,8 +65,12 @@ import NavMenu from "@/components/NavMenu";
 import BreadCrumb from "@/components/BreadCrumb";
 import NavTags from "@/components/NavTags";
 import { mapGetters } from "vuex";
-import { getAllCID, getAllContractList,} from "@/api/Contract";
-import {getAllWarehousingReceipt} from "@/api/WarehouseReceipt";
+import {
+  getAllCID,
+  getAllContractList,
+  getAllGlobalInitData
+} from "@/api/Contract";
+// import { getAllWarehousingReceipt } from "@/api/WarehouseReceipt";
 export default {
   // 首页 布局
   name: "Home",
@@ -114,38 +118,83 @@ export default {
     if (sessionStorage.authMenu) {
       this.roleMenu = this[`${sessionStorage.authMenu}`];
     }
-    // 生成菜单路由名称映射表
+    // 销售管理 权限角色 添加上 入仓单汇总表 路由
+    if (sessionStorage.role == "销售管理") {
+      let menuItem = {
+        entity: {
+          id: "WarehousingSummary",
+          path: "/Home/WarehousingSummary",
+          icon: "el-icon-document",
+          name: "入仓明细汇总表"
+        }
+      };
+      // 插入 入仓单汇总表路由数据
+      this.roleMenu[0].childs.splice(3, 0, menuItem);
+    }
+    // 生成菜单路由名称映射表 渲染菜单
     this.getMenuMap(this.roleMenu);
   },
   methods: {
     // 获取全局初始数据
     async getGlobalData() {
-      // 获取合同ID
-      let result = await getAllCID();
-      if(result){
-        if(result.Result){
-          let CIDList = result.Result.map(item=>{
+      let result = await getAllGlobalInitData();
+      if (result) {
+        // 合同ID数据列表
+        if (result[0]) {
+          let list = result[0].Result;
+          let CIDList = list.map(item => {
             return {
-              value:item
+              value: item
+            };
+          });
+          // 提交store
+          this.$store.commit("updteCIDList", { CIDList: CIDList });
+        }
+        // 牌号 品名 规格 仓库 单位 综合数据
+        if (result[1]) {
+          if (result[1].Result) {
+            let obj = result[1].Result;
+            for (let k in obj) {
+              obj[k] = obj[k].map(item => {
+                return {
+                  value: item
+                };
+              });
+              // 过滤掉null 空值
+              obj[k] = obj[k].filter(item => {
+                return item.value != null && item.value != "";
+              });
             }
-          })
-          // 提交store
-          this.$store.commit('updteCIDList',{"CIDList":CIDList});
+            // 牌号 品名 规格 仓库 单位
+            let {
+              BrandList,
+              GNameList,
+              StandardsList,
+              StoreList,
+              UnitList
+            } = obj;
+            // 提交store
+            this.$store.commit("updateInitGlobalData", { InitGlobalData: obj });
+          }
         }
-      }
-      // getAllContractList
-      let result2 = await getAllContractList();
-      if(result2){
-        if(result2.Result){
-          // 提交store
-          this.$store.commit('updteAllContract',{"AllContract":result2.Result})
+        // 所有合同列表数据
+        if (result[2]) {
+          if (result[2].Result) {
+            let list = [].concat(result[2].Result);
+            // 提交store
+            this.$store.commit("updteAllContract", {
+              AllContract: list
+            });
+          }
         }
-      }
-      // getAllWarehousingReceipt
-      let result3 = await getAllWarehousingReceipt();
-      if(result3){
-        if(result3.Result){
-          this.$store.commit('updateAllWarehouseReceipt',{"AllWarehouseReceipt":result3.Result})
+        // 所有入仓单数据列表
+        if (result[3]) {
+          if (result[3].Result) {
+            let list = [].concat(result[3].Result);
+            this.$store.commit("updateAllWarehouseReceipt", {
+              AllWarehouseReceipt: list
+            });
+          }
         }
       }
     },

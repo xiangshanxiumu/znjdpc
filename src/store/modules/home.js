@@ -8,17 +8,15 @@
 export default {
   state: {
     // 所有菜单路由映射表,
-    menuMap: [
-      {
-        type:"综合管理",
+    menuMap: [{
+        type: "综合管理",
         entity: { // 综合管理
           id: "zhgl",
           path: "综合管理",
           icon: "el-icon-menu",
           name: "综合管理"
         },
-        childs:[
-          {
+        childs: [{
             entity: {
               id: "FixedAssets",
               path: "/Home/FixedAssets",
@@ -61,7 +59,7 @@ export default {
         ]
       },
       {
-        type:"资金管理",
+        type: "资金管理",
         entity: { // 资金管理
           id: "zjgl",
           path: "资金管理",
@@ -144,7 +142,7 @@ export default {
         ]
       },
       { // 采购管理
-        type:"采购管理",
+        type: "采购管理",
         entity: {
           id: "cggl",
           path: "采购管理",
@@ -212,7 +210,7 @@ export default {
         ]
       },
       { // 销售管理
-        type:"销售管理",
+        type: "销售管理",
         entity: {
           id: "xsgl",
           path: "销售管理",
@@ -220,6 +218,39 @@ export default {
           name: "销售管理"
         },
         childs: [{
+            entity: {
+              id: "PricePolicyTable",
+              path: "/Home/PricePolicyTable",
+              icon: "el-icon-document",
+              name: "价格政策表"
+            }
+          },
+          {
+            entity: {
+              id: "khdagl",
+              path: "客户档案管理",
+              icon: "el-icon-menu",
+              name: "客户档案管理"
+            },
+            childs: [{
+                entity: {
+                  id: "CustomerFilesSummary",
+                  path: "/Home/CustomerFilesSummary",
+                  icon: "el-icon-document",
+                  name: "客户档案汇总表"
+                }
+              },
+              {
+                entity: {
+                  id: "CustomerFilesDetails",
+                  path: "/Home/CustomerFilesDetails",
+                  icon: "el-icon-document",
+                  name: "客户信息档案明细"
+                }
+              },
+            ]
+          },
+          {
             entity: {
               id: "xxhtgl",
               path: "销售合同",
@@ -279,7 +310,7 @@ export default {
         ]
       },
       { // 加工管理
-        type:"加工管理",
+        type: "加工管理",
         entity: {
           id: "jggl",
           path: "加工管理",
@@ -354,7 +385,7 @@ export default {
         ]
       },
       { // 仓储物流
-        type:"仓储物流",
+        type: "仓储物流",
         entity: {
           id: "ccwl",
           path: "仓储物流",
@@ -428,92 +459,167 @@ export default {
         ]
       },
       {
-        type:"营销管理", // 营销管理
+        type: "高层管理", // 高层管理
         entity: {
-          id: "yxgl",
-          path: "营销管理",
+          id: "qygl",
+          path: "高层管理",
           icon: "el-icon-menu",
-          name: "营销管理"
+          name: "高层管理"
         },
-        childs:[
+        childs: [
           {
             entity: {
-              id: "MarketingPlan",
-              path: "/Home/MarketingPlan",
-              icon: "el-icon-document",
-              name: "营销计划"
+              id: "dshjy",
+              path: "董事会决议",
+              icon: "el-icon-menu",
+              name: "董事会决议"
+            },
+            childs:[
+              {
+                entity: {
+                  id: "MarketingPlan",
+                  path: "/Home/DirectorsResolutionSummary",
+                  icon: "el-icon-document",
+                  name: "董事会决议汇总表"
+                }
+              },
+              {
+                entity: {
+                  id: "MarketingPlan",
+                  path: "/Home/DirectorsResolutionDetails",
+                  icon: "el-icon-document",
+                  name: "董事会决议明细"
+                }
+              }
+            ]
+          },
+          {
+            entity: {
+              id: "zjlbghyjy",
+              path: "总经理办公会议决议",
+              icon: "el-icon-menu",
+              name: "总经理办公会议决议"
+            },
+            childs:[
+              {
+                entity: {
+                  id: "MarketingPlan",
+                  path: "/Home/GManagerOMResolutionSummary",
+                  icon: "el-icon-document",
+                  name: "汇总表"
+                }
+              },
+              {
+                entity: {
+                  id: "MarketingPlan",
+                  path: "/Home/GManagerOMResolutionDetails",
+                  icon: "el-icon-document",
+                  name: "明细"
+                }
+              }
+            ]
+          },
+          {
+            entity: {
+              id: "yxgl",
+              path: "营销管理",
+              icon: "el-icon-menu",
+              name: "营销管理"
+            },
+            childs: [
+              {
+              entity: {
+                id: "MarketingPlan",
+                path: "/Home/MarketingPlanSummary",
+                icon: "el-icon-document",
+                name: "营销计划汇总"
+              }
+            },
+            {
+              entity: {
+                id: "MarketingPlan",
+                path: "/Home/MarketingPlanDetails",
+                icon: "el-icon-document",
+                name: "营销计划明细"
+              }
             }
+          ]
           }
+          
         ]
-      }
+      },
     ],
     // authMenu
-    authMenu:sessionStorage.authMenu, // 当前角色权限菜单
+    authMenu: sessionStorage.authMenu, // 当前角色权限菜单
     // 导航条 面包屑组数据
     breadList: [],
     // 动态tags
     dynamicTags: [],
     // 所有仓单数据列表
-    AllWarehouseReceipt:[],
+    AllWarehouseReceipt: [],
     // 所有合同数据列表
-    AllContract:[],
+    AllContract: [],
     // 所有合同ID
-    CIDList:[],
+    CIDList: [],
     // 所有仓库名称列表
-    StoreNameList:[],
+    StoreNameList: [],
+    InitGlobalData:{},// 初始全局数据 input 输入联想反馈
   },
   getters: {
     // 所有菜单映射表
     menuMap: (state) => state.menuMap,
     // 资金管理部门操作菜单映射表
-    fundManMenu:(state)=>{
-        let menuArr = state.menuMap.filter(item=>{
-            return item.type == "资金管理"
-        })
-        return menuArr;
+    fundManMenu: (state) => {
+      let menuArr = state.menuMap.filter(item => {
+        return item.type == "资金管理"
+      })
+      return menuArr;
     },
     // 采购管理部门操作菜单映射表
-    PurManMenu:(state)=>{
-        let menuArr = state.menuMap.filter(item=>{
-            return item.type == "采购管理"
-        })
-        return menuArr;
+    PurManMenu: (state) => {
+      let menuArr = state.menuMap.filter(item => {
+        return item.type == "采购管理"
+      })
+      return menuArr;
     },
     // 销售管理部门操作菜单映射表
-    SaleManMenu:(state)=>{
-        let menuArr = state.menuMap.filter(item=>{
-            return item.type == "销售管理"
-        })
-        return menuArr;
+    SaleManMenu: (state) => {
+      let menuArr = state.menuMap.filter(item => {
+        return item.type == "销售管理"
+      })
+      return menuArr;
     },
     // 加工管理部门操作菜单映射表
-    ProManMenu:(state)=>{
-        let menuArr = state.menuMap.filter(item=>{
-            return item.type == "加工管理"
-        })
-        return menuArr;
+    ProManMenu: (state) => {
+      let menuArr = state.menuMap.filter(item => {
+        return item.type == "加工管理"
+      })
+      return menuArr;
     },
     // 仓储物流管理部门操作菜单映射表
-    StoLManMenu:(state)=>{
-        let menuArr = state.menuMap.filter(item=>{
-            return item.type == "仓储物流"
-        })
-        return menuArr;
+    StoLManMenu: (state) => {
+      let menuArr = state.menuMap.filter(item => {
+        return item.type == "仓储物流"
+      })
+      return menuArr;
     },
-    // 当前角色权限菜单
-    // roleMenu:(state,getters)=>{
-    //     if(state.authMenu){
-    //         return getters[`${state.authMenu}`];
-    //     } else {
-    //         return state.menuMap;
-    //     }
-    // },
     breadList: (state) => state.breadList,
     dynamicTags: (state) => state.dynamicTags,
     // 所有合同ID
-    CIDList:(state)=>state.CIDList,
+    CIDList: (state) => state.CIDList,
+    // BrandList,GNameList,StandardsList,StoreList,UnitList 牌号 品名 规格 仓库 单位
+    // BrandList牌号
+    BrandList:(state)=>state.InitGlobalData.BrandList,
+    // GNameList品名
+    GNameList:(state)=>state.InitGlobalData.GNameList,
+    // StandardsList规格
+    StandardsList:(state)=>state.InitGlobalData.StandardsList,
+    // StoreList仓库
+    StoreList:(state)=>state.InitGlobalData.StoreList,
+    // UnitList单位
+    UnitList:(state)=>state.InitGlobalData.UnitList,
     // 所有仓库名称列表
-    StoreNameList:(state)=>{
+    StoreNameList: (state) => {
       // AllWarehouseReceipt RecDepo
       let List = [];
       state.AllWarehouseReceipt.map(item => {
@@ -524,14 +630,14 @@ export default {
         }
       });
       //去重 map some结合去重
-      let NewList= [];
-      List.map(item=>{
-          let isExit = NewList.some(item2 => {
-            return item2.value == item.value;
-          });
-          if(!isExit){
-            NewList.push(item)
-          }
+      let NewList = [];
+      List.map(item => {
+        let isExit = NewList.some(item2 => {
+          return item2.value == item.value;
+        });
+        if (!isExit) {
+          NewList.push(item)
+        }
       })
       return NewList;
     },
@@ -558,6 +664,10 @@ export default {
     },
     updateStoreNameList(state, payload) {
       state.StoreNameList = payload.StoreNameList;
+    },
+    // 提交 初始全局数据
+    updateInitGlobalData(state, payload) {
+      state.InitGlobalData = payload.InitGlobalData;
     },
   },
   actions: {
