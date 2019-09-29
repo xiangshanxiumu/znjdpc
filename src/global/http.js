@@ -1,9 +1,16 @@
+/*
+ * @Description: In User Settings Edit
+ * @Author: your name
+ * @Date: 2019-09-14 09:30:21
+ * @LastEditTime: 2019-09-28 10:25:44
+ * @LastEditors: Please set LastEditors
+ */
 import axios from 'axios';
 import qs from 'qs';
 // 导入项目配置
 import projectConfig from '@/projectConfig';
 // 导入loading函数
-import {startLoading,endLoading} from './loading';
+import {startLoading,endLoading,showMessage,showMessageBox} from './loading';
 
 let mode = projectConfig.mode
 axios.defaults.timeout = projectConfig.timeout;
@@ -26,24 +33,26 @@ axios.interceptors.request.use((config) => {
     }
     return config;
 },
-(err)=>{
-    return Promise.reject(err);
+(error)=>{
+  console.log(error.response)
+    return Promise.reject(error);
 }
 );
 axios.interceptors.response.use((response) => {
-    console.log(response.status);
     // 关闭loading
     endLoading();
     return response.data;
   },
-  (err) => {
-    console.log(err) // Error: Network Error
-    // let originalRequest = error.config;
-    // if(error.code == 'ECONNABORTED' && error.message.indexOf('timeout')!=-1 && !originalRequest._retry){
-    //         originalRequest._retry = true
-    //         return axios.request(originalRequest);
-    // }
-    return Promise.reject(err);
+  (error) => {
+    // 关闭loading
+    endLoading();
+     // Error: Network Error
+    if(error.message.match('timeout') !=null){
+      // 请求超时
+      showMessage("网络超时","error");
+      // showMessageBox("网络错误","请求超时","warning");
+    }
+    return Promise.reject(error);
   }
 );
 
