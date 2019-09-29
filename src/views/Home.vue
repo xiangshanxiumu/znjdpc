@@ -119,18 +119,18 @@ export default {
       this.roleMenu = this[`${sessionStorage.authMenu}`];
     }
     // 销售管理 权限角色 添加上 入仓单汇总表 路由
-    if (sessionStorage.role == "销售管理") {
-      let menuItem = {
-        entity: {
-          id: "WarehousingSummary",
-          path: "/Home/WarehousingSummary",
-          icon: "el-icon-document",
-          name: "入仓明细汇总表"
-        }
-      };
-      // 插入 入仓单汇总表路由数据
-      this.roleMenu[0].childs.splice(3, 0, menuItem);
-    }
+    // if (sessionStorage.role == "销售管理") {
+    //   let menuItem = {
+    //     entity: {
+    //       id: "WarehousingSummary",
+    //       path: "/Home/WarehousingSummary",
+    //       icon: "el-icon-document",
+    //       name: "入仓明细汇总表"
+    //     }
+    //   };
+    //   // 插入 入仓单汇总表路由数据
+    //   this.roleMenu[0].childs.splice(3, 0, menuItem);
+    // }
     // 生成菜单路由名称映射表 渲染菜单
     this.getMenuMap(this.roleMenu);
   },
@@ -184,15 +184,6 @@ export default {
             // 提交store
             this.$store.commit("updteAllContract", {
               AllContract: list
-            });
-          }
-        }
-        // 所有入仓单数据列表
-        if (result[3]) {
-          if (result[3].Result) {
-            let list = [].concat(result[3].Result);
-            this.$store.commit("updateAllWarehouseReceipt", {
-              AllWarehouseReceipt: list
             });
           }
         }

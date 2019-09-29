@@ -12,11 +12,11 @@ export const searchOneContract = (contractID) =>http.get('/api/Contract/SearchOn
 export const addContract = (data) =>http.post('/api/Contract/InsertOrUpdateContract',data);
 // 获取所有合同ID 
 export const getAllCID = ()=>http.get('/api/Contract/GetCIDList');
-// 联想列表: 单位 品名 规格 牌号
+// 联想列表: 单位 品名 规格 牌号 仓库
 export const getContextList = () =>http.get('/api/Contract/GetContextList');
 // 获取所有入仓单数据 2019-09-24
 export const getAllWarehousingReceipt = () =>http.get('/api/Store/GetInStoreList',{params:{loadingText:loadingText}});
 // 获取初始全局数据
 export const getAllGlobalInitData = () =>{
-    return http.all([getAllCID(),getContextList(),getAllContractList(),getAllWarehousingReceipt()]);
+    return http.all([getAllCID(),getContextList(),getAllContractList()]);
 }

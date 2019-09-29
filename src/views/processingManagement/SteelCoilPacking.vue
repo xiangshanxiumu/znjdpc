@@ -38,7 +38,7 @@
           :width="item.width"
           :fixed="item.fixed"
           :column-key="item.CoilID"
-          :type="item.order2"
+          :type="item.order1"
           align="center"
         >
           <template slot-scope="scope">
@@ -72,6 +72,7 @@
             :span-method="rowSpanMethod"
             border
             show-summary
+            :summary-method="getSummaries"
             max-width="99%"
           >
             <el-table-column
@@ -113,13 +114,15 @@
 <script>
 // 导入Sortable 表格拖拽
 // import Sortable from "sortablejs";
-// 导入获取 所有加工单 API函数
-import { getAllProStoreList } from "@/api/WarehouseReceipt";
+// 导入 添加卷包 API函数
+import { addRollPack } from "@/api/RollPack";
+import { mapGetters } from "vuex";
 export default {
   // 钢条小卷 重新打包
   name: "SteelCoilPacking",
   data() {
     return {
+      totalTon: 0, // 总吨位
       tableTitle: [
         // {
         //   CoilID: "101", // 钢卷id
@@ -137,9 +140,9 @@ export default {
         // SteelCoil:
         {
           GoodsID: "111", //父钢卷号
-          Brand: "牌号", // 牌号
-          Standards: "规格", // 规格
-          Ton: 10, //吨位
+          Brand: "", // 牌号
+          Standards: "", // 规格
+          Ton: 0, //吨位
           Striping: [
             {
               StripingId: "1001", // 分小条钢卷 Id
@@ -147,19 +150,19 @@ export default {
               RollPackNo: "" // 所属卷包号
             }
           ]
-        },
-        {
-          ParentID: "112", //父钢卷号
-          Brand: "", // 牌号
-          Standards: "", // 规格
-          Ton: 15 //吨位
-        },
-        {
-          ParentID: "113", //父钢卷号
-          Brand: "", // 牌号
-          Standards: "", // 规格
-          Ton: 13 //吨位
         }
+        // {
+        //   ParentID: "112", //父钢卷号
+        //   Brand: "", // 牌号
+        //   Standards: "", // 规格
+        //   Ton: 15 //吨位
+        // },
+        // {
+        //   ParentID: "113", //父钢卷号
+        //   Brand: "", // 牌号
+        //   Standards: "", // 规格
+        //   Ton: 13 //吨位
+        // }
       ],
       checkedList: [], // 钢卷小条勾选列表
       packingList: [], // 综合打包数据列表
@@ -170,13 +173,13 @@ export default {
         {
           title: [
             {
-              prop: "RollPackNo",
+              prop: "RPID",
               label: "卷包号",
               width: "240",
               fixed: ""
             },
             {
-              prop: "CoilID",
+              prop: "RollPackNo",
               label: "小卷编号",
               width: "180",
               fixed: ""
@@ -238,13 +241,13 @@ export default {
       // 打包小卷表格title
       packTableTitle: [
         {
-          prop: "RollPackNo",
+          prop: "RPID",
           label: "卷包号",
           width: "240",
           fixed: ""
         },
         {
-          prop: "CoilID",
+          prop: "RollPackNo",
           label: "小卷编号",
           width: "180",
           fixed: ""
@@ -302,6 +305,10 @@ export default {
       ]
     };
   },
+  computed: {
+    // 要分条加工的钢卷
+    ...mapGetters(["steelCoilMachiningList"])
+  },
   created() {
     this.ISGoods.map(item1 => {
       this.tableTitle.map((item2, index) => {
@@ -312,16 +319,22 @@ export default {
         }
       });
     });
-    this.getProStoreList();
+    // 初始渲染要打包的小条表格
+    this.renderTable();
   },
   methods: {
-    // 获取加工单列表数据
-    async getProStoreList() {
-      let result = await getAllProStoreList();
-      let ProStoreList;
-      if (result) {
-        ProStoreList = result.Result;
-        ProStoreList = ProStoreList.filter(item => {
+    // 初始渲染要打包的小条表格
+    renderTable() {
+      console.log(this.steelCoilMachiningList);
+      // 计算总吨位
+      this.steelCoilMachiningList.map(item => {
+        this.totalTon += Number(item.Ton);
+      });
+      if (this.steelCoilMachiningList.length == 0) {
+        return false;
+      }
+      if (this.steelCoilMachiningList.length > 0) {
+        let ProStoreList = this.steelCoilMachiningList.filter(item => {
           return item.SeparateSolution;
         });
         this.ISGoods = ProStoreList;
@@ -365,8 +378,8 @@ export default {
           titleArr.push({
             prop: label,
             label: label,
-            CoilID: `${order1}-${label}-${i + 1}`,
-            order1: order1,
+            CoilID: `${label}-${order1}`, //`${order1}-${label}-${i + 1}`,
+            order1: `${order1}C`,
             order2: `${i + 1}-order`,
             width: "120",
             fixed: "",
@@ -379,7 +392,34 @@ export default {
       });
       return { StripArr, titleArr };
     },
-
+    // 表单合计自定义统计计算方法
+    getSummaries(param) {
+      const { columns, data } = param;
+      const sums = [];
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = "合计";
+          return;
+        } else if (index == 4 || index == 8) {
+          const values = data.map(item => Number(item[column.property]));
+          if (!values.every(value => isNaN(value))) {
+            sums[index] = values.reduce((prev, curr) => {
+              const value = Number(curr);
+              if (!isNaN(value)) {
+                return prev + curr;
+              } else {
+                return prev;
+              }
+            }, 0);
+            sums[index] = sums[index].toFixed(3);
+            sums[index] += " 吨";
+          }
+        } else {
+          sums[index] = "";
+        }
+      });
+      return sums;
+    },
     // checkBoxButton 勾选点击事件
     checkBoxChange(scope, item) {
       let rowIndex = scope.$index;
@@ -403,7 +443,7 @@ export default {
           CoilTon: CoilTon
         };
         Object.assign(obj, scope.row);
-        this.packData.push(obj);
+        this.packData.push(obj); // 卷包数据
         this.checkedList.push(obj);
       } else {
         // 去掉勾选点击情况下 从数据列表中清除
@@ -455,10 +495,10 @@ export default {
     rowSpanMethod({ row, column, rowIndex, columnIndex }) {
       if (columnIndex === 0) {
         // 第一列
-        if (rowIndex % 8 === 0) {
+        if (rowIndex % 50 === 0) {
           // 行 index
           return {
-            rowspan: 8,
+            rowspan: 50,
             colspan: 1
           };
         } else {
@@ -474,17 +514,22 @@ export default {
       let packArr = [].concat(this.packData);
       let packTtitle = [].concat(this.packTableTitle);
       // 生成卷包号
-      let now = new Date(); 
-      let nowTime = now.toLocaleString()
+      let now = new Date();
+      let nowTime = now.toLocaleString();
       let date = now.toLocaleDateString();
-      // let date = nowTime.substring(0,9);//截取日期
       let time = now.getTime();
-      // let time = nowTime.substring(12,20); //截取时间 getTime()
-
-      let curTime = date+"-"+time;
-      packArr.map(item=>{
-        item.RollPackNo = item.SteelRollID+'-'+curTime;
-      })
+      let curTime = date + "-" + time;
+      packArr.map(item => {
+        item.RPID = item.SID + "-" + curTime; // 卷包号
+        item.RollPackNo = item.CoilID; // 加工分条号
+        item.BrandList = [].push(item.Brand); //涉及牌号
+        item.StandardsList = [].push(item.Standards); // 涉及加工规格
+        item.Storename = item.StoreName; // 加工厂仓库
+        item.PackTon = 0;
+        item.PackTon += Number(item.CoilTon); // 已打包吨位
+        item.UnPackTon = 0; // 未打包吨位 ?
+        item.SteelRollIDList = [].push(item.SteelRollID); // 设计钢卷号
+      });
       if (this.packList.length <= 1) {
         if (this.packList[0].pack.length == 0) {
           this.packList[0].pack = packArr;
@@ -523,9 +568,9 @@ export default {
       this.packList = [];
       let packTtitle = [].concat(this.packTableTitle);
       let tableItem = {
-        title:packTtitle,
-        pack:[]
-      }
+        title: packTtitle,
+        pack: []
+      };
       this.packList.push(tableItem);
       // checkBox 去disabled
       let checkBoxs = $("#Table").find("input:checked");
@@ -545,8 +590,92 @@ export default {
     backHandle() {
       this.$router.go(-1);
     },
-    submitForm() {
-      console.log(this.packList);
+    // 提交
+    async submitForm() {
+      if (this.packList.length == 0) {
+        this.$message({
+          message: "请先选择加工后的钢卷小条打包后再提交",
+          type: "warning",
+          showClose: true,
+          center: true
+        });
+      } else {
+        if (this.packList[0].pack.length == 0) {
+          this.$message({
+            message: "请先选择加工后的钢卷小条打包后再提交",
+            type: "warning",
+            showClose: true,
+            center: true
+          });
+          return false;
+        }
+        // 卷包数据处理
+        let PackData = [];
+        this.packList.map(item => {
+          let packItem = {
+            RPID: "",
+            ProRollNo: "",
+            BrandList: "",
+            StandardsList: "",
+            Storename: "",
+            PackTon: 0,
+            UnPackTon: 0,
+            SteelRollIDList: ""
+          };
+          if (item.pack && item.pack.length > 0) {
+            item.pack.map(item2 => {
+              packItem.RPID = item2.RPID; // 卷包号
+              packItem.ProRollNo += item2.CoilID + "/"; // 加工分条号 小卷号
+              packItem.BrandList += item2.Brand + "/"; //涉及牌号
+              packItem.StandardsList += item2.Standards + "/"; // 涉及加工规格
+              packItem.Storename += item2.StoreName + "/"; // 加工厂仓库
+              packItem.PackTon += Number(item2.CoilTon); // 已打包吨位
+              packItem.UnPackTon = 0; // 总未打包吨位 ?
+              packItem.SteelRollIDList += item2.SteelRollID + "/"; // 设计钢卷号
+            });
+          }
+          PackData.push(packItem);
+        });
+        console.log("222", PackData);
+        // 计算剩余吨位
+        let useTon = 0;
+        PackData.map(item => {
+          useTon += Number(item.PackTon);
+        });
+        // 总未打包吨位
+        let UnPackTon = this.totalTon - useTon;
+        PackData.map(item => {
+          item.UnPackTon = UnPackTon;
+        });
+        let result = await addRollPack(PackData);
+        console.log(result);
+        if (result) {
+          if (result.StatusCode == 200) {
+            setTimeout(() => {
+              this.$alert("录入成功", "加工打包录入", {
+                confirmButtonText: "确定",
+                type: "success",
+                // center: true,
+                callback: action => {
+                  this.$message({
+                    type: "success",
+                    message: `加工打包录入成功`
+                  });
+                  // 返回上一页面 或返回委外加工单汇总表
+                  this.$router.push({
+                    path: "SteelCoilPackingSummary"
+                  });
+                }
+              });
+            }, 1000);
+          } else {
+            this.$message({
+              type: "info",
+              message: result.Message
+            });
+          }
+        }
+      }
     }
   }
 };

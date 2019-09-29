@@ -27,7 +27,7 @@ export default [
             auth:true,
         }
     },
-    {   // 委外加工单汇总
+    {   // 钢卷打包
         path:'SteelCoilPacking',
         name:'SteelCoilPacking',
         component:SteelCoilPacking,
@@ -35,7 +35,14 @@ export default [
             auth:true,
         }
     },
-
+    {   // 钢卷打包后的汇总表
+        path:'SteelCoilPackingSummary',
+        name:'SteelCoilPackingSummary',
+        component:()=>import('@/views/processingManagement/SteelCoilPackingSummary'),
+        meta:{
+            auth:true,
+        }
+    },
     {   // 委外加工合同录入
         path:'OutsourcingProcessingContractEntry',
         name:'OutsourcingProcessingContractEntry',

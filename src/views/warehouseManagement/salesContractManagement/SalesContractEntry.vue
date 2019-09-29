@@ -14,14 +14,14 @@
           <div class="input-item">
             <div class="input-box">
               <el-form-item label="供方" prop="Supply" class="form-item">
-                <el-input v-model="ContractData.contract.Supply" placeholder="请输入内容"></el-input>
+                <el-autocomplete v-model="ContractData.contract.Supply" placeholder="请输入内容" :fetch-suggestions="querySearchUnit" class="input-width"></el-autocomplete>
               </el-form-item>
             </div>
           </div>
           <div class="input-item">
             <div class="input-box">
               <el-form-item label="需方" prop="Demand" class="form-item">
-                <el-input v-model="ContractData.contract.Demand" placeholder="请输入内容"></el-input>
+                <el-autocomplete v-model="ContractData.contract.Demand" placeholder="请输入内容" :fetch-suggestions="querySearchUnit" class="input-width"></el-autocomplete>
               </el-form-item>
             </div>
           </div>
@@ -30,14 +30,14 @@
           <div class="input-item">
             <div class="input-box">
               <el-form-item label="合同编号" prop="CID" class="form-item">
-                <el-input v-model="ContractData.contract.CID" placeholder="请输入内容"></el-input>
+                <el-input v-model="ContractData.contract.CID" placeholder="请输入内容" class="input-width"></el-input>
               </el-form-item>
             </div>
           </div>
           <div class="input-item">
             <div class="input-box">
               <el-form-item label="签订地址" prop="Address" class="form-item">
-                <el-input v-model="ContractData.contract.Address" placeholder="请输入内容"></el-input>
+                <el-input v-model="ContractData.contract.Address" placeholder="请输入内容" class="input-width"></el-input>
               </el-form-item>
             </div>
           </div>
@@ -49,6 +49,7 @@
                   value-format="yyyy-MM-dd"
                   type="date"
                   placeholder="选择日期"
+                  class="input-width"
                 ></el-date-picker>
               </el-form-item>
             </div>
@@ -124,28 +125,28 @@
     <el-dialog title="编辑" :visible.sync="dialogFormVisible" class="page-dialog" width="30%">
       <el-form :model="form">
         <el-form-item label="产品名称" :label-width="formLabelWidth">
-          <el-input v-model="form.CEName" auto-complete="off"></el-input>
+          <el-autocomplete v-model="form.CEName" auto-complete="off" :fetch-suggestions="querySearchCEName" class="form-input-width"></el-autocomplete>
         </el-form-item>
         <el-form-item label="厂家" :label-width="formLabelWidth">
-          <el-input v-model="form.CEFactroyName" auto-complete="off"></el-input>
+          <el-autocomplete v-model="form.CEFactroyName" auto-complete="off" :fetch-suggestions="querySearchUnit" class="form-input-width"></el-autocomplete>
         </el-form-item>
         <el-form-item label="牌号" :label-width="formLabelWidth">
-          <el-input v-model="form.CEBrand" auto-complete="off"></el-input>
+          <el-autocomplete v-model="form.CEBrand" auto-complete="off" :fetch-suggestions="querySearchCEBrand" class="form-input-width"></el-autocomplete>
         </el-form-item>
         <el-form-item label="规格" :label-width="formLabelWidth">
-          <el-input v-model="form.CEStandards" auto-complete="off"></el-input>
+          <el-autocomplete v-model="form.CEStandards" auto-complete="off" :fetch-suggestions="querySearchCEStandards" class="form-input-width"></el-autocomplete>
         </el-form-item>
         <el-form-item label="数量" :label-width="formLabelWidth">
-          <el-input v-model="form.CETon" auto-complete="off"></el-input>
+          <el-input v-model="form.CETon" auto-complete="off" class="form-input-width"></el-input>
         </el-form-item>
         <el-form-item label="单价(含税)" :label-width="formLabelWidth">
-          <el-input v-model="form.CEUnitPrice" auto-complete="off"></el-input>
+          <el-input v-model="form.CEUnitPrice" auto-complete="off" class="form-input-width"></el-input>
         </el-form-item>
         <el-form-item label="合计金额" :label-width="formLabelWidth">
-          <el-input v-model="form.CETotalPrice" auto-complete="off"></el-input>
+          <el-input v-model="form.CETotalPrice" auto-complete="off" class="form-input-width"></el-input>
         </el-form-item>
         <el-form-item label="备注" :label-width="formLabelWidth">
-          <el-input v-model="form.CEInfo" auto-complete="off"></el-input>
+          <el-input v-model="form.CEInfo" auto-complete="off" class="form-input-width"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -262,14 +263,14 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["viewEditorContract"]),
+    ...mapGetters(["viewEditorContract","GNameList","UnitList","BrandList","StandardsList"]),
     pageTitle() {
       // 页面标题
       return `销售合同${this.operation}`;
     }
   },
   created() {
-    // 从入仓单汇总表单 入仓单查看 编辑
+    // 从销售合同汇总表单 销售合同查看 编辑
     if (this.$route.query.operation) {
       if (this.$route.query.operation == "查看编辑") {
         this.operation = this.$route.query.operation;
@@ -278,9 +279,60 @@ export default {
     }
   },
   methods: {
+    querySearchCEName(queryString, cb) {
+      let restaurants = this.GNameList;
+      let results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
+    createFilter(queryString) {
+      return restaurant => {
+        return (
+          restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) ===
+          0
+        );
+      };
+    },
+    //  Unit CEFactroyName
+    querySearchUnit(queryString, cb){
+      let restaurants = this.UnitList;
+      let results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
+    // CEBrand
+    querySearchCEBrand(queryString, cb){
+      let restaurants = this.BrandList;
+      let results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
+    // CEStandards
+    querySearchCEStandards(queryString, cb){
+      let restaurants = this.StandardsList;
+      let results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
     // 采购合同汇总表 查看详情 回显 编辑
     explicitViewEditor(contractExt) {
-      console.log(contractExt)
+      this.ContractData.contractExt = [].concat(contractExt);
+      let obj = this.ContractData.contractExt[0];
+      // 数据同步到store
+      Object.assign(this.ContractData.contract, obj);
+      // 需方 Demand "福建中鞍科技有限公司"
+      this.ContractData.contract.Demand = "福建中鞍科技有限公司";
+    },
+    // 采购合同汇总表 查看详情 回显 编辑
+    explicitViewEditor(contractExt) {
       this.ContractData.contractExt = [].concat(contractExt);
       let obj = this.ContractData.contractExt[0];
       // 数据同步到store
@@ -372,10 +424,8 @@ export default {
       });
       // 验证通过 调用接口
       if (isValid) {
-        console.log(this.ContractData);
         this.$loadingShow("销售合同录入处理中...");
         let result = await addContract(this.ContractData);
-        console.log(result);
         // Message;
         if(result){
           this.$loadingHide();
@@ -408,14 +458,12 @@ export default {
 </script>
 <style scoped>
 .input-item {
-  text-align: left;
+  text-align: right;
 }
 .input-box {
   display: inline-flex;
-  align-items: center;
-  padding: 0.5rem 0rem;
   position: relative;
-  left: 30%;
+  right: 30%;
 }
 .input-label {
   min-width: 6rem;
@@ -424,5 +472,11 @@ export default {
 }
 .form-item {
   display: inline-flex;
+}
+.input-width{
+  width:17rem;
+}
+.form-input-width{
+  width:80%;
 }
 </style>

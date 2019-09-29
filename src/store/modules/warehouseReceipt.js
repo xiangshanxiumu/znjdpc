@@ -1,64 +1,79 @@
 /**仓单数据 */
-export default {
-  state: {
-    // 所有的入仓单数据列表
-    AllWarehousingReceipt: [],
-  },
-  getters: {
-    // 合同编号数据列表
-    CIDArr: (state) => {
-      let CIDArr = [];
-      state.AllWarehousingReceipt.map(item => {
-        if (item.CID) {
-          CIDArr.push({
-            value: item.CID
+// 从数据列表中获取某属性数据组函数
+const getAttributeList = (state,arr,attribute) =>{
+      if(arr.length==0){
+        return [];
+      }
+      // 筛选
+      let Arr = [];
+      state[`${arr}`].map(item => {
+        if (item[`${attribute}`]) {
+          Arr.push({
+            value: item[`${attribute}`]
           })
         }
       });
       //去重 map some结合去重
-      let NewCIDArr= [];
-      CIDArr.map(item=>{
-          let isExit = NewCIDArr.some(item2 => {
+      let NewArr= [];
+      Arr.map(item=>{
+          let isExit = NewArr.some(item2 => {
             return item2.value == item.value;
           });
           if(!isExit){
-            NewCIDArr.push(item)
+            NewArr.push(item)
           }
       })
+      return NewArr;
+}
+export default {
+  state: {
+    // 所有的入仓单数据列表
+    AllWarehousingReceipt: [],
+    // 所有出仓单数据列表
+    AllWarehouseReceipt: [],
+    // 所有加工单数据列表
+    AllProcessingReceipt:[],
+  },
+  getters: {
+    // 合同编号CID数据列表
+    inStoreCIDList: (state) => {
+      return getAttributeList(state,"AllWarehousingReceipt","CID");
     //   let hash = {};
     //   CIDArr = CIDArr.reduce(function (item, next) {
     //     hash[next.name] ? '' : hash[next.name] = true && item.push(next);
     //     return item
     //   }, []);
     //   console.log(CIDArr)
-      return NewCIDArr;
     },
-    // 采购单位数据列表
-    BuybyArr: (state) => {
-      let BuybyArr = [];
-      state.AllWarehousingReceipt.map(item => {
-        if (item.Buyby) {
-          BuybyArr.push({
-            value: item.Buyby
-          })
-        }
-      });
-      //去重 map some结合去重
-      let NewBuybyArr= [];
-      BuybyArr.map(item=>{
-          let isExit = NewBuybyArr.some(item2 => {
-            return item2.value == item.value;
-          });
-          if(!isExit){
-            NewBuybyArr.push(item)
-          }
-      })
-      return NewBuybyArr;
+    // 采购单位Buyby数据列表
+    inStoreBuybyList: (state) => {
+      return getAttributeList(state,"AllWarehousingReceipt","Buyby");
+    },
+    // SID
+    inStoreSIDList:(state)=>{
+      return getAttributeList(state,"AllWarehousingReceipt","SID");
+    },
+    // SteelRollID
+    inStoreSteelRollIDList:(state)=>{
+      return getAttributeList(state,"AllWarehousingReceipt","SteelRollID");
+    },
+    // RecDepo
+    inStoreRecDepoList:(state)=>{
+      return getAttributeList(state,"AllWarehousingReceipt","RecDepo");
     },
   },
   mutations: {
+    // 入仓单数据 提交
     updateAllWarehousingReceipt(state, payload) {
       state.AllWarehousingReceipt = payload.AllWarehousingReceipt
-    }
+    },
+    // 出仓单数据 提交
+    updateAllWarehouseReceipt(state, payload) {
+      state.AllWarehouseReceipt = payload.AllWarehouseReceipt;
+    },
+    // 加工单数据 提交
+    updateAllProcessingReceipt(state, payload) {
+      state.AllProcessingReceipt = payload.AllProcessingReceipt;
+    },
   }
 }

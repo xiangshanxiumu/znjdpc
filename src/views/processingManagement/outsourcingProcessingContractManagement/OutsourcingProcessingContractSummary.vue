@@ -14,18 +14,18 @@
         <div class="page-search-item">
           <el-form :model="searchFrom">
             <div class="input-box">
-              <el-form-item label="采购合同编号" prop="ContractID" class="form-item">
+              <el-form-item label="加工合同编号" prop="ContractID" class="form-item">
                 <el-input v-model="searchFrom.ContractID" placeholder="请输入采购合同编号"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
-              <el-form-item label="采购单位" prop="Buyby" class="form-item">
+              <el-form-item label="加工单位" prop="Buyby" class="form-item">
                 <el-input v-model="searchFrom.Buyby" placeholder="请输入采购单位"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
-              <el-form-item label="入仓单编号" prop="InStoreID" class="form-item">
-                <el-input v-model="searchFrom.InStoreID" placeholder="请输入仓单编号"></el-input>
+              <el-form-item label="加工单编号" prop="SID" class="form-item">
+                <el-input v-model="searchFrom.SID" placeholder="请输入仓单编号"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
@@ -60,8 +60,7 @@
       <!--表格顶部区域-->
       <div class="table-top-area">
         <div class="table-top-btns">
-          <el-button  type="warning" @click="machiningHandle()">加工</el-button>
-          <el-button  type="danger" @click="outOfStockHandle()">出仓</el-button>
+          <el-button  type="success" @click="viewEditorHandle">查看编辑</el-button>
         </div>
         <div class="table-top-status">
           <div class="status-item">
@@ -186,44 +185,60 @@ export default {
       },
       tableTitle: [
         {
-          prop: "InStoreID", // 仓单编号id
-          label: "入仓单编号"
+          prop: "CID", // 销售合同编号id
+          label: "加工合同编号",
+          width: ""
         },
         {
-          prop: "ContractID", // 合同编号id
-          label: "采购合同编号"
+          prop: "Demand", // 客户名称
+          label: "客户名称",
+          width: ""
         },
         {
-          prop: "Buyby",
-          label: "采购单位"
+          prop: "CEFactroyName",
+          label: "加工单位",
+          width: ""
         },
         {
-          prop: "RecDate",
-          label: "仓单日期"
+          prop: "CEName", // 产品名称
+          label: "产品名称",
+          width: ""
         },
         {
-          prop: "RecDepo",
-          label: "收货仓库"
-        },
-        {
-          prop: "Brand",
+          prop: "CEBrand",
           label: "牌号"
         },
         {
-          prop: "Standards",
+          prop: "CEStandards",
           label: "规格"
         },
         {
-          prop: "GoodsID", // GoodsID
-          label: "钢卷号"
+          prop: "CETon",
+          label: "数量(吨)"
         },
         {
-          prop: "Ton",
-          label: "吨位"
+          prop: "CEUnitPrice",
+          label: "单价(元)"
         },
         {
-          prop: "GStatus",
-          label: "单价"
+          prop: "CETotalPrice", // 合计金额
+          label: "合计金额(元)"
+        },
+        {
+          prop: "Address", // 签订地址
+          label: "签订地址"
+        },
+        {
+          prop: "SignTime", // 签订时间
+          label: "签订时间"
+        },
+        {
+          prop: "ContractStatus", // 合同状态
+          label: "合同状态"
+        },
+        {
+          prop: "GInfo", // 备注
+          label: "备注"
         }
       ],
       tableData: [],
@@ -256,6 +271,51 @@ export default {
     this.getList();
   },
   methods: {
+    // 查看编辑 路由跳转到采购合同录入页面
+    viewEditorHandle() {
+      let len = this.multipleSelection.length;
+      if (len == 0) {
+        this.$message({
+          message: "请选择要查看编辑的合同",
+          type: "warning",
+          showClose: true,
+          center: true
+        });
+        return false;
+      }
+      if (len >= 2) {
+        // 当选择两个及以上时 判断合同编号是否一致
+        let CID = this.multipleSelection[0].CID; // 合同编号
+        let isAgreement = this.multipleSelection.every(item => {
+          return item.CID == CID;
+        });
+        if (!isAgreement) {
+          this.$message({
+            message: "选择编辑的合同编号不一致",
+            type: "error",
+            showClose: true,
+            center: true
+          });
+          return false;
+        }
+      }
+      let CID = this.multipleSelection[0].CID; // 合同编号
+      // 把同一个 CID仓单下的数据过滤出来
+      let viewEditorContract = this.goodsList.filter(item => {
+        return item.CID == CID;
+      });
+      // 提交store
+      this.$store.commit("updateViewEditorContract", {
+        viewEditorContract: viewEditorContract
+      });
+      // 路由跳转 到加工合同录入页面
+      this.$router.push({
+        name: "OutsourcingProcessingContractEntry",
+        query: {
+          operation: "查看编辑"
+        }
+      });
+    },
     // 表单合计自定义统计计算方法
     getSummaries(param) {
       const { columns, data } = param;
@@ -340,19 +400,16 @@ export default {
     // 获取列表数据
     async getList() {
       let type = "采购"; // 合同type
-      let result = await getAllContractList(type);
-      const loading = this.$loading({
-          lock: true,
-          text: "加载中",
-          spinner: "el-icon-loading",
-          background: "rgba(0, 0, 0, 0.7)"
-        });
+      let result = await getAllContractList();
       if (result.StatusCode == 200) {
-        loading.close(); // 关闭加载动画
-        let data = result.Result;
-        // 把三层结构数据摊平 获取所有钢卷数据组列表
-        this.goodsList = this.getGoods(data);
-        this.curList = this.curList.concat(this.goodsList)
+        if(result.Result){
+          this.goodsList = result.Result;
+          // 加工合同筛选
+          this.goodsList = this.goodsList.filter(item => {
+            return item.Type == "加工";
+          });
+        }
+        this.curList = [].concat(this.goodsList);
         this.GoodsPaging(this.curList);
       }
     },

@@ -1,6 +1,6 @@
 export default {
     state:{
-        // 委外加工钢卷列表数据
+        // 委外加工钢卷列表数据 已有分条方案
         steelCoilMachiningList:[],
     },
     getters:{

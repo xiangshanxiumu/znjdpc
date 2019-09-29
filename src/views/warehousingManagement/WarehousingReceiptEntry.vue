@@ -146,40 +146,40 @@
     <el-dialog title="编辑" :visible.sync="dialogFormVisible" class="page-dialog" width="30%">
       <el-form :model="form">
         <el-form-item label="品名" :label-width="formLabelWidth">
-          <el-input v-model="form.GName" auto-complete="off"></el-input>
+          <el-autocomplete v-model="form.GName" auto-complete="off" :fetch-suggestions="querySearchGName" class="form-input-width"></el-autocomplete>
         </el-form-item>
         <el-form-item label="牌号" :label-width="formLabelWidth">
-          <el-input v-model="form.Brand" auto-complete="off"></el-input>
+          <el-autocomplete v-model="form.Brand" auto-complete="off" :fetch-suggestions="querySearchBrand" class="form-input-width"></el-autocomplete>
         </el-form-item>
         <el-form-item label="钢卷号" :label-width="formLabelWidth">
-          <el-input v-model="form.SteelRollID" auto-complete="off"></el-input>
+          <el-input v-model="form.SteelRollID" auto-complete="off" class="form-input-width"></el-input>
         </el-form-item>
         <el-form-item label="规格(厚*宽)" :label-width="formLabelWidth">
-          <el-input v-model="form.Standards" auto-complete="off"></el-input>
+          <el-autocomplete v-model="form.Standards" auto-complete="off" :fetch-suggestions="querySearchStandards" class="form-input-width"></el-autocomplete>
         </el-form-item>
         <el-form-item label="吨位" :label-width="formLabelWidth">
-          <el-input v-model="form.Ton" auto-complete="off"></el-input>
+          <el-input v-model="form.Ton" auto-complete="off" class="form-input-width"></el-input>
         </el-form-item>
         <el-form-item label="单价" :label-width="formLabelWidth">
-          <el-input v-model="form.UnitPrice" auto-complete="off"></el-input>
+          <el-input v-model="form.UnitPrice" auto-complete="off" class="form-input-width"></el-input>
         </el-form-item>
         <el-form-item label="总金额" :label-width="formLabelWidth">
-          <el-input v-model="form.TotalPrice" auto-complete="off"></el-input>
+          <el-input v-model="form.TotalPrice" auto-complete="off" class="form-input-width"></el-input>
         </el-form-item>
         <el-form-item label="接收盈亏" :label-width="formLabelWidth">
-          <el-input v-model="form.ProfitAndLossTon" auto-complete="off"></el-input>
+          <el-input v-model="form.ProfitAndLossTon" auto-complete="off" class="form-input-width"></el-input>
         </el-form-item>
         <el-form-item label="包装状态" :label-width="formLabelWidth">
-          <el-input v-model="form.PackStatus" auto-complete="off"></el-input>
+          <el-input v-model="form.PackStatus" auto-complete="off" class="form-input-width"></el-input>
         </el-form-item>
         <el-form-item label="接收异议/拍照" :label-width="formLabelWidth">
-          <el-input v-model="form.RecInfo" auto-complete="off"></el-input>
+          <el-input v-model="form.RecInfo" auto-complete="off" class="form-input-width"></el-input>
         </el-form-item>
         <el-form-item label="异议反馈" :label-width="formLabelWidth">
-          <el-input v-model="form.RecInfoBack" auto-complete="off"></el-input>
+          <el-input v-model="form.RecInfoBack" auto-complete="off" class="form-input-width"></el-input>
         </el-form-item>
         <el-form-item label="备注" :label-width="formLabelWidth">
-          <el-input v-model="form.GInfo" auto-complete="off"></el-input>
+          <el-input v-model="form.GInfo" auto-complete="off" class="form-input-width"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -346,7 +346,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["editSteelCoil", "CIDList", "StoreList","UnitList"]),
+    ...mapGetters(["editSteelCoil", "CIDList", "StoreList","UnitList","BrandList","GNameList","StandardsList"]),
     pageTitle() {
       // 页面标题
       return `入仓单信息${this.operation}`;
@@ -390,12 +390,14 @@ export default {
       if (result) {
         if (result.StatusCode == 200) {
           if (result.Result) {
-            let CID = result.Result.CID;
-            let Supply = result.Result.Supply;
+            console.log(result.Result)
+            Object.assign(this.Store.store,result.Result.con)
+            // // 采购单位
+            let Supply = result.Result.con.Supply;
+            this.Store.store.Buyby = Supply;
+            let CID = result.Result.con.CID;
             let date = new Date().toLocaleDateString();
             this.Store.store.SID = `${CID}-`; // 入仓单前缀
-            // 采购单位
-            this.Store.store.Buyby = Supply;
           }
         }
       }
@@ -412,6 +414,33 @@ export default {
     // 接收单位名称输入检索
     querySearchUnit(queryString, cb){
       let restaurants = this.UnitList;
+      let results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
+    // GName
+    querySearchGName(queryString, cb){
+      let restaurants = this.GNameList;
+      let results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
+    // Brand
+    querySearchBrand(queryString, cb){
+      let restaurants = this.BrandList;
+      let results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
+    // Standards
+    querySearchStandards(queryString, cb){
+      let restaurants = this.StandardsList;
       let results = queryString
         ? restaurants.filter(this.createFilter(queryString))
         : restaurants;
@@ -587,5 +616,8 @@ export default {
 }
 .input-width{
   width:17rem;
+}
+.form-input-width{
+  width:80%;
 }
 </style>

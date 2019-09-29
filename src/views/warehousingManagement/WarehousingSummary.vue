@@ -18,29 +18,28 @@
                 <el-autocomplete
                   v-model="searchFrom.CID"
                   placeholder="请输入采购合同编号"
-                  :fetch-suggestions="querySearch"
-                  :trigger-on-focus="false"
+                  :fetch-suggestions="querySearchCID"
                 ></el-autocomplete>
               </el-form-item>
             </div>
             <div class="input-box" v-if="cgShow">
               <el-form-item label="采购单位" prop="Buyby" class="form-item">
-                <el-input v-model="searchFrom.Buyby" placeholder="请输入采购单位"></el-input>
+                <el-autocomplete v-model="searchFrom.Buyby" placeholder="请输入采购单位" :fetch-suggestions="querySearchBuyby"></el-autocomplete>
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="入仓单编号" prop="SID" class="form-item">
-                <el-input v-model="searchFrom.SID" placeholder="请输入仓单编号"></el-input>
+                <el-autocomplete v-model="searchFrom.SID" placeholder="请输入仓单编号" :fetch-suggestions="querySearchSID"></el-autocomplete>
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="钢卷号" prop="SteelRollID" class="form-item">
-                <el-input v-model="searchFrom.SteelRollID" placeholder="请输入钢卷号"></el-input>
+                <el-autocomplete v-model="searchFrom.SteelRollID" placeholder="请输入钢卷号" :fetch-suggestions="querySearchSteelRollID"></el-autocomplete>
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="收货仓库" prop="RecDepo" class="form-item">
-                <el-input v-model="searchFrom.RecDepo" placeholder="请输入收货仓库"></el-input>
+                <el-autocomplete v-model="searchFrom.RecDepo" placeholder="请输入收货仓库" :fetch-suggestions="querySearchRecDepo"></el-autocomplete>
               </el-form-item>
             </div>
             <div class="input-box" v-if="cgShow">
@@ -88,7 +87,7 @@
         style="width: 100%"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="50" align="center"></el-table-column>
+        <el-table-column type="selection" width="55" align="center"></el-table-column>
         <el-table-column
           v-for="(item,index) in tableTitle"
           :key="index"
@@ -219,7 +218,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["CIDArr", "BuybyArr"]),
+    ...mapGetters(["inStoreCIDList", "inStoreBuybyList","inStoreSIDList","inStoreSteelRollIDList","inStoreRecDepoList"]),
     totalTon() {
       // 总吨位
       let count = 0;
@@ -258,8 +257,8 @@ export default {
   },
   methods: {
     // 输入搜索
-    querySearch(queryString, cb) {
-      let restaurants = this.CIDArr;
+    querySearchCID(queryString, cb) {
+      let restaurants = this.inStoreCIDList;
       let results = queryString
         ? restaurants.filter(this.createFilter(queryString))
         : restaurants;
@@ -274,7 +273,42 @@ export default {
         );
       };
     },
-
+    // Buyby 输入检索
+    querySearchBuyby(queryString, cb){
+      let restaurants = this.inStoreBuybyList;
+      let results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
+    // SID 输入检索
+    querySearchSID(queryString, cb){
+      let restaurants = this.inStoreSIDList;
+      let results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
+    // SteelRollID 输入检索
+    querySearchSteelRollID(queryString, cb){
+      let restaurants = this.inStoreSteelRollIDList;
+      let results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
+    // RecDepo 输入检索
+    querySearchRecDepo(queryString, cb){
+      let restaurants = this.inStoreRecDepoList;
+      let results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
     // 表单合计自定义统计计算方法
     getSummaries(param) {
       const { columns, data } = param;
@@ -364,7 +398,7 @@ export default {
       if (result.StatusCode == 200) {
         if (result.Result) {
           this.goodsList = result.Result;
-          // 提交store;
+          // 提交store 所有入仓单数据列表;
           this.$store.commit("updateAllWarehousingReceipt", {
             AllWarehousingReceipt: this.goodsList
           });

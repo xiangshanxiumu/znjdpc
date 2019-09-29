@@ -277,6 +277,14 @@ export default {
           },
           {
             entity: {
+              id: "WarehousingSummary",
+              path: "/Home/WarehousingSummary",
+              icon: "el-icon-document",
+              name: "入仓明细汇总表"
+            }
+          },
+          {
+            entity: {
               id: "WarehouseEntry",
               path: "/Home/WarehouseEntry",
               icon: "el-icon-document",
@@ -364,6 +372,14 @@ export default {
               path: "/Home/SteelCoilPacking",
               icon: "el-icon-document",
               name: "委外加工钢卷打包"
+            }
+          },
+          {
+            entity: {
+              id: "SteelCoilPackingSummary",
+              path: "/Home/SteelCoilPackingSummary",
+              icon: "el-icon-document",
+              name: "委外加工钢卷打包汇总表"
             }
           },
           {
@@ -506,7 +522,7 @@ export default {
                   id: "MarketingPlan",
                   path: "/Home/GManagerOMResolutionSummary",
                   icon: "el-icon-document",
-                  name: "汇总表"
+                  name: "办公会议决议汇总表"
                 }
               },
               {
@@ -514,7 +530,7 @@ export default {
                   id: "MarketingPlan",
                   path: "/Home/GManagerOMResolutionDetails",
                   icon: "el-icon-document",
-                  name: "明细"
+                  name: "办公会议决议明细"
                 }
               }
             ]
@@ -555,15 +571,12 @@ export default {
     breadList: [],
     // 动态tags
     dynamicTags: [],
-    // 所有仓单数据列表
-    AllWarehouseReceipt: [],
     // 所有合同数据列表
     AllContract: [],
     // 所有合同ID
     CIDList: [],
-    // 所有仓库名称列表
-    StoreNameList: [],
-    InitGlobalData:{},// 初始全局数据 input 输入联想反馈
+    // 初始全局数据 input 输入联想反馈
+    InitGlobalData:{},
   },
   getters: {
     // 所有菜单映射表
@@ -607,7 +620,6 @@ export default {
     dynamicTags: (state) => state.dynamicTags,
     // 所有合同ID
     CIDList: (state) => state.CIDList,
-    // BrandList,GNameList,StandardsList,StoreList,UnitList 牌号 品名 规格 仓库 单位
     // BrandList牌号
     BrandList:(state)=>state.InitGlobalData.BrandList,
     // GNameList品名
@@ -618,29 +630,6 @@ export default {
     StoreList:(state)=>state.InitGlobalData.StoreList,
     // UnitList单位
     UnitList:(state)=>state.InitGlobalData.UnitList,
-    // 所有仓库名称列表
-    StoreNameList: (state) => {
-      // AllWarehouseReceipt RecDepo
-      let List = [];
-      state.AllWarehouseReceipt.map(item => {
-        if (item.RecDepo) {
-          List.push({
-            value: item.RecDepo
-          })
-        }
-      });
-      //去重 map some结合去重
-      let NewList = [];
-      List.map(item => {
-        let isExit = NewList.some(item2 => {
-          return item2.value == item.value;
-        });
-        if (!isExit) {
-          NewList.push(item)
-        }
-      })
-      return NewList;
-    },
   },
   mutations: {
     updateMenuMap(state, payload) {
@@ -656,14 +645,8 @@ export default {
     updteAllContract(state, payload) {
       state.AllContract = payload.AllContract;
     },
-    updateAllWarehouseReceipt(state, payload) {
-      state.AllWarehouseReceipt = payload.AllWarehouseReceipt;
-    },
     updteCIDList(state, payload) {
       state.CIDList = payload.CIDList;
-    },
-    updateStoreNameList(state, payload) {
-      state.StoreNameList = payload.StoreNameList;
     },
     // 提交 初始全局数据
     updateInitGlobalData(state, payload) {

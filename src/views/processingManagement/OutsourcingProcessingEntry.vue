@@ -20,36 +20,37 @@
                   placeholder="请输入采购合同编号"
                   :fetch-suggestions="querySearchCID"
                   @select="selectCID"
+                  class="input-width"
                 ></el-autocomplete>
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="委托单位" prop="Buyby" class="form-item">
-                <el-input v-model="StoreData.store.Buyby" placeholder="请输入内容"></el-input>
+                <el-autocomplete v-model="StoreData.store.Buyby" placeholder="请输入内容" :fetch-suggestions="querySearchUnit" class="input-width"></el-autocomplete>
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="加工仓库名称" prop="StoreName" class="form-item">
-                <el-input v-model="StoreData.store.StoreName" placeholder="请输入内容"></el-input>
+                <el-autocomplete v-model="StoreData.store.StoreName" placeholder="请输入内容" :fetch-suggestions="querySearchStoreName" class="input-width"></el-autocomplete>
               </el-form-item>
             </div>
           </div>
           <div class="middle-box">
             <div class="input-box">
               <el-form-item label="加工单编号" prop="SID" class="form-item">
-                <el-input v-model="StoreData.store.SID" placeholder="请输入内容"></el-input>
+                <el-input v-model="StoreData.store.SID" placeholder="请输入内容" class="input-width"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="加工地点" prop="RecPlace" class="form-item">
-                <el-input v-model="StoreData.store.RecPlace" placeholder="请输入内容"></el-input>
+                <el-input v-model="StoreData.store.RecPlace" placeholder="请输入内容" class="input-width"></el-input>
               </el-form-item>
             </div>
           </div>
           <div class="right-box">
             <div class="input-box">
               <el-form-item label="加工单位" prop="RecDepo" class="form-item">
-                <el-input v-model="StoreData.store.RecDepo" placeholder="请输入内容"></el-input>
+                <el-autocomplete v-model="StoreData.store.RecDepo" placeholder="请输入内容" :fetch-suggestions="querySearchUnit" class="input-width"></el-autocomplete>
               </el-form-item>
             </div>
             <div class="input-box">
@@ -59,6 +60,7 @@
                   value-format="yyyy-MM-dd"
                   type="date"
                   placeholder="选择日期"
+                  class="input-width"
                 ></el-date-picker>
               </el-form-item>
             </div>
@@ -111,7 +113,7 @@
               </template>
             </el-table-column>
             <!--动态分条区-->
-            <el-table-column fixed prop="SurplusMaterial" label="分条余料" align="center" width="150"></el-table-column>
+            <el-table-column  prop="SurplusMaterial" label="分条余料" align="center"  fixed="right"  width="150"></el-table-column>
             <el-table-column label="操作" min-width="180" fixed="right">
               <template slot-scope="scope">
                 <el-button
@@ -170,7 +172,7 @@ import FileUpload from "@/components/common/FileUpload";
 // StripPlan
 import StripPlan from './component/StripPlan';
 // 导入 合同API函数
-import { getContractList, searchContractList } from "@/api/Contract";
+import { getContractList, searchContractList,searchOneContract,} from "@/api/Contract";
 // 导入添加仓单API函数
 import { addWarehouseReceipt } from "@/api/WarehouseReceipt";
 import { mapGetters } from "vuex";
@@ -201,7 +203,6 @@ export default {
           Ext: "",
           CID: "",
           Type:"加工",
-          Id: "",
         },
         goodlist: [
           {
@@ -224,7 +225,6 @@ export default {
             ProsID:"", // 加工单
             SeparateSolution:"",// 分条方案 转字符串
             SteelRollID: "",
-            Id: ""
           }
         ]
       },
@@ -356,7 +356,7 @@ export default {
   },
   computed: {
     // 加工操作的钢卷列表数据
-    ...mapGetters(["steelCoilMachiningList","CIDList",])
+    ...mapGetters(["steelCoilMachiningList","CIDList","StoreList","UnitList",])
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
@@ -397,6 +397,48 @@ export default {
     // 输入框下拉选择事件
     selectCID(item) {
       let word = item.value;
+      this.inputMatch(word);
+    },
+    // 输入搜索匹配
+    async inputMatch(word) {
+      let result = await searchOneContract(word);
+      if (result) {
+        if (result.StatusCode == 200) {
+          if (result.Result) {
+            console.log(result.Result)
+            let CID;
+            if(result.Result.con != null){
+              Object.assign(this.StoreData.store,result.Result.con) 
+              this.StoreData.store.Buyby = result.Result.con.Supply; // 委托单位
+              // Supply 加工单位
+              this.StoreData.store.RecDepo = result.Result.con.Demand; //加工单位
+              this.StoreData.store.RecPlace = result.Result.con.Address; // 加工地址
+              CID = result.Result.con.CID;
+            } else{
+              CID = word;
+            }
+            this.StoreData.store.SID = `${CID}-`; // 入仓单前缀
+          }
+        }
+      }
+    },
+    // 仓库名称输入检索
+    querySearchStoreName(queryString, cb){
+      let restaurants = this.StoreList;
+      let results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
+    // 接收单位名称输入检索
+    querySearchUnit(queryString, cb){
+      let restaurants = this.UnitList;
+      let results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
     },
     // 表格新增一行
     addOneRow() {
@@ -426,7 +468,8 @@ export default {
       if(StripData.domains.length ==0){
         return false;
       } else{
-        this.SeparateSolution = "",// 先清空
+        this.SeparateSolution = "";// 先清空
+        let StripString = "";
         StripData.domains.map(item=>{
           let label = item.Standards+"*"+item.Num;
           let prop = item.prop;
@@ -435,8 +478,12 @@ export default {
             label:label,
             width:"150"
           });
-          // 分条方案字符串数据 
-          this.SeparateSolution +=label+"/";
+          // 分条方案字符串数据
+          
+          StripString +=label+"/";
+          // 去掉末尾的 '"/"
+          let len = StripString.length;
+          this.SeparateSolution = StripString.substr(0,len-1);
         })
       }
       // 分条方案数据同步到表格头部
@@ -546,6 +593,10 @@ export default {
       if (isValid) {
         // 加工分条单id同步
         let ProsID = this.StoreData.store.SID;
+        
+        this.StoreData.goodlist.map(item => {
+          item.ProsID = ProsID;
+        });
         // 分条方案添加到每个钢卷数据对象中 
         this.StoreData.store.SeparateSolution = this.SeparateSolution;
         // 调用录入API
@@ -561,9 +612,9 @@ export default {
                   type: "success",
                   message: `加工单录入成功`
                 });
-                // 返回上一页面 或返回入仓单汇总表
+                // 返回上一页面 或返回委外加工单汇总表
                 this.$router.push({
-                  path: "WarehousingSummary"
+                  path: "OutsourcingProcessingSummary"
                 });
               }
             });
@@ -618,5 +669,8 @@ export default {
 .page-dialog {
   display: inline-flex;
   flex-direction: column;
+}
+.input-width{
+  width:17rem;
 }
 </style>
