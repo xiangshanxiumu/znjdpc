@@ -18,28 +18,30 @@
                 <el-autocomplete
                   v-model="searchFrom.CID"
                   placeholder="请输入采购合同编号"
+                  clearable
                   :fetch-suggestions="querySearchCID"
+                  class="input-width"
                 ></el-autocomplete>
               </el-form-item>
             </div>
             <div class="input-box" v-if="cgShow">
               <el-form-item label="采购单位" prop="Buyby" class="form-item">
-                <el-autocomplete v-model="searchFrom.Buyby" placeholder="请输入采购单位" :fetch-suggestions="querySearchBuyby"></el-autocomplete>
+                <el-autocomplete v-model="searchFrom.Buyby" placeholder="请输入采购单位" clearable :fetch-suggestions="querySearchBuyby" class="input-width"></el-autocomplete>
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="入仓单编号" prop="SID" class="form-item">
-                <el-autocomplete v-model="searchFrom.SID" placeholder="请输入仓单编号" :fetch-suggestions="querySearchSID"></el-autocomplete>
+                <el-autocomplete v-model="searchFrom.SID" placeholder="请输入仓单编号" clearable :fetch-suggestions="querySearchSID" class="input-width"></el-autocomplete>
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="钢卷号" prop="SteelRollID" class="form-item">
-                <el-autocomplete v-model="searchFrom.SteelRollID" placeholder="请输入钢卷号" :fetch-suggestions="querySearchSteelRollID"></el-autocomplete>
+                <el-autocomplete v-model="searchFrom.SteelRollID" placeholder="请输入钢卷号" clearable :fetch-suggestions="querySearchSteelRollID" class="input-width"></el-autocomplete>
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="收货仓库" prop="RecDepo" class="form-item">
-                <el-autocomplete v-model="searchFrom.RecDepo" placeholder="请输入收货仓库" :fetch-suggestions="querySearchRecDepo"></el-autocomplete>
+                <el-autocomplete v-model="searchFrom.RecDepo" placeholder="请输入收货仓库" clearable :fetch-suggestions="querySearchRecDepo" class="input-width"></el-autocomplete>
               </el-form-item>
             </div>
             <div class="input-box" v-if="cgShow">
@@ -49,6 +51,8 @@
                   value-format="yyyy-MM-dd"
                   type="date"
                   placeholder="选择仓单日期"
+                  clearable
+                  class="input-width"
                 ></el-date-picker>
               </el-form-item>
             </div>
@@ -81,8 +85,8 @@
         v-loading="tableLoading"
         :data="tableData"
         border
+        max-height="600"
         show-summary
-        height="600"
         :summary-method="getSummaries"
         style="width: 100%"
         @selection-change="handleSelectionChange"
@@ -443,7 +447,9 @@ export default {
     searchHandle() {
       // 搜索条件数据 清空格
       for (let k in this.searchFrom) {
-        this.searchFrom[k] = this.searchFrom[k].trim();
+        if(this.searchFrom[k]!=null){
+          this.searchFrom[k] = this.searchFrom[k].trim();
+        }
       }
       // 空值判断
       let isHas = false;
@@ -646,5 +652,8 @@ export default {
 .form-item {
   display: inline-flex;
   margin-right: 3rem;
+}
+.input-width{
+  width:18rem;
 }
 </style>

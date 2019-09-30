@@ -15,17 +15,17 @@
           <el-form :model="searchFrom">
             <div class="input-box">
               <el-form-item label="采购合同编号" prop="CID" class="form-item">
-                <el-input v-model="searchFrom.CID" placeholder="请输入采购合同编号"></el-input>
+                <el-autocomplete v-model="searchFrom.CID" placeholder="请输入采购合同编号" clearable :fetch-suggestions="querySearchCID" class="input-width"></el-autocomplete>
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="供应商名称" prop="Supply" class="form-item">
-                <el-input v-model="searchFrom.Supply" placeholder="请输入采购单位"></el-input>
+                <el-autocomplete v-model="searchFrom.Supply" placeholder="请输入采购单位" clearable :fetch-suggestions="querySearchSupply" class="input-width"></el-autocomplete>
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="未履行量" prop="NoPerformNum" class="form-item">
-                <el-input v-model="searchFrom.NoPerformNum" placeholder="请输入仓单编号"></el-input>
+                <el-input v-model="searchFrom.NoPerformNum" placeholder="请输未履行量" clearable class="input-width"></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
@@ -35,6 +35,8 @@
                   value-format="yyyy-MM-dd"
                   type="date"
                   placeholder="选择结束时间"
+                  clearable
+                  class="input-width"
                 ></el-date-picker>
               </el-form-item>
             </div>
@@ -105,6 +107,7 @@
 <script>
 // 导入合同接口API函数
 import { getAllContractList, searchContractList } from "@/api/Contract";
+import { mapGetters } from 'vuex';
 export default {
   // 采购合同汇总表
   name: "ProcurementContractSummary",
@@ -207,6 +210,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(["PurchaseCIDList","PurchaseSupplyList"]),
     totalTon() {
       // 总吨位
       let count = 0;
@@ -239,6 +243,32 @@ export default {
     this.getList();
   },
   methods: {
+    createFilter(queryString) {
+      return restaurant => {
+        return (
+          restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) ===
+          0
+        );
+      };
+    },
+    // CID 输入搜索
+    querySearchCID(queryString, cb) {
+      let restaurants = this.PurchaseCIDList;
+      let results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
+    // Supply 输入搜索
+    querySearchSupply(queryString, cb) {
+      let restaurants = this.PurchaseSupplyList;
+      let results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
     // 表单合计自定义统计计算方法
     getSummaries(param) {
       const { columns, data } = param;
@@ -322,55 +352,6 @@ export default {
         }
       });
     },
-    // 计算获取钢卷号的列表数据
-    getGoods(data) {
-      let gootList = [];
-      if (data == undefined || !Array.isArray(data)) return false;
-      if (Array.isArray(data)) {
-        if (data.length > 0) {
-          data.map(item1 => {
-            // Id
-            // SignTime
-            // Supply
-            if (
-              item1.InStores &&
-              Array.isArray(item1.InStores) &&
-              item1.InStores.length > 0
-            ) {
-              item1.InStores.map(item2 => {
-                // Id
-                // Buyby
-                // RecDate
-                // RecDepo
-                if (
-                  item2.ISGoods &&
-                  Array.isArray(item2.ISGoods) &&
-                  item2.ISGoods.length > 0
-                ) {
-                  item2.ISGoods.map(item3 => {
-                    item3.ContractID = item1.Id; // 合同编号 id
-                    item3.SignTime = item1.SignTime; // 合同签订时间
-                    item3.Supply = item1.Supply; // 供应商
-
-                    item3.InStoreID = item2.Id; // 仓单编号 id
-                    item3.GoodsID = item3.Id; // 钢卷号id
-                    item3.Buyby = item2.Buyby; // 采购单位
-                    item3.RecDate = item2.RecDate; // 采购日期
-                    item3.RecDepo = item2.RecDepo; // 收货仓库
-                  });
-                  gootList = gootList.concat(item2.ISGoods);
-                }
-              });
-            } else {
-              // InStores 为[]
-              item1.ContractID = item1.Id; // 合同编号 id
-              gootList = gootList.concat(item1);
-            }
-          });
-        }
-      }
-      return gootList;
-    },
     // 数据初始分页处理
     GoodsPaging(data) {
       this.pageStart = 0;
@@ -392,6 +373,8 @@ export default {
           this.goodsList.map(item => {
             item.CETotalPrice = Number(item.CEUnitPrice) * Number(item.CETon);
           });
+          // 提交Store
+          this.$store.commit('updateAllPurchaseContract',{"AllPurchaseContract":this.goodsList});
         }
         this.curList = [].concat(this.goodsList);
         this.GoodsPaging(this.curList);
@@ -427,7 +410,9 @@ export default {
     searchHandle() {
       // 搜索条件数据 清空格
       for (let k in this.searchFrom) {
-        this.searchFrom[k] = this.searchFrom[k].trim();
+        if(this.searchFrom[k] != null){
+          this.searchFrom[k] = this.searchFrom[k].trim();
+        }
       }
       // 空值判断
       let isHas = false;
@@ -564,5 +549,8 @@ export default {
 }
 .table-top-status {
   display: inline-flex;
+}
+.input-width{
+  width:18rem;
 }
 </style>

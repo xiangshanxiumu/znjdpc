@@ -43,6 +43,14 @@ export default [
             auth:true,
         }
     },
+    {   // 钢卷打包的卷包出仓 录入 
+        path:'RollPackWarehouseEntry',
+        name:'RollPackWarehouseEntry',
+        component:()=>import('@/views/processingManagement/RollPackWarehouseEntry'),
+        meta:{
+            auth:true,
+        }
+    },
     {   // 委外加工合同录入
         path:'OutsourcingProcessingContractEntry',
         name:'OutsourcingProcessingContractEntry',

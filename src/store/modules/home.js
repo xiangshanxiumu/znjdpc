@@ -384,6 +384,14 @@ export default {
           },
           {
             entity: {
+              id: "RollPackWarehouseEntry",
+              path: "/Home/RollPackWarehouseEntry",
+              icon: "el-icon-document",
+              name: "卷包出仓录入"
+            }
+          },
+          {
+            entity: {
               id: "ProcessingCustomerExchangeAccount",
               path: "/Home/ProcessingCustomerExchangeAccount",
               icon: "el-icon-document",
@@ -519,7 +527,7 @@ export default {
             childs:[
               {
                 entity: {
-                  id: "MarketingPlan",
+                  id: "GManagerOMResolutionSummary",
                   path: "/Home/GManagerOMResolutionSummary",
                   icon: "el-icon-document",
                   name: "办公会议决议汇总表"
@@ -527,7 +535,7 @@ export default {
               },
               {
                 entity: {
-                  id: "MarketingPlan",
+                  id: "GManagerOMResolutionDetails",
                   path: "/Home/GManagerOMResolutionDetails",
                   icon: "el-icon-document",
                   name: "办公会议决议明细"
@@ -545,7 +553,7 @@ export default {
             childs: [
               {
               entity: {
-                id: "MarketingPlan",
+                id: "MarketingPlanSummary",
                 path: "/Home/MarketingPlanSummary",
                 icon: "el-icon-document",
                 name: "营销计划汇总"
@@ -553,7 +561,7 @@ export default {
             },
             {
               entity: {
-                id: "MarketingPlan",
+                id: "MarketingPlanDetails",
                 path: "/Home/MarketingPlanDetails",
                 icon: "el-icon-document",
                 name: "营销计划明细"

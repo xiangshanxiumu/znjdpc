@@ -9,6 +9,7 @@ export default {
     mutations:{
         updateSteelCoilMachiningList(state,payload){
             state.steelCoilMachiningList = payload.steelCoilMachiningList;
-        }
+        },
+        
     }
 }

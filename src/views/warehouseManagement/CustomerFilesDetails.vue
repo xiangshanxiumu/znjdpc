@@ -1,6 +1,6 @@
 <template>
   <div class="page-wrap">
-    <h1>文件管理</h1>
+    <h1>客户信息档案明细</h1>
     <div class="page-content">
       <!--表格-->
       <el-table
@@ -31,8 +31,8 @@
 </template>
 <script>
 export default {
-  // 文件管理
-  name: "FileManagement",
+  // 客户信息档案明细
+  name: "CustomerFilesDetails",
   data() {
     return {
       tableData: [
@@ -74,6 +74,7 @@ export default {
           fixed: "",
           sortable: true
         },
+        
         {
           prop: "Custodian",
           label: "创建人",

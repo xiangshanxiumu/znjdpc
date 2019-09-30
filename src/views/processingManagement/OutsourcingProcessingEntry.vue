@@ -405,7 +405,6 @@ export default {
       if (result) {
         if (result.StatusCode == 200) {
           if (result.Result) {
-            console.log(result.Result)
             let CID;
             if(result.Result.con != null){
               Object.assign(this.StoreData.store,result.Result.con) 
@@ -413,9 +412,9 @@ export default {
               // Supply 加工单位
               this.StoreData.store.RecDepo = result.Result.con.Demand; //加工单位
               this.StoreData.store.RecPlace = result.Result.con.Address; // 加工地址
-              CID = result.Result.con.CID;
+              CID = result.Result.con.CID.split("(")[0];
             } else{
-              CID = word;
+              CID = word.split("(")[0];
             }
             this.StoreData.store.SID = `${CID}-`; // 入仓单前缀
           }
@@ -599,6 +598,8 @@ export default {
         });
         // 分条方案添加到每个钢卷数据对象中 
         this.StoreData.store.SeparateSolution = this.SeparateSolution;
+        // 合同编号处理
+        this.StoreData.store.CID = this.StoreData.store.CID.split("(")[0];
         // 调用录入API
         let result = await addWarehouseReceipt(this.StoreData);
         if (result.StatusCode == 200) {

@@ -144,7 +144,7 @@ export default {
           let list = result[0].Result;
           let CIDList = list.map(item => {
             return {
-              value: item
+              value: `${item.CID}(${item.Type})`,
             };
           });
           // 提交store

@@ -14,14 +14,14 @@
           <div class="input-item">
             <div class="input-box">
               <el-form-item label="供方" prop="Supply" class="form-item">
-                <el-autocomplete v-model="ContractData.contract.Supply" placeholder="请输入内容" :fetch-suggestions="querySearchUnit" class="input-width"></el-autocomplete>
+                <el-autocomplete v-model="ContractData.contract.Supply" placeholder="请输入内容" clearable :fetch-suggestions="querySearchUnit" class="input-width"></el-autocomplete>
               </el-form-item>
             </div>
           </div>
           <div class="input-item">
             <div class="input-box">
               <el-form-item label="需方" prop="Demand" class="form-item">
-                <el-autocomplete v-model="ContractData.contract.Demand" placeholder="请输入内容" :fetch-suggestions="querySearchUnit" class="input-width"></el-autocomplete>
+                <el-autocomplete v-model="ContractData.contract.Demand" placeholder="请输入内容" clearable :fetch-suggestions="querySearchUnit" class="input-width"></el-autocomplete>
               </el-form-item>
             </div>
           </div>
@@ -30,14 +30,14 @@
           <div class="input-item">
             <div class="input-box">
               <el-form-item label="合同编号" prop="CID" class="form-item">
-                <el-input v-model="ContractData.contract.CID" placeholder="请输入内容" class="input-width"></el-input>
+                <el-input v-model="ContractData.contract.CID" placeholder="请输入内容" clearable class="input-width"></el-input>
               </el-form-item>
             </div>
           </div>
           <div class="input-item">
             <div class="input-box">
               <el-form-item label="签订地址" prop="Address" class="form-item">
-                <el-input v-model="ContractData.contract.Address" placeholder="请输入内容" class="input-width"></el-input>
+                <el-input v-model="ContractData.contract.Address" placeholder="请输入内容" clearable class="input-width"></el-input>
               </el-form-item>
             </div>
           </div>
@@ -49,6 +49,7 @@
                   value-format="yyyy-MM-dd"
                   type="date"
                   placeholder="选择日期"
+                  clearable
                   class="input-width"
                 ></el-date-picker>
               </el-form-item>
@@ -269,6 +270,18 @@ export default {
       return `销售合同${this.operation}`;
     }
   },
+  watch:{
+    form:{
+      handler(val,oldval){
+        if(val){
+          // 自动计算总价
+          val.CETotalPrice = parseInt(val.CETon)*parseInt(val.CEUnitPrice);
+        }
+      },
+      immediate:true,
+      deep:true,
+    }
+  },
   created() {
     // 从销售合同汇总表单 销售合同查看 编辑
     if (this.$route.query.operation) {
@@ -424,6 +437,12 @@ export default {
       });
       // 验证通过 调用接口
       if (isValid) {
+        // 列表数据 同步CID
+        let CID = this.ContractData.contract.CID;
+        this.ContractData.contractExt.map(item => {
+          item.CID = CID;
+        });
+        console.log(this.ContractData);
         this.$loadingShow("销售合同录入处理中...");
         let result = await addContract(this.ContractData);
         // Message;

@@ -56,4 +56,28 @@ export default [
             auth:true,
         }
     },
+    {   // PricePolicyTable
+        path:'PricePolicyTable',
+        name:'PricePolicyTable',
+        component:()=>import("@/views/warehouseManagement/PricePolicyTable"),
+        meta:{
+            auth:true,
+        }
+    },
+    {   // PricePolicyTable
+        path:'CustomerFilesDetails',
+        name:'CustomerFilesDetails',
+        component:()=>import("@/views/warehouseManagement/CustomerFilesDetails"),
+        meta:{
+            auth:true,
+        }
+    },
+    {   // PricePolicyTable
+        path:'CustomerFilesSummary',
+        name:'CustomerFilesSummary',
+        component:()=>import("@/views/warehouseManagement/CustomerFilesSummary"),
+        meta:{
+            auth:true,
+        }
+    },
 ]

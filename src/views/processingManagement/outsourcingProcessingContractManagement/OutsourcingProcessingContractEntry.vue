@@ -278,6 +278,19 @@ export default {
       return `委外加工合同${this.operation}`;
     }
   },
+  watch:{
+    // 对话框表单
+    form:{
+      handler(val,oldval){
+        if(val){
+          // 自动计算总价
+          val.CETotalPrice = parseInt(val.CETon)*parseInt(val.CEUnitPrice);
+        }
+      },
+      immediate:true,
+      deep:true,
+    }
+  },
   created() {
     // 从加工合同汇总表单 加工合同查看 编辑
     if (this.$route.query.operation) {

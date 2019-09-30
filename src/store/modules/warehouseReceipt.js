@@ -1,7 +1,7 @@
 /**仓单数据 */
 // 从数据列表中获取某属性数据组函数
 const getAttributeList = (state,arr,attribute) =>{
-      if(arr.length==0){
+      if(state[`${arr}`].length==0){
         return [];
       }
       // 筛选
@@ -33,6 +33,12 @@ export default {
     AllWarehouseReceipt: [],
     // 所有加工单数据列表
     AllProcessingReceipt:[],
+    // 卷包数据汇总列表
+    AllRollPackList:[],
+    // 要出仓的卷包数据列表
+    RollPackList:[],
+    // 客户往来汇总表=>查看明细--->客户往来明细账
+    viewExchangeDetailed:[]
   },
   getters: {
     // 合同编号CID数据列表
@@ -61,6 +67,12 @@ export default {
     inStoreRecDepoList:(state)=>{
       return getAttributeList(state,"AllWarehousingReceipt","RecDepo");
     },
+    // RPID 卷包号数据列表
+    RPIDList:(state)=>{
+      return getAttributeList(state,"AllRollPackList","RPID");
+    },
+    // RollPackList
+    outStoreRollPackList:(state)=>state.RollPackList,
   },
   mutations: {
     // 入仓单数据 提交
@@ -74,6 +86,15 @@ export default {
     // 加工单数据 提交
     updateAllProcessingReceipt(state, payload) {
       state.AllProcessingReceipt = payload.AllProcessingReceipt;
+    },
+    updateAllRollPackList(state,payload){
+      state.AllRollPackList = payload.AllRollPackList;
+    },
+    updateRollPackList(state,payload){
+      state.RollPackList = payload.RollPackList;
+    },
+    updateviewExchangeDetailed(state,payload){
+      state.viewExchangeDetailed = payload.viewExchangeDetailed;
     },
   }
 }

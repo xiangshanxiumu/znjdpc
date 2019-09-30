@@ -18,6 +18,7 @@
                 <el-autocomplete
                   v-model="Store.store.CID"
                   placeholder="请输入内容"
+                  clearable
                   :fetch-suggestions="querySearchCID"
                   @select="selectCID"
                   class="input-width"
@@ -29,48 +30,85 @@
                 <el-autocomplete
                   v-model="Store.store.StoreName"
                   placeholder="请输入仓库名称"
+                  clearable
                   :fetch-suggestions="querySearchStoreName"
                   class="input-width"
-                ></el-autocomplete >
+                ></el-autocomplete>
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="销售单位" prop="Buyby" class="form-item">
-                <el-autocomplete v-model="Store.store.Buyby" placeholder="请输入销售单位" :fetch-suggestions="querySearchUnit" class="input-width"></el-autocomplete>
+                <el-autocomplete
+                  v-model="Store.store.Buyby"
+                  placeholder="请输入销售单位"
+                  clearable
+                  :fetch-suggestions="querySearchUnit"
+                  class="input-width"
+                ></el-autocomplete>
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="运费" prop="TransPrice" class="form-item">
-                <el-input v-model="Store.store.TransPrice" placeholder="请输入运费" class="input-width"></el-input>
+                <el-input
+                  v-model="Store.store.TransPrice"
+                  placeholder="请输入运费"
+                  clearable
+                  class="input-width"
+                ></el-input>
               </el-form-item>
             </div>
           </div>
           <div class="middle-box">
             <div class="input-box">
               <el-form-item label="出仓单编号" prop="SID" class="form-item">
-                <el-input v-model="Store.store.SID" placeholder="请输入内容" class="input-width"></el-input>
+                <el-input
+                  v-model="Store.store.SID"
+                  placeholder="请输入内容"
+                  clearable
+                  class="input-width"
+                ></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="收到货地点" prop="RecPlace" class="form-item">
-                <el-input v-model="Store.store.RecPlace" placeholder="请输入内容" class="input-width"></el-input>
+                <el-input
+                  v-model="Store.store.RecPlace"
+                  placeholder="请输入内容"
+                  clearable
+                  class="input-width"
+                ></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="车船号" prop="CarBoatID" class="form-item">
-                <el-input v-model="Store.store.CarBoatID" placeholder="请输入内容" class="input-width"></el-input>
+                <el-input
+                  v-model="Store.store.CarBoatID"
+                  placeholder="请输入内容"
+                  clearable
+                  class="input-width"
+                ></el-input>
               </el-form-item>
             </div>
           </div>
           <div class="right-box">
             <div class="input-box">
               <el-form-item label="接收人姓名" prop="RecUnitPerson" class="form-item">
-                <el-input v-model="Store.store.RecUnitPerson" placeholder="请输入内容" class="input-width"></el-input>
+                <el-input
+                  v-model="Store.store.RecUnitPerson"
+                  placeholder="请输入内容"
+                  clearable
+                  class="input-width"
+                ></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
               <el-form-item label="接收人身份证" prop="RecPersonID" class="form-item">
-                <el-input v-model="Store.store.RecPersonID" placeholder="请输入内容" class="input-width"></el-input>
+                <el-input
+                  v-model="Store.store.RecPersonID"
+                  placeholder="请输入内容"
+                  clearable
+                  class="input-width"
+                ></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
@@ -80,6 +118,7 @@
                   value-format="yyyy-MM-dd"
                   type="date"
                   placeholder="选择日期"
+                  clearable
                   class="input-width"
                 ></el-date-picker>
               </el-form-item>
@@ -151,19 +190,40 @@
     <el-dialog title="编辑" :visible.sync="dialogFormVisible" class="page-dialog" width="30%">
       <el-form :model="form">
         <el-form-item label="品名" :label-width="formLabelWidth">
-          <el-autocomplete v-model="form.GName" auto-complete="off" :fetch-suggestions="querySearchGName" class="form-input-width"></el-autocomplete>
+          <el-autocomplete
+            v-model="form.GName"
+            auto-complete="off"
+            :fetch-suggestions="querySearchGName"
+            class="form-input-width"
+          ></el-autocomplete>
         </el-form-item>
         <el-form-item label="牌号" :label-width="formLabelWidth">
-          <el-autocomplete v-model="form.Brand" auto-complete="off" :fetch-suggestions="querySearchBrand" class="form-input-width"></el-autocomplete>
+          <el-autocomplete
+            v-model="form.Brand"
+            auto-complete="off"
+            :fetch-suggestions="querySearchBrand"
+            class="form-input-width"
+          ></el-autocomplete>
         </el-form-item>
         <el-form-item label="钢卷号" :label-width="formLabelWidth">
           <el-input v-model="form.SteelRollID" auto-complete="off" class="form-input-width"></el-input>
         </el-form-item>
         <el-form-item label="规格(厚*宽)" :label-width="formLabelWidth">
-          <el-autocomplete v-model="form.Standards" auto-complete="off" :fetch-suggestions="querySearchStandards" class="form-input-width"></el-autocomplete>
+          <el-autocomplete
+            v-model="form.Standards"
+            auto-complete="off"
+            :fetch-suggestions="querySearchStandards"
+            class="form-input-width"
+          ></el-autocomplete>
         </el-form-item>
         <el-form-item label="吨位" :label-width="formLabelWidth">
           <el-input v-model="form.Ton" auto-complete="off" class="form-input-width"></el-input>
+        </el-form-item>
+        <el-form-item label="单价" :label-width="formLabelWidth">
+          <el-input v-model="form.UnitPrice" auto-complete="off" class="form-input-width"></el-input>
+        </el-form-item>
+        <el-form-item label="总金额" :label-width="formLabelWidth">
+          <el-input v-model="form.TotalPrice" auto-complete="off" class="form-input-width"></el-input>
         </el-form-item>
         <el-form-item label="接收盈亏" :label-width="formLabelWidth">
           <el-input v-model="form.ProfitAndLossTon" auto-complete="off" class="form-input-width"></el-input>
@@ -198,7 +258,8 @@ import {
   getContractList,
   searchContractList,
   searchOneContract,
-  getAllContract
+  getAllContract,
+  getAllCID
 } from "@/api/Contract";
 import { mapGetters } from "vuex";
 export default {
@@ -227,7 +288,7 @@ export default {
           Ext: "",
           CID: "",
           Id: "",
-          Type:"出仓"
+          Type: "出仓"
         },
         goodlist: [
           {
@@ -352,7 +413,11 @@ export default {
       "warehouseReceiptList",
       "editSteelCoil",
       "CIDList",
-      "StoreList","UnitList","BrandList","GNameList","StandardsList"
+      "StoreList",
+      "UnitList",
+      "BrandList",
+      "GNameList",
+      "StandardsList"
     ]),
     pageTitle() {
       // 页面标题
@@ -365,11 +430,17 @@ export default {
       if (from.name == "WarehousingSummary" && to.name == "WarehouseEntry") {
         // 初始渲染表格 出仓操作的钢卷
         vm.Store.goodlist = vm.outWarehouseList;
+        console.log(vm.Store.goodlist);
         // 初始填充 仓库名称
         if (vm.Store.goodlist.length > 0) {
           if (vm.Store.goodlist[0].RecDepo) {
             vm.Store.store.StoreName = vm.Store.goodlist[0].RecDepo;
             vm.Store.store.Buyby = vm.Store.goodlist[0].Buyby;
+            // 出仓单价UnitPrice 不是入仓的单价 先重置为0
+            vm.Store.goodlist.map(item => {
+              item.UnitPrice = 0;
+              item.TotalPrice = 0;
+            });
           }
         }
       }
@@ -386,13 +457,25 @@ export default {
   },
   methods: {
     // 合同输入检索
-    querySearchCID(queryString, cb) {
-      let restaurants = this.CIDList;
-      let results = queryString
-        ? restaurants.filter(this.createFilter(queryString))
-        : restaurants;
-      // 调用 callback 返回建议列表的数据
-      cb(results);
+    async querySearchCID(queryString, cb) {
+      let result = await getAllCID();
+      // 合同ID数据列表
+      if (result) {
+        let list = result.Result;
+        let CIDList = list.map(item => {
+          return {
+            value: `${item.CID}(${item.Type})`,
+          };
+        });
+        // 提交store
+        this.$store.commit("updteCIDList", { CIDList: CIDList });
+        let restaurants = this.CIDList;
+        let results = queryString
+          ? restaurants.filter(this.createFilter(queryString))
+          : restaurants;
+        // 调用 callback 返回建议列表的数据
+        cb(results);
+      }
     },
     createFilter(queryString) {
       return restaurant => {
@@ -408,7 +491,7 @@ export default {
       this.inputMatch(word);
     },
     // 仓库名称输入检索
-    querySearchStoreName(queryString, cb){
+    querySearchStoreName(queryString, cb) {
       let restaurants = this.StoreList;
       let results = queryString
         ? restaurants.filter(this.createFilter(queryString))
@@ -417,7 +500,7 @@ export default {
       cb(results);
     },
     // 接收单位名称输入检索
-    querySearchUnit(queryString, cb){
+    querySearchUnit(queryString, cb) {
       let restaurants = this.UnitList;
       let results = queryString
         ? restaurants.filter(this.createFilter(queryString))
@@ -426,7 +509,7 @@ export default {
       cb(results);
     },
     // GName
-    querySearchGName(queryString, cb){
+    querySearchGName(queryString, cb) {
       let restaurants = this.GNameList;
       let results = queryString
         ? restaurants.filter(this.createFilter(queryString))
@@ -435,7 +518,7 @@ export default {
       cb(results);
     },
     // Brand
-    querySearchBrand(queryString, cb){
+    querySearchBrand(queryString, cb) {
       let restaurants = this.BrandList;
       let results = queryString
         ? restaurants.filter(this.createFilter(queryString))
@@ -444,7 +527,7 @@ export default {
       cb(results);
     },
     // Standards
-    querySearchStandards(queryString, cb){
+    querySearchStandards(queryString, cb) {
       let restaurants = this.StandardsList;
       let results = queryString
         ? restaurants.filter(this.createFilter(queryString))
@@ -458,13 +541,28 @@ export default {
       if (result) {
         if (result.StatusCode == 200) {
           if (result.Result) {
-            Object.assign(this.Store.store,result.Result.con)
-            // // 采购单位
-            let Supply = result.Result.con.Supply;
-            this.Store.store.Buyby = Supply;
-            let CID = result.Result.con.CID;
-            let date = new Date().toLocaleDateString();
-            this.Store.store.SID = `${CID}-`; // 入仓单前缀
+            let CID;
+            if (result.Result.con && result.Result.con != null) {
+              Object.assign(this.Store.store, result.Result.con);
+              // // 采购单位
+              let Supply = result.Result.con.Supply;
+              this.Store.store.Buyby = Supply;
+              let CID = result.Result.con.CID.split("(")[0];
+              let date = new Date().toLocaleDateString();
+            } else{
+              CID = word.split("(")[0];
+            }
+            this.Store.store.Type = "销售"
+            this.Store.store.SID = `${CID}-`; // 出仓单前缀
+            if (result.Result.conextlist && result.Result.conextlist.length>0) {
+              let list = result.Result.conextlist;
+              // 设置合同单价
+              this.Store.goodlist.map((item, index) => {
+                if(list[`${index}`]){
+                  item.UnitPrice = list[`${index}`].CEUnitPrice;
+                }
+              });
+            }
           }
         }
       }
@@ -566,6 +664,8 @@ export default {
         this.Store.goodlist.map(item => {
           item.OutsID = OutsID;
         });
+        // 合同编号处理
+        this.Store.store.CID = this.Store.store.CID.split("(")[0];
         this.$loadingShow("出仓单录入处理中...");
         // 调用录入API
         let result = await addWarehouseReceipt(this.Store);
@@ -635,10 +735,10 @@ export default {
 .el-form-item__label {
   min-width: 5rem;
 }
-.input-width{
-  width:17rem;
+.input-width {
+  width: 17rem;
 }
-.form-input-width{
-  width:80%;
+.form-input-width {
+  width: 80%;
 }
 </style>

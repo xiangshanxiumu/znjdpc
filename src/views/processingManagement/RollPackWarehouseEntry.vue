@@ -14,16 +14,14 @@
         <div class="page-topPart-inputArea">
           <div class="left-box">
             <div class="input-box">
-              <el-form-item label="采购合同编号" prop="CID" class="form-item">
+              <el-form-item label="销售合同编号" prop="CID" class="form-item">
                 <el-autocomplete
                   v-model="Store.store.CID"
-                  placeholder="请输入采购合同编号"
-                  clearable
+                  placeholder="请输入内容"
                   :fetch-suggestions="querySearchCID"
                   @select="selectCID"
                   class="input-width"
-                >
-                </el-autocomplete>
+                ></el-autocomplete>
               </el-form-item>
             </div>
             <div class="input-box">
@@ -31,42 +29,45 @@
                 <el-autocomplete
                   v-model="Store.store.StoreName"
                   placeholder="请输入仓库名称"
-                  clearable
                   :fetch-suggestions="querySearchStoreName"
                   class="input-width"
                 ></el-autocomplete>
               </el-form-item>
             </div>
             <div class="input-box">
-              <el-form-item label="采购单位" prop="Buyby" class="form-item">
+              <el-form-item label="销售单位" prop="Buyby" class="form-item">
                 <el-autocomplete
                   v-model="Store.store.Buyby"
-                  placeholder="请输入采购单位"
-                  clearable
+                  placeholder="请输入销售单位"
                   :fetch-suggestions="querySearchUnit"
                   class="input-width"
                 ></el-autocomplete>
               </el-form-item>
             </div>
+            <div class="input-box">
+              <el-form-item label="运费" prop="TransPrice" class="form-item">
+                <el-input v-model="Store.store.TransPrice" placeholder="请输入运费" class="input-width"></el-input>
+              </el-form-item>
+            </div>
           </div>
           <div class="middle-box">
             <div class="input-box">
-              <el-form-item label="入仓单编号" prop="SID" class="form-item">
+              <el-form-item label="出仓单编号" prop="SID" class="form-item">
                 <el-input
                   v-model="Store.store.SID"
-                  placeholder="请输入仓单编号"
-                  clearable
+                  placeholder="请输入内容"
                   class="input-width"
+                  auto-complete="on"
                 ></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
-              <el-form-item label="收货地点" prop="RecPlace" class="form-item">
+              <el-form-item label="收到货地点" prop="RecPlace" class="form-item">
                 <el-input
                   v-model="Store.store.RecPlace"
-                  placeholder="请输入收货地点"
-                  clearable
+                  placeholder="请输入内容"
                   class="input-width"
+                  auto-complete="on"
                 ></el-input>
               </el-form-item>
             </div>
@@ -74,33 +75,32 @@
               <el-form-item label="车船号" prop="CarBoatID" class="form-item">
                 <el-input
                   v-model="Store.store.CarBoatID"
-                  placeholder="请输入车船号"
-                  clearable
+                  placeholder="请输入内容"
                   class="input-width"
+                  auto-complete="on"
                 ></el-input>
               </el-form-item>
             </div>
           </div>
           <div class="right-box">
             <div class="input-box">
-              <el-form-item label="运费" prop="TransPrice" class="form-item">
+              <el-form-item label="接收人姓名" prop="RecUnitPerson" class="form-item">
                 <el-input
-                  v-model="Store.store.TransPrice"
-                  placeholder="请输入运费"
-                  clearable
+                  v-model="Store.store.RecUnitPerson"
+                  placeholder="请输入内容"
                   class="input-width"
+                  auto-complete="on"
                 ></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
-              <el-form-item label="货物接收入库单位" prop="RecUnitPerson" class="form-item">
-                <el-autocomplete
-                  v-model="Store.store.RecUnitPerson"
-                  placeholder="请输入接收入库单位"
-                  clearable
-                  :fetch-suggestions="querySearchUnit"
+              <el-form-item label="接收人身份证" prop="RecPersonID" class="form-item">
+                <el-input
+                  v-model="Store.store.RecPersonID"
+                  placeholder="请输入内容"
                   class="input-width"
-                ></el-autocomplete>
+                  auto-complete="on"
+                ></el-input>
               </el-form-item>
             </div>
             <div class="input-box">
@@ -110,7 +110,6 @@
                   value-format="yyyy-MM-dd"
                   type="date"
                   placeholder="选择日期"
-                  clearable
                   class="input-width"
                 ></el-date-picker>
               </el-form-item>
@@ -132,7 +131,7 @@
         <!--表格顶部区域-->
         <!--表格-->
         <el-table
-          :data="Store.goodlist"
+          :data="Store.rollpacklist"
           border
           show-summary
           :summary-method="getSummaries"
@@ -144,9 +143,10 @@
             :key="index"
             :prop="item.prop"
             :label="item.label"
+            :width="item.width"
             align="center"
           ></el-table-column>
-          <el-table-column label="操作" width="180" fixed="right" align="center">
+          <el-table-column label="操作" width="180" fixed="right">
             <template slot-scope="scope">
               <el-button
                 size="mini"
@@ -165,7 +165,7 @@
         </el-table>
         <!--表格-->
         <!--合同附件-->
-        <h2>附件</h2>
+        <h3>附件</h3>
         <div class="enclosure-box">
           <FileUpload v-model="Enclosure"></FileUpload>
         </div>
@@ -181,56 +181,29 @@
     <!--dialog对话框-->
     <el-dialog title="编辑" :visible.sync="dialogFormVisible" class="page-dialog" width="30%">
       <el-form :model="form">
-        <el-form-item label="品名" :label-width="formLabelWidth">
-          <el-autocomplete
-            v-model="form.GName"
-            auto-complete="off"
-            :fetch-suggestions="querySearchGName"
-            class="form-input-width"
-          ></el-autocomplete>
+        <el-form-item label="卷包号" :label-width="formLabelWidth">
+          <el-autocomplete v-model="form.RPID" auto-complete="off" class="form-input-width"></el-autocomplete>
         </el-form-item>
-        <el-form-item label="牌号" :label-width="formLabelWidth">
-          <el-autocomplete
-            v-model="form.Brand"
-            auto-complete="off"
-            :fetch-suggestions="querySearchBrand"
-            class="form-input-width"
-          ></el-autocomplete>
+        <el-form-item label="打包吨位" :label-width="formLabelWidth">
+          <el-autocomplete v-model="form.PackTon" auto-complete="off" class="form-input-width"></el-autocomplete>
         </el-form-item>
-        <el-form-item label="钢卷号" :label-width="formLabelWidth">
-          <el-input v-model="form.SteelRollID" auto-complete="off" class="form-input-width"></el-input>
+        <el-form-item label="未打包吨位" :label-width="formLabelWidth">
+          <el-input v-model="form.UnPackTon" auto-complete="off" class="form-input-width"></el-input>
         </el-form-item>
-        <el-form-item label="规格(厚*宽)" :label-width="formLabelWidth">
-          <el-autocomplete
-            v-model="form.Standards"
-            auto-complete="off"
-            :fetch-suggestions="querySearchStandards"
-            class="form-input-width"
-          ></el-autocomplete>
+        <el-form-item label="涉及小卷号" :label-width="formLabelWidth">
+          <el-autocomplete v-model="form.ProRollNo" auto-complete="off" class="form-input-width"></el-autocomplete>
         </el-form-item>
-        <el-form-item label="吨位" :label-width="formLabelWidth">
-          <el-input v-model="form.Ton" auto-complete="off" class="form-input-width"></el-input>
+        <el-form-item label="涉及牌号" :label-width="formLabelWidth">
+          <el-input v-model="form.BrandList" auto-complete="off" class="form-input-width"></el-input>
         </el-form-item>
-        <el-form-item label="单价" :label-width="formLabelWidth">
-          <el-input v-model="form.UnitPrice" auto-complete="off" class="form-input-width"></el-input>
+        <el-form-item label="涉及钢卷号" :label-width="formLabelWidth">
+          <el-input v-model="form.SteelRollIDList" auto-complete="off" class="form-input-width"></el-input>
         </el-form-item>
-        <el-form-item label="总金额" :label-width="formLabelWidth">
-          <el-input v-model="form.TotalPrice" auto-complete="off" class="form-input-width"></el-input>
+        <el-form-item label="涉及规格" :label-width="formLabelWidth">
+          <el-input v-model="form.StandardsList" auto-complete="off" class="form-input-width"></el-input>
         </el-form-item>
-        <el-form-item label="接收盈亏" :label-width="formLabelWidth">
-          <el-input v-model="form.ProfitAndLossTon" auto-complete="off" class="form-input-width"></el-input>
-        </el-form-item>
-        <el-form-item label="包装状态" :label-width="formLabelWidth">
-          <el-input v-model="form.PackStatus" auto-complete="off" class="form-input-width"></el-input>
-        </el-form-item>
-        <el-form-item label="接收异议/拍照" :label-width="formLabelWidth">
-          <el-input v-model="form.RecInfo" auto-complete="off" class="form-input-width"></el-input>
-        </el-form-item>
-        <el-form-item label="异议反馈" :label-width="formLabelWidth">
-          <el-input v-model="form.RecInfoBack" auto-complete="off" class="form-input-width"></el-input>
-        </el-form-item>
-        <el-form-item label="备注" :label-width="formLabelWidth">
-          <el-input v-model="form.GInfo" auto-complete="off" class="form-input-width"></el-input>
+        <el-form-item label="涉及仓库" :label-width="formLabelWidth">
+          <el-input v-model="form.Storename" auto-complete="off" class="form-input-width"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -244,7 +217,7 @@
 <script>
 import FileUpload from "@/components/common/FileUpload";
 // 导入添加仓单API函数
-import { addWarehouseReceipt } from "@/api/WarehouseReceipt";
+import { addRollPackOutStore } from "@/api/RollPack";
 // 合同API函数
 import {
   getContractList,
@@ -255,22 +228,23 @@ import {
 } from "@/api/Contract";
 import { mapGetters } from "vuex";
 export default {
-  // 入仓单录入
-  name: "WarehousingReceiptEntry",
+  // 卷包出仓单录入
+  name: "RollPackWarehouseEntry",
   components: {
     FileUpload
   },
   data() {
     return {
+      // 当前page出仓单数据模型
       Store: {
         store: {
           SID: "",
           RecDate: "",
-          RecDepo: "",
+          RecDepo: "", //接收的地方
           RecPersonID: "",
           Buyby: "",
           SupplierOutID: "",
-          StoreName: "",
+          StoreName: "", //出的地方
           RecPlace: "",
           CarBoatID: "",
           RecUnitPerson: "",
@@ -279,42 +253,24 @@ export default {
           Ext: "",
           CID: "",
           Id: "",
-          Type: "入仓"
+          Type: "出仓"
         },
-        goodlist: [
+        rollpacklist: [
           {
-            GName: "",
-            Brand: "",
-            Standards: "",
-            Ton: 0,
-            ProfitAndLossTon: 0,
-            PackStatus: "",
-            RecInfo: "",
-            RecInfoBack: "",
-            GInfo: "",
-            GStatus: "",
-            ProRollNo: "",
-            RollPackNo: "s",
-            UnitPrice: 0,
-            OutDate: "",
-            InsID: "",
-            OutsID: "",
-            SteelRollID: "",
-            Id: ""
+            BrandList: "",
+            RPID: "" // 卷包号 相当于钢卷号
           }
         ]
       },
       Enclosure: [], // 新增附件
       // 校验规则
       rules: {
-        CID: [
-          { required: true, message: "请输入采购合同编号", trigger: "blur" }
-        ],
+        CID: [{ required: true, message: "请输入合同编号", trigger: "blur" }],
         SID: [{ required: true, message: "请输入仓单编号", trigger: "blur" }],
         StoreName: [
           { required: true, message: "请输入仓库名称", trigger: "blur" }
         ],
-        Buyby: [{ required: true, message: "请输入采购单位", trigger: "blur" }],
+        Buyby: [{ required: true, message: "请输入销售单位", trigger: "blur" }],
         RecPlace: [
           { required: true, message: "请输入收货地点", trigger: "blur" }
         ],
@@ -324,74 +280,65 @@ export default {
         RecUnitPerson: [
           { required: true, message: "请输入货物接收入库单位", trigger: "blur" }
         ],
+        RecPersonID: [
+          { required: true, message: "请输入货物接收入库单位", trigger: "blur" }
+        ],
         TransPrice: [{ required: true, message: "请输入运费", trigger: "blur" }]
       },
       // 表头
       tableTitle: [
         {
-          prop: "GName",
-          label: "品名"
+          prop: "RPID", // 卷包号id
+          label: "卷包号",
+          width: ""
         },
         {
-          prop: "Brand",
-          label: "牌号"
+          prop: "PackTon",
+          label: "打包吨位",
+          width: "120"
         },
         {
-          prop: "SteelRollID",
-          label: "钢卷号"
+          prop: "UnPackTon",
+          label: "未打包吨位",
+          width: "120"
         },
         {
-          prop: "Standards",
-          label: "规格(厚*宽)"
+          prop: "ProRollNo",
+          label: "涉及小卷号",
+          width: ""
         },
         {
-          prop: "Ton",
-          label: "吨位"
+          prop: "BrandList",
+          label: "涉及牌号",
+          width: ""
         },
         {
-          prop: "UnitPrice",
-          label: "单价"
+          prop: "SteelRollIDList",
+          label: "涉及钢卷号",
+          width: ""
         },
         {
-          prop: "TotalPrice",
-          label: "总金额"
+          prop: "StandardsList",
+          label: "涉及规格",
+          width: ""
         },
         {
-          prop: "ProfitAndLossTon",
-          label: "接收盈亏"
-        },
-        {
-          prop: "PackStatus",
-          label: "包装状态"
-        },
-        {
-          prop: "RecInfo",
-          label: "接收异议/拍照"
-        },
-        {
-          prop: "RecInfoBack",
-          label: "异议反馈"
-        },
-        {
-          prop: "GInfo",
-          label: "备注"
+          prop: "Storename",
+          label: "涉及仓库",
+          width: ""
         }
       ],
       dialogFormVisible: false, // dialog 对话框显示或隐藏
       editIndex: 0, // 当前编辑表格数据index
       form: {
-        SteelRollID: "", // 钢卷号
-        GName: "", // 品名
-        Brand: "", // 牌号
-        Standards: "", // 规格(厚*宽)
-        Ton: "", // 吨位
-        UnitPrice: 0, // 单价
-        TotalPrice: 0, // 总金额
-        ProfitAndLossTon: 0, // 接收盈亏
-        PackStatus: "", // 包装状态
-        RecInfo: "", //  接收异议/拍照
-        RecInfoBack: "", // 异议反馈
-        GInfo: "" // 备注
+        RPID: "",
+        PackTon: "",
+        UnPackTon: "",
+        ProRollNo: "",
+        BrandList: "",
+        SteelRollIDList: "",
+        StandardsList: "",
+        Storename: ""
       },
       formLabelWidth: "120px", // 表单 label宽度
       operation: "录入" // 操作
@@ -399,41 +346,50 @@ export default {
   },
   computed: {
     ...mapGetters([
+      "outWarehouseList",
+      "warehouseReceiptList",
       "editSteelCoil",
       "CIDList",
       "StoreList",
       "UnitList",
       "BrandList",
       "GNameList",
-      "StandardsList"
+      "StandardsList",
+      "outStoreRollPackList"
     ]),
     pageTitle() {
       // 页面标题
-      return `入仓单信息${this.operation}`;
+      return `卷包出仓单信息${this.operation}`;
     }
   },
-  watch: {
-    // 对话框表单
-    form: {
-      handler(val, oldval) {
-        if (val) {
-          // 自动计算总价
-          val.TotalPrice = parseInt(val.Ton) * parseInt(val.UnitPrice);
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      // 通过 `vm` 访问组件实例
+      if (
+        from.name == "SteelCoilPackingSummary" &&
+        to.name == "RollPackWarehouseEntry"
+      ) {
+        // 初始渲染表格 出仓操作的钢卷
+        vm.Store.rollpacklist = vm.outStoreRollPackList;
+        // 初始填充 仓库名称
+        if (vm.Store.rollpacklist.length > 0) {
+          if (vm.Store.rollpacklist[0].Storename) {
+            let StoreName = vm.Store.rollpacklist[0].Storename;
+            StoreName = StoreName.split("/")[0];
+            vm.Store.store.StoreName = StoreName;
+          }
         }
-      },
-      immediate: true,
-      deep: true
-    }
+      }
+    });
   },
   created() {
     // 从入仓单汇总表单 入仓单查看 编辑
-    if (this.$route.query.operation) {
-      if (this.$route.query.operation == "查看编辑") {
-        this.operation = this.$route.query.operation;
-        console.log(this.editSteelCoil);
-        this.explicitEdit(this.editSteelCoil);
-      }
-    }
+    // if (this.$route.query.operation) {
+    //   if (this.$route.query.operation == "查看编辑") {
+    //     this.operation = this.$route.query.operation;
+    //     this.explicitEdit(this.editSteelCoil);
+    //   }
+    // }
   },
   methods: {
     // 合同输入检索
@@ -444,7 +400,7 @@ export default {
         let list = result.Result;
         let CIDList = list.map(item => {
           return {
-            value: `${item.CID}(${item.Type})`,
+            value: `${item.CID}(${item.Type})`
           };
         });
         // 提交store
@@ -457,40 +413,10 @@ export default {
         cb(results);
       }
     },
-    createFilter(queryString) {
-      return restaurant => {
-        return (
-          restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) ===
-          0
-        );
-      };
-    },
     // 输入框下拉选择事件
     selectCID(item) {
       let word = item.value;
       this.inputMatch(word);
-    },
-    // 输入搜索匹配
-    async inputMatch(word) {
-      let result = await searchOneContract(word);
-      if (result) {
-        if (result.StatusCode == 200) {
-          if (result.Result) {
-            let CID;
-            if (result.Result.con && result.Result.con != null) {
-              Object.assign(this.Store.store, result.Result.con);
-              let Supply = result.Result.con.Supply;
-              this.Store.store.Buyby = Supply;
-              CID = result.Result.con.CID.split("(")[0];
-              let date = new Date().toLocaleDateString();
-            } else{
-              CID = word.split("(")[0];
-            }
-            this.Store.store.Type = "采购"
-            this.Store.store.SID = `${CID}-`; // 入仓单前缀
-          }
-        }
-      }
     },
     // 仓库名称输入检索
     querySearchStoreName(queryString, cb) {
@@ -537,36 +463,53 @@ export default {
       // 调用 callback 返回建议列表的数据
       cb(results);
     },
-    // 入仓单汇总表 查看详情 回显 编辑
-    explicitEdit(goodlist) {
-      this.Store.goodlist = [].concat(goodlist);
-      let obj = this.Store.goodlist[0];
-      // 数据同步到store
-      Object.assign(this.Store.store, obj);
+    // 输入搜索匹配
+    async inputMatch(word) {
+      let result = await searchOneContract(word);
+      if (result) {
+        if (result.StatusCode == 200) {
+          if (result.Result) {
+            let CID;
+            if (result.Result.con && result.Result.con != null) {
+              Object.assign(this.Store.store, result.Result.con);
+              let Supply = result.Result.con.Supply;
+              this.Store.store.Buyby = Supply;
+              CID = result.Result.con.CID.split("(")[0];
+            } else {
+              CID = word.split("(")[0];
+            }
+            this.Store.store.Type = "出仓";
+            this.Store.store.SID = `${CID}-`; // 入仓单前缀
+          }
+        }
+      }
     },
+    // 入仓单汇总表 查看详情 回显 编辑
+    // explicitEdit(goodlist) {
+    //   this.Store.goodlist = [].concat(goodlist);
+    //   let obj = this.Store.goodlist[0];
+    //   // 数据同步到store
+    //   Object.assign(this.Store.store, obj);
+    // },
     // 表格新增一行
     addOneRow() {
       let row = {
-        SteelRollID: "", // 钢卷号
-        GName: "", // 品名
-        Brand: "", // 牌号
-        Standards: "", // 规格(厚*宽)
-        Ton: "", // 吨位
-        UnitPrice: 0, // 单价
-        TotalPrice: 0, // 总金额
-        ProfitAndLossTon: 0, // 接收盈亏
-        PackStatus: "", // 包装状态
-        RecInfo: "", //  接收异议/拍照
-        RecInfoBack: "", // 异议反馈
-        GInfo: "" // 备注
+        RPID: "",
+        PackTon: "",
+        UnPackTon: "",
+        ProRollNo: "",
+        BrandList: "",
+        SteelRollIDList: "",
+        StandardsList: "",
+        Storename: ""
       };
       // 判断有否前一行数据存在,存在则复制前一行数据
-      let len = this.Store.goodlist.length;
+      let len = this.Store.rollpacklist.length;
       if (len >= 1) {
         // 把前一行数据赋值给row
-        row = JSON.parse(JSON.stringify(this.Store.goodlist[len - 1])); // 克隆
+        row = JSON.parse(JSON.stringify(this.Store.rollpacklist[len - 1])); // 克隆
       }
-      this.Store.goodlist.push(row);
+      this.Store.rollpacklist.push(row);
     },
     // 表单合计自定义统计计算方法
     getSummaries(param) {
@@ -604,11 +547,11 @@ export default {
     },
     // 合同表单 删除事件
     handleDelete(index, row) {
-      this.Store.goodlist.splice(index, 1);
+      this.Store.rollpacklist.splice(index, 1);
     },
     // dialog 对话框确定事件
     dialogFormOkHandle() {
-      this.Store.goodlist[this.editIndex] = this.form;
+      this.Store.rollpacklist[this.editIndex] = this.form;
       this.dialogFormVisible = false;
     },
     // 返回按钮
@@ -629,43 +572,45 @@ export default {
       });
       // 验证通过 调用接口
       if (isValid) {
-        // InsID 数据替换
-        let InsID = this.Store.store.SID
-        this.Store.goodlist.map(item => {
-          item.InsID = InsID;
+        // OutsID 替换
+        let OutsID = this.Store.store.SID;
+        this.Store.rollpacklist.map(item => {
+          item.OutsID = OutsID;
         });
+        delete this.Store.store["Id"]; // 删除Id属性
         // 合同编号处理
         this.Store.store.CID = this.Store.store.CID.split("(")[0];
+        this.$loadingShow("卷包出仓单录入处理中...");
         // 调用录入API
-        this.$loadingShow("入仓单录入...");
-        let result = await addWarehouseReceipt(this.Store);
+        let result = await addRollPackOutStore(this.Store);
         if (result) {
           this.$loadingHide();
           if (result.StatusCode == 200) {
-            this.$alert(result.Message, "入仓单录入", {
+            this.$alert(result.Message, "卷包出仓单", {
               confirmButtonText: "确定",
               type: "success",
               // center: true,
               callback: action => {
                 this.$message({
                   type: "success",
-                  message: `入仓单录入成功`
+                  message: `卷包出仓单录入成功`
                 });
-                // 返回上一页面 或返回入仓单汇总表
+                // 返回上一页面 或返回卷包汇总表
+                // this.$router.go(-1);
                 this.$router.push({
-                  path: "WarehousingSummary"
+                  path: "SteelCoilPackingSummary"
                 });
               }
             });
           } else if (result.StatusCode == 424) {
-            this.$alert("当前采购合同编号不存在", "入仓单录入失败", {
+            this.$alert("当前采购合同编号不存在", "出仓单录入失败", {
               confirmButtonText: "确定",
               type: "warning",
               // center: true,
               callback: action => {}
             });
           } else {
-            this.$alert(result.Message, "入仓单录入失败", {
+            this.$alert(result.Message, "出仓单录入失败", {
               confirmButtonText: "确定",
               type: "warning",
               // center: true,
@@ -705,7 +650,7 @@ export default {
   min-width: 5rem;
 }
 .input-width {
-  width: 18rem;
+  width: 17rem;
 }
 .form-input-width {
   width: 80%;

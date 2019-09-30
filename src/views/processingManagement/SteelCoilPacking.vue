@@ -521,14 +521,14 @@ export default {
       let curTime = date + "-" + time;
       packArr.map(item => {
         item.RPID = item.SID + "-" + curTime; // 卷包号
-        item.RollPackNo = item.CoilID; // 加工分条号
-        item.BrandList = [].push(item.Brand); //涉及牌号
-        item.StandardsList = [].push(item.Standards); // 涉及加工规格
-        item.Storename = item.StoreName; // 加工厂仓库
-        item.PackTon = 0;
-        item.PackTon += Number(item.CoilTon); // 已打包吨位
-        item.UnPackTon = 0; // 未打包吨位 ?
-        item.SteelRollIDList = [].push(item.SteelRollID); // 设计钢卷号
+        // item.RollPackNo = item.CoilID; // 加工分条号
+        // item.BrandList = [].push(item.Brand); //涉及牌号
+        // item.StandardsList = [].push(item.Standards); // 涉及加工规格
+        // item.Storename = item.StoreName; // 加工厂仓库
+        // item.PackTon = 0;
+        // item.PackTon += Number(item.CoilTon); // 已打包吨位
+        // item.UnPackTon = 0; // 未打包吨位 ?
+        // item.SteelRollIDList = [].push(item.SteelRollID); // 设计钢卷号
       });
       if (this.packList.length <= 1) {
         if (this.packList[0].pack.length == 0) {

@@ -1,0 +1,53 @@
+/**高层管理 */
+
+export default [
+    {
+        path:"DirectorsResolutionSummary",
+        name:"DirectorsResolutionSummary",
+        component:()=>import("@/views/TopManagement/DirectorsResolutionSummary"),
+        meta:{
+            auth:true,
+        }
+    },
+    {
+        path:"DirectorsResolutionDetails",
+        name:"DirectorsResolutionDetails",
+        component:()=>import("@/views/TopManagement/DirectorsResolutionDetails"),
+        meta:{
+            auth:true,
+        }
+    },
+
+    {
+        path:"GManagerOMResolutionSummary",
+        name:"GManagerOMResolutionSummary",
+        component:()=>import("@/views/TopManagement/GManagerOMResolutionSummary"),
+        meta:{
+            auth:true,
+        }
+    },
+    {
+        path:"GManagerOMResolutionDetails",
+        name:"GManagerOMResolutionDetails",
+        component:()=>import("@/views/TopManagement/GManagerOMResolutionDetails"),
+        meta:{
+            auth:true,
+        }
+    },
+    {
+        path:"MarketingPlanSummary",
+        name:"MarketingPlanSummary",
+        component:()=>import("@/views/TopManagement/MarketingPlanSummary"),
+        meta:{
+            auth:true,
+        }
+    },
+    {
+        path:"MarketingPlanDetails",
+        name:"MarketingPlanDetails",
+        component:()=>import("@/views/TopManagement/MarketingPlanDetails"),
+        meta:{
+            auth:true,
+        }
+    },
+]

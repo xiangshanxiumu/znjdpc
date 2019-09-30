@@ -16,6 +16,8 @@ import warehouseLogistics from './warehouseLogistics';
 import marketManagement from './marketManagement';
 // 综合管理
 import comprehensiveManagement from './comprehensiveManagement';
+// 高层管理
+import TopManagement from './TopManagement';
 export default [
       {
         path: '/Home',
@@ -30,6 +32,7 @@ export default [
           ...warehouseLogistics,
           ...marketManagement,
           ...comprehensiveManagement,
+          ...TopManagement
         ],
         meta:{
             // KeepAlive:true,

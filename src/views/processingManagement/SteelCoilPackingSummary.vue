@@ -15,7 +15,7 @@
           <el-form :model="searchFrom">
             <div class="input-box">
               <el-form-item label="卷包号" prop="RPID" class="form-item">
-                <el-input v-model="searchFrom.RPID" placeholder="请输入卷包号" class="input-width"></el-input>
+                <el-autocomplete v-model="searchFrom.RPID" placeholder="请输入卷包号" class="input-width" clearable :fetch-suggestions="querySearchRPID"></el-autocomplete>
               </el-form-item>
             </div>
             <!-- <div class="input-box">
@@ -50,7 +50,7 @@
       <!--表格顶部区域-->
       <div class="table-top-area">
         <div class="table-top-btns">
-          <el-button type="danger" @click="outWarehouseHandle()" v-if="xsShow">出仓</el-button>
+          <el-button type="danger" @click="outStoreHandle">出仓</el-button>
         </div>
         <div class="table-top-status">
           <div class="status-item">
@@ -105,6 +105,7 @@
 <script>
 // 导入合同接口API函数
 import { getRollPackList } from "@/api/RollPack";
+import {mapGetters} from "vuex";
 export default {
   // 委外加工钢卷打包汇总表
   name: "SteelCoilPackingSummary",
@@ -140,7 +141,7 @@ export default {
       },
       tableTitle: [
         {
-          prop: "RPID", // 合同编号id
+          prop: "RPID", // 卷包号id
           label: "卷包号",
           width: ""
         },
@@ -179,6 +180,11 @@ export default {
           label: "涉及仓库",
           width: ""
         },
+        {
+          prop: "RPIDStatus", 
+          label: "状态",
+          width: ""
+        },
       ],
       currentPage: 1, //当前页index
       pageIndex: 1, // 页码
@@ -192,6 +198,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(["RPIDList"]),
     totalTon() {
       // 总吨位
       let count = 0;
@@ -224,6 +231,23 @@ export default {
     this.getList();
   },
   methods: {
+    // 卷包号 输入检索
+    querySearchRPID(queryString, cb) {
+      let restaurants = this.RPIDList;
+      let results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
+    createFilter(queryString) {
+      return restaurant => {
+        return (
+          restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) ===
+          0
+        );
+      };
+    },
     // 表单合计自定义统计计算方法
     getSummaries(param) {
       const { columns, data } = param;
@@ -307,92 +331,6 @@ export default {
         }
       });
     },
-    // 出库出仓操作 路由跳转到 "出仓单录入"
-    outWarehouseHandle() {
-      // 判断是否有勾选要出仓加工的钢卷
-      if (this.multipleSelection.length == 0) {
-        this.$message({
-          message: "请选择要出仓的钢卷",
-          type: "warning",
-          showClose: true,
-          center: true
-        });
-        return false;
-      }
-      // 判断收货仓库是否一致 不一致的不能出仓操作
-      if (this.multipleSelection.length >= 2) {
-        let RecDepo = this.multipleSelection[0].RecDepo;
-        let isAgreement = this.multipleSelection.every(item => {
-          return item.RecDepo == RecDepo;
-        });
-        if (!isAgreement) {
-          this.$message({
-            message: "出仓钢卷的收货仓库不一致！",
-            type: "error",
-            showClose: true,
-            center: true
-          });
-          return false;
-        }
-      }
-      // 出仓钢卷列表数据提交全局store
-      this.$store.commit("updateOutWarehouseList", {
-        outWarehouseList: this.multipleSelection
-      });
-      // 路由跳转 "出仓单录入"
-      this.$router.push({
-        path: "WarehouseEntry"
-      });
-    },
-    // 计算获取钢卷号的列表数据
-    getGoods(data) {
-      let gootList = [];
-      if (data == undefined || !Array.isArray(data)) return false;
-      if (Array.isArray(data)) {
-        if (data.length > 0) {
-          data.map(item1 => {
-            // Id
-            // SignTime
-            // Supply
-            if (
-              item1.InStores &&
-              Array.isArray(item1.InStores) &&
-              item1.InStores.length > 0
-            ) {
-              item1.InStores.map(item2 => {
-                // Id
-                // Buyby
-                // RecDate
-                // RecDepo
-                if (
-                  item2.ISGoods &&
-                  Array.isArray(item2.ISGoods) &&
-                  item2.ISGoods.length > 0
-                ) {
-                  item2.ISGoods.map(item3 => {
-                    item3.ContractID = item1.Id; // 合同编号 id
-                    item3.SignTime = item1.SignTime; // 合同签订时间
-                    item3.Supply = item1.Supply; // 供应商
-
-                    item3.InStoreID = item2.Id; // 仓单编号 id
-                    item3.GoodsID = item3.Id; // 钢卷号id
-                    item3.Buyby = item2.Buyby; // 采购单位
-                    item3.RecDate = item2.RecDate; // 采购日期
-                    item3.RecDepo = item2.RecDepo; // 收货仓库
-                  });
-                  gootList = gootList.concat(item2.ISGoods);
-                }
-              });
-            } else {
-              // InStores 为[]
-              item1.ContractID = item1.Id; // 合同编号 id
-              gootList = gootList.concat(item1);
-            }
-          });
-        }
-      }
-      return gootList;
-    },
     // 数据初始分页处理
     GoodsPaging(data) {
       this.pageStart = 0;
@@ -410,10 +348,19 @@ export default {
           // this.goodsList.map(item => {
           //   item.CETotalPrice = Number(item.CEUnitPrice) * Number(item.CETon);
           // });
+          // 数字保留小数后三位 以及 计算添加 RPIDStatus
           this.goodsList.map(item=>{
             item.PackTon = item.PackTon.toFixed(3);
             item.UnPackTon = item.UnPackTon.toFixed(3);
-          })
+            // OutsID
+            if(item.OutsID){
+              item.RPIDStatus = "已经出仓"
+            }else{
+              item.RPIDStatus = "未出仓"
+            }
+          });
+          // 提交store
+          this.$store.commit('updateAllRollPackList',{"AllRollPackList":this.goodsList});
         }
         this.curList = [].concat(this.goodsList);
         this.GoodsPaging(this.curList);
@@ -496,25 +443,12 @@ export default {
         this.GoodsPaging(this.curList);
       }
     },
-    // 加工
-    machiningHandle() {
-      // 判断是否有勾选要出仓加工的钢卷
-      if (this.multipleSelection.length == 0) {
-        this.$message({
-          message: "请选择要加工的钢卷",
-          type: "warning",
-          showClose: true,
-          center: true
-        });
-        return false;
-      }
-    },
     // 出库出仓操作 路由跳转到 "出仓单录入"
-    outOfStockHandle() {
+    outStoreHandle() {
       // 判断是否有勾选要出仓加工的钢卷
       if (this.multipleSelection.length == 0) {
         this.$message({
-          message: "请选择要出仓的钢卷",
+          message: "请选择要出仓的钢条卷包",
           type: "warning",
           showClose: true,
           center: true
@@ -522,14 +456,27 @@ export default {
         return false;
       }
       // 判断收货仓库是否一致 不一致的不能出仓操作
-      if (this.multipleSelection.length >= 2) {
-        let RecDepo = this.multipleSelection[0].RecDepo;
-        let isAgreement = this.multipleSelection.every(item => {
-          return item.RecDepo == RecDepo;
-        });
-        if (!isAgreement) {
+      if (this.multipleSelection.length >= 1) {
+        // let RPID = this.multipleSelection[0].RPID;
+        // let isAgreement = this.multipleSelection.every(item => {
+        //   return item.RPID == RPID;
+        // });
+        // if (!isAgreement) {
+        //   this.$message({
+        //     message: "出仓的钢条卷包不一致！",
+        //     type: "error",
+        //     showClose: true,
+        //     center: true
+        //   });
+        //   return false;
+        // }
+        // 判断是否出仓过
+        let isOut = this.multipleSelection.some(item=>{
+          return item.RPIDStatus == "已经出仓"
+        })
+        if(isOut){
           this.$message({
-            message: "出仓钢卷的收货仓库不一致！",
+            message: "该卷包已经出仓过！",
             type: "error",
             showClose: true,
             center: true
@@ -538,12 +485,12 @@ export default {
         }
       }
       // 提交全局store
-      this.$store.commit("updateOutWarehouseList", {
-        outWarehouseList: this.multipleSelection
+      this.$store.commit("updateRollPackList", {
+        RollPackList: this.multipleSelection
       });
-      // 路由跳转 "出仓单录入"
+      // 路由跳转 "卷包出仓单录入"
       this.$router.push({
-        path: "WarehouseEntry"
+        path: "RollPackWarehouseEntry"
       });
     },
     // 分页器
